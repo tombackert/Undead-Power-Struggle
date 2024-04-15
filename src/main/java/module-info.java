@@ -1,9 +1,11 @@
 /**
- * The main module of the tnt application.
+ * The main module of the ups application.
  */
-module tnt {
+module ups {
     requires javafx.controls;
     requires transitive javafx.graphics;
     
-    exports tnt.gui;
+    exports ups.gui;
+    exports ups.model;
+    exports ups.view;
 }
