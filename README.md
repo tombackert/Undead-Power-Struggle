@@ -1,4 +1,4 @@
-# TNT - 
+# UPS - Undead Power Struggle
 
 Bitte hier eine sinnvolle Dokumentation ergänzen!
 
@@ -29,14 +29,14 @@ Already a pro? Just edit this README.md and make it your own. Want to make it ea
 
 ```
 cd existing_repo
-git remote add origin https://projects.isp.uni-luebeck.de/sweng-prak-2023/tnt-template.git
+git remote add origin https://projects.isp.uni-luebeck.de/sweng-prak-2024/ups-template.git
 git branch -M main
 git push -uf origin main
 ```
 
 ## Integrate with your tools
 
-- [ ] [Set up project integrations](https://projects.isp.uni-luebeck.de/sweng-prak-2023/tnt-template/-/settings/integrations)
+- [ ] [Set up project integrations](https://projects.isp.uni-luebeck.de/sweng-prak-2024/ups-template/-/settings/integrations)
 
 ## Collaborate with your team
 

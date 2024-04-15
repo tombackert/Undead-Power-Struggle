@@ -1,4 +1,4 @@
-package tnt.model;
+package ups.model;
 
 /**
  * Example model class which should be replaced with your actual implementation.

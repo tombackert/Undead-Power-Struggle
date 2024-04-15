@@ -1,4 +1,4 @@
-package tnt.model;
+package ups.model;
 
 import org.junit.jupiter.api.Test;
 

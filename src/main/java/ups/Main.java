@@ -1,6 +1,6 @@
-package tnt;
+package ups;
 
-import tnt.gui.Gui;
+import ups.gui.Gui;
 
 import java.util.Arrays;
 
