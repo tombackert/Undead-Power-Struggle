@@ -4,6 +4,7 @@
 module ups {
     requires javafx.controls;
     requires transitive javafx.graphics;
-    
+
+    exports ups.menu to javafx.graphics;
     exports ups.gui;
 }
