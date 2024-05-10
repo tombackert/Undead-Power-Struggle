@@ -28,13 +28,13 @@ public class MenuApp extends Application {
     private static final int HEIGHT = 720;
 
     private List<Pair<String, Runnable>> menuData = Arrays.asList(
-            new Pair<String, Runnable>("Single Player", () -> {}),
-            new Pair<String, Runnable>("Multiplayer", () -> {}),
-            new Pair<String, Runnable>("Game Options", () -> {}),
-            new Pair<String, Runnable>("Additional Content", () -> {}),
-            new Pair<String, Runnable>("Tutorial", () -> {}),
-            new Pair<String, Runnable>("Benchmark", () -> {}),
-            new Pair<String, Runnable>("Credits", () -> {}),
+            new Pair<String, Runnable>("Single Player", () -> System.out.println("Single Player clicked")),
+            new Pair<String, Runnable>("Multiplayer", () -> System.out.println("Multiplayer clicked")),
+            new Pair<String, Runnable>("Game Options", () -> System.out.println("Game Options clicked")),
+            new Pair<String, Runnable>("Additional Content", () -> System.out.println("Additional Content clicked")),
+            new Pair<String, Runnable>("Tutorial", () -> System.out.println("Tutorial clicked")),
+            new Pair<String, Runnable>("Benchmark", () -> System.out.println("Benchmark clicked")),
+            new Pair<String, Runnable>("Credits", () -> System.out.println("Credits clicked")),
             new Pair<String, Runnable>("Exit to Desktop", Platform::exit)
     );
 
