@@ -6,26 +6,47 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
+
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
+
+import javafx.application.Application;
+import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Scene;
+import javafx.scene.effect.ColorAdjust;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
+
+
+import java.util.Objects;
+
 /**
  * Starting point of the JavaFX GUI
  */
 public class Gui extends Application {
-    /**
-     * This method is called by the Application to start the GUI.
-     *
-     * @param primaryStage The initial root stage of the application.
-     */
-    @Override
-    public void start(Stage primaryStage) {
-        primaryStage.setTitle("Hello World!");
-        Button btn = new Button();
-        btn.setText("Say 'Hello World'");
-        btn.setOnAction(event -> System.out.println("Hello World!"));
 
-        StackPane root = new StackPane();
-        root.getChildren().add(btn);
-        primaryStage.setScene(new Scene(root, 300, 250));
-        primaryStage.show();
+    @Override
+    public void start(Stage stage) {
+
+        HBox layout = new HBox();
+        layout.setAlignment(Pos.CENTER);
+
+        Image i = new Image(Gui.class.getResourceAsStream("Civ6_bg.png"));
+
+        ImageView iv = new ImageView();
+        iv.setImage(i);
+
+        layout.getChildren().addAll(iv);
+
+        Scene scene = new Scene(layout, 880, 460);
+        stage.setScene(scene);
+        stage.show();
+
+
     }
 
     /**
