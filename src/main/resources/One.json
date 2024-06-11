@@ -1,0 +1,14 @@
+{
+  "terrainTypes": [
+    ["Wueste", "Wueste", "Canyon", "Wald", "Wald", "Wald", "Wald", "Wald", "Gras", "Gras"],
+    ["Wueste", "SilverCastle", "Canyon", "Wald", "Wald", "Wald", "Wald", "GoldCastle", "Gras", "Gras"],
+    [ "Canyon", "Canyon", "Canyon", "Blumen", "Blumen", "Blumen", "Wald", "Canyon", "Blumen", "Blumen"],
+    ["Canyon", "Canyon", "Blumen", "Blumen", "Blumen", "Wueste", "Wueste", "Canyon", "Canyon", "Blumen"],
+    ["Canyon", "Gras", "Gras", "Blumen", "Blumen", "Blumen", "Wueste", "Wueste", "Canyon", "Canyon"],
+    ["Gras", "Gras", "GoldCastle", "Blumen", "Blumen", "Blumen", "Wasser", "Wueste", "Wueste", "Canyon"],
+    ["Gras", "Gras", "Gras", "Wald", "Blumen", "Blumen", "Wasser", "Wasser", "Wueste", "Wueste"],
+    ["Gras", "Gras", "Wald", "Wald", "Berg", "Wasser", "Wasser", "Wasser", "Wueste", "Gras"],
+    ["Gras", "Berg", "Wald", "Wald", "Gras", "Wasser", "Wasser", "Wasser", "Canyon", "Canyon"],
+    ["Wald", "Wald", "Wald", "Gras", "Gras", "Gras", "Gras", "Canyon", "Canyon", "Canyon"]
+  ]
+}

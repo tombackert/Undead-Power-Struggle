@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox alignment="CENTER" prefHeight="418.0" prefWidth="629.0" spacing="10" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ups.controller.GameMenuController">
+    <padding>
+        <Insets bottom="10" left="10" right="10" top="10" />
+    </padding>
+    <HBox prefHeight="100.0" prefWidth="200.0">
+        <VBox prefHeight="104.0" prefWidth="230.0">
+            <TextField fx:id="player1Field" promptText="Spieler 1 Name"/>
+            <TextField fx:id="player2Field" promptText="Spieler 2 Name"/>
+            <TextField fx:id="player3Field" promptText="Spieler 3 Name"/>
+            <TextField fx:id="player4Field" promptText="Spieler 4 Name"/>
+        </VBox>
+        <VBox prefHeight="104.0" prefWidth="181.0">
+            <ComboBox fx:id="color1ComboBox" promptText="Farbe auswählen">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Rot"/>
+                        <String fx:value="Schwarz"/>
+                        <String fx:value="Blau"/>
+                        <String fx:value="Weiß"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
+            <ComboBox fx:id="color2ComboBox" promptText="Farbe auswählen">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Rot"/>
+                        <String fx:value="Schwarz"/>
+                        <String fx:value="Blau"/>
+                        <String fx:value="Weiß"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
+            <ComboBox fx:id="color3ComboBox" promptText="Farbe auswählen">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Rot"/>
+                        <String fx:value="Schwarz"/>
+                        <String fx:value="Blau"/>
+                        <String fx:value="Weiß"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
+            <ComboBox fx:id="color4ComboBox" promptText="Farbe auswählen">
+                <items>
+                    <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Rot"/>
+                        <String fx:value="Schwarz"/>
+                        <String fx:value="Blau"/>
+                        <String fx:value="Weiß"/>
+                    </FXCollections>
+                </items>
+            </ComboBox>
+        </VBox>
+    </HBox>
+   <HBox prefHeight="202.0" prefWidth="609.0" />
+     <Button alignment="CENTER" contentDisplay="CENTER" onAction="#startNewGame" text="Neues Spiel" />
+     <Button alignment="CENTER" contentDisplay="CENTER" onAction="#exitGame" text="Beenden" />
+</VBox>
