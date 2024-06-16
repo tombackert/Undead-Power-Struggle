@@ -1,6 +1,6 @@
 package ups;
 
-import ups.menu.MenuApp;
+// import ups.menu.MenuApp;
 
 /**
  * The common starting point of the GUI.
@@ -11,6 +11,6 @@ public class Main {
      * @param args The command line arguments passed to the application.
      */
     public static void main(String[] args) {
-        MenuApp.main(args);
+        ups.view.MenuView.main(args);
     }
 }
