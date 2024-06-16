@@ -17,14 +17,14 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import javafx.util.Pair;
-import ups.controller.MenuController;
+import ups.controller.OptionsController;
 import ups.model.MenuItem;
 import ups.model.Title;
 
 import java.io.InputStream;
 import java.util.List;
 
-public class MenuView extends Application {
+public class OptionsMenuView extends Application {
 
     private static final int WIDTH = 1280;
     private static final int HEIGHT = 720;
@@ -38,7 +38,7 @@ public class MenuView extends Application {
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
         Scene scene = new Scene(createContent());
-        primaryStage.setTitle("Kingdom Builder Menu");
+        primaryStage.setTitle("Game Options");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -59,7 +59,7 @@ public class MenuView extends Application {
     }
 
     private void addBackground() {
-        InputStream inputStream = getClass().getResourceAsStream("bg2.jpg");
+        InputStream inputStream = getClass().getResourceAsStream("bg3.jpg");
         if (inputStream != null) {
             Image image = new Image(inputStream);
             ImageView imageView = new ImageView(image);
@@ -72,7 +72,7 @@ public class MenuView extends Application {
     }
 
     private void addTitle() {
-        Title title = new Title("KINDOM BUILDER");
+        Title title = new Title("Game Options");
         title.setTranslateX(WIDTH / 2 - title.getTitleWidth() / 2);
         title.setTranslateY(HEIGHT / 3);
 
@@ -109,7 +109,7 @@ public class MenuView extends Application {
         menuBox.setTranslateX(x);
         menuBox.setTranslateY(y);
 
-        List<Pair<String, Runnable>> menuData = MenuController.getMenuData(primaryStage);
+        List<Pair<String, Runnable>> menuData = OptionsController.getMenuData(primaryStage);
         menuData.forEach(data -> {
             MenuItem item = new MenuItem(data.getKey());
             item.setOnAction(data.getValue());
