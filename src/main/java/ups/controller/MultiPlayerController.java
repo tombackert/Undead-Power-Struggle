@@ -12,10 +12,10 @@ public class MultiPlayerController {
 
     public static List<Pair<String, Runnable>> getMenuData(Stage primaryStage) {
         return Arrays.asList(
-                new Pair<>("You", () -> selectColor(Color.RED)),
-                new Pair<>("AI Player 1", () -> selectColor(Color.GREEN)),
-                new Pair<>("AI Player 2", () -> selectColor(Color.BLUE)),
-                new Pair<>("AI Player 3", () -> selectColor(Color.YELLOW)),
+                new Pair<>("Player 1", () -> selectColor(Color.RED)),
+                new Pair<>("Player 2", () -> selectColor(Color.GREEN)),
+                new Pair<>("Player 3", () -> selectColor(Color.BLUE)),
+                new Pair<>("Player 4", () -> selectColor(Color.YELLOW)),
                 new Pair<>("Back", () -> {
                     try {
                         new MenuView().start(primaryStage);

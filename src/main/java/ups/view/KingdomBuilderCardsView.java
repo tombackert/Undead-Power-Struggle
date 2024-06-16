@@ -1,33 +1,34 @@
 package ups.view;
 
-import javafx.util.Pair;
-import ups.controller.OptionsController;
-
 import java.util.List;
 
-public class OptionsMenuView extends BaseMenuView {
+import javafx.util.Pair;
+import ups.controller.KingdomBuilderCardsController;
 
+public class KingdomBuilderCardsView extends BaseMenuView{
+    
     @Override
     protected String getTitle() {
-        return "Game Options";
+        return "Kingdom Builder Cards";
     }
 
     @Override
     protected String getTitleText() {
-        return "OPTIONS";
+        return "Kingdom Builder Cards";
     }
 
     @Override
     protected String getBackgroundImage() {
-        return "bg5.png";
+        return "bg8.png";
     }
 
     @Override
     protected List<Pair<String, Runnable>> getMenuData() {
-        return OptionsController.getMenuData(primaryStage);
+        return KingdomBuilderCardsController.getMenuData(primaryStage);
     }
 
     public static void main(String[] args) {
         launch(args);
     }
+
 }

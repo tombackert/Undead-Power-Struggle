@@ -1,33 +1,36 @@
 package ups.view;
 
 import javafx.util.Pair;
-import ups.controller.OptionsController;
+import ups.controller.CreditsController;
 
 import java.util.List;
 
-public class OptionsMenuView extends BaseMenuView {
 
+
+public class CreditsMenuView extends BaseMenuView {
+    
     @Override
     protected String getTitle() {
-        return "Game Options";
+        return "Credits";
     }
 
     @Override
     protected String getTitleText() {
-        return "OPTIONS";
+        return "Credits";
     }
 
     @Override
     protected String getBackgroundImage() {
-        return "bg5.png";
+        return "bg3.png";
     }
 
     @Override
     protected List<Pair<String, Runnable>> getMenuData() {
-        return OptionsController.getMenuData(primaryStage);
+        return CreditsController.getMenuData(primaryStage);
     }
 
     public static void main(String[] args) {
         launch(args);
     }
+    
 }

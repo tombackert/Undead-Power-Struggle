@@ -1,129 +1,30 @@
 package ups.view;
 
-import javafx.animation.ScaleTransition;
-import javafx.animation.TranslateTransition;
-import javafx.application.Application;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.effect.DropShadow;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
-import javafx.stage.Stage;
-import javafx.util.Duration;
 import javafx.util.Pair;
 import ups.controller.SinglePlayerController;
-import ups.model.MenuItem;
-import ups.model.Title;
 
-import java.io.InputStream;
 import java.util.List;
 
-public class SinglePlayerMenuView extends Application {
-
-    private static final int WIDTH = 1280;
-    private static final int HEIGHT = 720;
-    private Stage primaryStage;
-
-    private Pane root = new Pane();
-    private VBox menuBox = new VBox(-5);
-    private Line line;
+public class SinglePlayerMenuView extends BaseMenuView {
 
     @Override
-    public void start(Stage primaryStage) {
-        this.primaryStage = primaryStage;
-        Scene scene = new Scene(createContent());
-        primaryStage.setTitle("Single Player Settings");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+    protected String getTitle() {
+        return "Single Player Settings";
     }
 
-    private Parent createContent() {
-        addBackground();
-        addTitle();
-
-        double lineX = WIDTH / 2 - 100;
-        double lineY = HEIGHT / 3 + 50;
-
-        addLine(lineX, lineY);
-        addMenu(lineX + 5, lineY + 5);
-
-        startAnimation();
-
-        return root;
+    @Override
+    protected String getTitleText() {
+        return "Single Player";
     }
 
-    private void addBackground() {
-        InputStream inputStream = getClass().getResourceAsStream("bg4.jpg");
-        if (inputStream != null) {
-            Image image = new Image(inputStream);
-            ImageView imageView = new ImageView(image);
-            imageView.setFitWidth(WIDTH);
-            imageView.setFitHeight(HEIGHT);
-            root.getChildren().add(imageView);
-        } else {
-            System.err.println("Die Bilddatei wurde nicht gefunden!");
-        }
+    @Override
+    protected String getBackgroundImage() {
+        return "bg7.png";
     }
 
-    private void addTitle() {
-        Title title = new Title("CHOOSE PLAYER COLOR");
-        title.setTranslateX(WIDTH / 2 - title.getTitleWidth() / 2);
-        title.setTranslateY(HEIGHT / 3);
-
-        root.getChildren().add(title);
-    }
-
-    private void addLine(double x, double y) {
-        line = new Line(x, y, x, y + 300);
-        line.setStrokeWidth(3);
-        line.setStroke(Color.color(1, 1, 1, 0.75));
-        line.setEffect(new DropShadow(5, Color.BLACK));
-        line.setScaleY(0);
-
-        root.getChildren().add(line);
-    }
-
-    private void startAnimation() {
-        ScaleTransition st = new ScaleTransition(Duration.seconds(1), line);
-        st.setToY(1);
-        st.setOnFinished(e -> {
-            for (int i = 0; i < menuBox.getChildren().size(); i++) {
-                Node n = menuBox.getChildren().get(i);
-
-                TranslateTransition tt = new TranslateTransition(Duration.seconds(1 + i * 0.15), n);
-                tt.setToX(0);
-                tt.setOnFinished(e2 -> n.setClip(null));
-                tt.play();
-            }
-        });
-        st.play();
-    }
-
-    private void addMenu(double x, double y) {
-        menuBox.setTranslateX(x);
-        menuBox.setTranslateY(y);
-
-        List<Pair<String, Runnable>> menuData = SinglePlayerController.getMenuData(primaryStage);
-        menuData.forEach(data -> {
-            MenuItem item = new MenuItem(data.getKey());
-            item.setOnAction(data.getValue());
-            item.setTranslateX(-300);
-
-            Rectangle clip = new Rectangle(300, 30);
-            clip.translateXProperty().bind(item.translateXProperty().negate());
-
-            item.setClip(clip);
-
-            menuBox.getChildren().addAll(item);
-        });
-
-        root.getChildren().add(menuBox);
+    @Override
+    protected List<Pair<String, Runnable>> getMenuData() {
+        return SinglePlayerController.getMenuData(primaryStage);
     }
 
     public static void main(String[] args) {
