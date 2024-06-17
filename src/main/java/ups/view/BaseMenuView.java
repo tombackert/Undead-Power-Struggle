@@ -104,7 +104,7 @@ public abstract class BaseMenuView extends Application {
         st.play();
     }
 
-    private void addMenu(double x, double y) {
+    protected void addMenu(double x, double y) {
         menuBox.setTranslateX(x);
         menuBox.setTranslateY(y);
 

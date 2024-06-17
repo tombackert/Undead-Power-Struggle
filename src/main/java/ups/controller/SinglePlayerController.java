@@ -1,21 +1,23 @@
 package ups.controller;
 
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import ups.view.MenuView;
+import ups.model.MenuItem;
+import ups.model.PlayerMenuItem;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class SinglePlayerController {
 
+    private static String player1Name = "Player Name";
+
     public static List<Pair<String, Runnable>> getMenuData(Stage primaryStage) {
         return Arrays.asList(
-                new Pair<>("You", () -> selectColor(Color.RED)),
-                new Pair<>("AI Player 1", () -> selectColor(Color.GREEN)),
-                new Pair<>("AI Player 2", () -> selectColor(Color.BLUE)),
-                new Pair<>("AI Player 3", () -> selectColor(Color.YELLOW)),
+
+                new Pair<>("Start Game", () -> System.out.println("Game started!!!")),
+                new Pair<>(player1Name, () -> updatePlayerName(1)),
                 new Pair<>("Back", () -> {
                     try {
                         new MenuView().start(primaryStage);
@@ -26,8 +28,15 @@ public class SinglePlayerController {
         );
     }
 
-    private static void selectColor(Color color) {
-        System.out.println("Selected color: " + color.toString());
-        // Add functionality to save the selected color and proceed with the game setup
+    private static void updatePlayerName(int playerNumber) {
+        // This method is now handled by the PlayerMenuItem class, so no further action is required here.
+    }
+
+    public static MenuItem createMenuItem(String name, boolean isPlayer) {
+        if (isPlayer) {
+            return new PlayerMenuItem(name);
+        } else {
+            return new MenuItem(name);
+        }
     }
 }
