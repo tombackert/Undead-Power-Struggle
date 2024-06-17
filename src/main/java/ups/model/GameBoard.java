@@ -16,12 +16,27 @@ import ups.gui.ColorMapping;
 /**
  * The GameBoard class represents the game board of the game.
  */
+
 public class GameBoard {
+    
     private final Color[][] colors; // Hält die Farben für jede Position
     private final String[][] terrainMap;  // Hält die Geländetypen für jede Position
     private final boolean[][] occupied;  // Hält die Informationen über besetzte Felder
     private Map<Point, Player> hexagonOwnership; // Hält die Besitzer der Hexagone
     private Map<String, Integer> terrainCount; // Anzahl der verbleibenden Felder für jeden Geländetyp
+    
+    //List of selected cards
+    public List<String> selectedCards;
+    
+    
+    /*
+    * Neue Variablen
+    */
+    public int boardSizeX;
+    public int boardSizeY;
+
+    public int[][] coordinatesOfLastNeighbours = new int[6][2];
+    public int[][] occupiedBy;
 
     /**
      * Constructs a new GameBoard with the given number of rows and columns.
@@ -29,13 +44,17 @@ public class GameBoard {
      * @param rows the number of rows
      * @param cols the number of columns
      */
-    public GameBoard(int rows, int cols) {
+    public GameBoard(int rows, int cols, List<String> selectedCards) {
         super();
         this.colors = new Color[rows][cols]; // Initialisierung der Farbmatrix
         this.terrainMap = new String[rows][cols]; // Initialisierung der TerrainMap
         this.occupied = new boolean[rows][cols]; // Initialisierung der Besetztheitsmatrix
         this.terrainCount = new HashMap<>(); // Initialisierung der Terrainzählung
+        this.occupiedBy = new int[rows][cols];
+        this.boardSizeX = rows;
+        this.boardSizeY = cols;
         hexagonOwnership = new HashMap<>(); // Initialisierung der Besitzerliste
+        this.selectedCards = selectedCards;
     }
 
     /**
@@ -50,6 +69,9 @@ public class GameBoard {
         this.colors = new Color[rows][cols]; // Initialisierung der Farbmatrix
         this.terrainMap = new String[rows][cols]; // Initialisierung der TerrainMap
         this.occupied = new boolean[rows][cols]; // Initialisierung der Besetztheitsmatrix
+        this.occupiedBy = new int[rows][cols];
+        this.boardSizeX = rows;
+        this.boardSizeY = cols;
         initialize(index, 0, 0);
     }
 
@@ -137,6 +159,7 @@ public class GameBoard {
         if (isNotOccupied(x, y)) {
             colors[x][y] = color;
             occupied[x][y] = true; // Setze das Hexagon als besetzt
+            occupiedBy[x][y] = ColorMapping.getIntFromColor(color);
 
             // Aktualisiere den Zähler für den Geländetyp
             String terrainType = terrainMap[x][y]; // Hole den Geländetyp des Hexagons
@@ -154,7 +177,8 @@ public class GameBoard {
      * @return the terrain type
      */
     public String getTerrainType(int x, int y) {
-        return terrainMap[x][y];
+        if (0 <= x && x < this.boardSizeX && 0 <= y && y < this.boardSizeY) return terrainMap[x][y];
+        return "!";
     }
 
     /**
@@ -166,6 +190,18 @@ public class GameBoard {
      */
     public boolean isNotOccupied(int x, int y) {
         return !occupied[x][y];
+    }
+
+
+    /**
+     * Returns the occupation of the hexagon at the given row and column.
+     * 
+     * @param x the row
+     * @param y the column
+     * @return 0 if the hexagon is not occupied, 1 to 4 depending on which player occupies hexagon.
+     */
+    public int getOccupation(int x, int y) {
+        return this.occupiedBy[x][y];
     }
 
     /**
@@ -199,4 +235,40 @@ public class GameBoard {
     public boolean isTerrainAvailable(String terrainType) {
         return terrainCount.getOrDefault(terrainType, 0) > 0;
     }
+
+    //Returns the tile types of the neighbours in an array and stores the coordinates in the 2D array coordinatesOfLastNeighbours
+    public void resetNeighbourCoordinates(int x, int y) {
+
+        if ((y % 2) == 0) {
+            this.coordinatesOfLastNeighbours[0] = new int[]{x - 1, y - 1};
+            this.coordinatesOfLastNeighbours[1] = new int[]{x - 1, y};
+            this.coordinatesOfLastNeighbours[2] = new int[]{x, y - 1};
+            this.coordinatesOfLastNeighbours[3] = new int[]{x, y + 1};
+            this.coordinatesOfLastNeighbours[4] = new int[]{x + 1, y - 1};
+            this.coordinatesOfLastNeighbours[5] = new int[]{x + 1, y};
+        }
+        else {
+            this.coordinatesOfLastNeighbours[0] = new int[]{x - 1, y};
+            this.coordinatesOfLastNeighbours[1] = new int[]{x - 1, y + 1};
+            this.coordinatesOfLastNeighbours[2] = new int[]{x, y - 1};
+            this.coordinatesOfLastNeighbours[3] = new int[]{x, y + 1};
+            this.coordinatesOfLastNeighbours[4] = new int[]{x + 1, y};
+            this.coordinatesOfLastNeighbours[5] = new int[]{x + 1, y + 1};
+        }
+        
+    }
+
+    /*
+     * Returns the terrain type of the neighbours of the hexagon at the given row and column.
+     */
+    public String[] getNeighbourTerrain(int x, int y) {
+        this.resetNeighbourCoordinates(x, y);
+        String[] arr = new String[6];
+        for (int i = 0; i < 6; i++) {
+            arr[i] = this.getTerrainType(this.coordinatesOfLastNeighbours[i][0], this.coordinatesOfLastNeighbours[i][1]);
+        }
+        return arr;
+    }
+
+
 }

@@ -41,6 +41,45 @@ public class ColorMapping {
         return colorMap.getOrDefault(colorName, Color.GRAY); // Default color is gray
     }
 
+
+    /*
+     * Returns the JavaFX Color object for the given player color.
+     */
+    public static Color getColorFromInt(int color) {
+        switch (color) {
+            case 1:
+                return Color.RED;
+            case 2:
+                return Color.BLACK;
+            case 3:
+                return Color.BLUE;
+            case 4:
+                return Color.WHITE;
+            default:
+                throw new IllegalArgumentException("Ungültige Spielerfarbe: " + Integer.toString(color));
+        }
+    }
+
+
+    /*
+     * Returns the player color for the given JavaFX Color object.
+     */
+    public static int getIntFromColor(Color color) {
+        if (color.equals(Color.RED)) {
+            return 1;
+        } else if (color.equals(Color.BLACK)) {
+            return 2;
+        } else if (color.equals(Color.BLUE)) {
+            return 3;
+        } else if (color.equals(Color.WHITE)) {
+            return 4;
+        } else {
+            throw new IllegalArgumentException("Ungültige Spielerfarbe: " + color.toString());
+        }
+    }
+
+
+
     /**
      * Returns the color name for the given JavaFX Color object.
      *

@@ -16,6 +16,7 @@ import ups.model.InvalidPlacementException;
 import ups.model.Player;
 import ups.view.GameBoardView;
 import ups.view.GameMenuView;
+import java.util.Arrays;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -112,7 +113,7 @@ public class GameBoardController {
     }
 
     private void initializeModel() throws IOException {
-        model = new GameBoard(20, 20);
+        model = new GameBoard(20, 20, Arrays.asList("Fischer", "Bergleute", "Arbeiter"));
         int[][] positions = {{0, 0}, {0, 10}, {10, 0}, {10, 10}};
         for (int i = 0; i < positions.length; i++) {
             model.initialize(i, positions[i][0], positions[i][1]);
