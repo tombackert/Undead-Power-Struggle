@@ -1,11 +1,7 @@
-// GameBoardController.java
 package ups.controller;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
@@ -16,14 +12,12 @@ import ups.model.InvalidPlacementException;
 import ups.model.Player;
 import ups.view.GameBoardView;
 import ups.view.GameMenuView;
-import java.util.Arrays;
-
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import ups.utils.LanguageSettings;
+import java.util.ResourceBundle;
 
 public class GameBoardController {
     @FXML
@@ -38,6 +32,8 @@ public class GameBoardController {
     private Button drawTerrainCardButton;
     @FXML
     private Button endTurnButton;
+    @FXML
+    private Button backToMenuButton;
 
     private GameBoardView view;
     private GameBoard model;
@@ -46,110 +42,43 @@ public class GameBoardController {
     private int currentPlayerIndex = 0;
     private boolean terrainDrawnThisTurn = false;
     private final String[] terrainsBuildable = {"Gras", "Wald", "Wueste", "Blumen", "Canyon"};
-    private Stage gameStage;
+    private static Stage gameStage;
     private String[] playerNames;
     private Color[] playerColors;
     private static final Logger logger = Logger.getLogger(GameBoardController.class.getName());
+    private ResourceBundle bundle;
+    private static GameBoardController instance;
+    private String currentTerrain;
 
     public void setPlayers(String[] playerNames, Color[] playerColors) {
         this.playerNames = playerNames;
         this.playerColors = playerColors;
 
         if (playerNames != null && playerColors != null) {
-            players = new Player[playerNames.length];
-            for (int i = 0; i < playerNames.length; i++) {
-                Player player = new Player(playerNames[i], playerColors[i]);
-                players[i] = player;
-                playerControllers.put(player, new PlayerController(player, model) {
-                    @Override
-                    protected void notifyCanEndTurn() {
-                        endTurnButton.setDisable(false);
-                    }
-                });
-            }
-            updateCurrentPlayerLabel();
-            updateCurrentPlayerSettlementLabel();
+            initializePlayers();
+            updateCurrentPlayerInfo();
         } else {
             logger.log(Level.SEVERE, "Player names or colors are null.");
         }
     }
 
-    public void start(Stage primaryStage) throws IOException {
-        this.gameStage = primaryStage;
-        initializeGame();
-    }
-
-    @FXML
-    private void initializeGame() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ups/view/GameBoardView.fxml"));
-        Parent root = loader.load();
-
-        GameBoardController controller = loader.getController();
-        controller.setPlayers(playerNames, playerColors);
-
-        Scene scene = new Scene(root, 1024, 768);
-        gameStage.setScene(scene);
-        gameStage.setTitle("Undead Power Struggle");
-        gameStage.show();
-    }
-
-    @FXML
-    public void initialize() {
-        // Initialize model and view
-        try {
-            initializeModel();
-            view = new GameBoardView(model);
-            view.setController(this);
-            boardPane.getChildren().add(view);
-        } catch (IOException e) {
-            logger.log(Level.SEVERE, "Initialisierung fehlgeschlagen.", e);
-        }
-
-        if (currentTerrainLabel != null) {
-            currentTerrainLabel.setText("Geländekarte:\nZiehe erst eine Geländekarte!");
-        } else {
-            logger.log(Level.SEVERE, "currentTerrainLabel is null.");
-        }
-    }
-
-    private void initializeModel() throws IOException {
-        model = new GameBoard(20, 20, Arrays.asList("Fischer", "Bergleute", "Arbeiter"));
-        int[][] positions = {{0, 0}, {0, 10}, {10, 0}, {10, 10}};
-        for (int i = 0; i < positions.length; i++) {
-            model.initialize(i, positions[i][0], positions[i][1]);
-        }
-    }
-
-    public void handleHexagonClick(Group hexGroup, int row, int col) {
-        try {
-            Player currentPlayer = players[currentPlayerIndex];
-            PlayerController playerController = playerControllers.get(currentPlayer);
-
-            if (currentPlayer.canPlaceSettlement() && model.isNotOccupied(row, col)) {
-                playerController.placeSettlement(currentPlayer, row, col);
-                view.addHouseToHexagon(hexGroup, currentPlayer.getColor());
-                updateCurrentPlayerSettlementLabel();
-                if (playerController.canEndTurn()) {
+    private void initializePlayers() {
+        players = new Player[playerNames.length];
+        for (int i = 0; i < playerNames.length; i++) {
+            Player player = new Player(playerNames[i], playerColors[i]);
+            players[i] = player;
+            playerControllers.put(player, new PlayerController(player, model) {
+                @Override
+                protected void notifyCanEndTurn() {
                     endTurnButton.setDisable(false);
                 }
-            } else {
-                System.out.println("Maximale Anzahl von Siedlungen für diesen Zug erreicht oder Feld ist bereits besetzt.");
-            }
-        } catch (InvalidPlacementException e) {
-            System.out.println(e.getMessage());
+            });
         }
     }
 
-    @FXML
-    public void switchPlayer() {
-        currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+    private void updateCurrentPlayerInfo() {
         updateCurrentPlayerLabel();
         updateCurrentPlayerSettlementLabel();
-        currentTerrainLabel.setText("Geländekarte:\nZiehe erst eine Geländekarte!");
-        terrainDrawnThisTurn = false;
-        playerControllers.get(players[currentPlayerIndex]).resetTurn();
-        endTurnButton.setDisable(true);
-        drawTerrainCardButton.setDisable(false);
     }
 
     private void updateCurrentPlayerLabel() {
@@ -178,16 +107,126 @@ public class GameBoardController {
         }
 
         if (players == null || players.length == 0) {
-            currentPlayerSettlementLabel.setText("Noch verfügbare Siedlungen: Unbekannt");
+            currentPlayerSettlementLabel.setText("Verfügbare Siedlungen: Unbekannt");
         } else {
             Player currentPlayer = players[currentPlayerIndex];
             if (currentPlayer == null) {
-                currentPlayerSettlementLabel.setText("Noch verfügbare Siedlungen: Unbekannt");
+                currentPlayerSettlementLabel.setText("Verfügbare Siedlungen: Unbekannt");
                 logger.log(Level.SEVERE, "Current player is null.");
             } else {
-                currentPlayerSettlementLabel.setText("Noch verfügbare Siedlungen: " + currentPlayer.getRemainingSettlements());
+                currentPlayerSettlementLabel.setText("Verfügbare Siedlungen: " + currentPlayer.getRemainingSettlements());
             }
         }
+        updateTexts();
+    }
+
+    public static void setGameStage(Stage gameStageFromMenu) {
+        gameStage = gameStageFromMenu;
+        System.out.println("Setting game stage: " + gameStage);
+    }
+
+    public void setResourceBundle(ResourceBundle bundle) {
+        this.bundle = bundle;
+        updateTexts();
+    }
+
+    private void updateTexts() {
+        if (bundle == null) {
+            logger.log(Level.SEVERE, "bundle is null.");
+            return;
+        }
+
+        setLabelText(currentPlayerLabel, "current_player", players[currentPlayerIndex].getName());
+        setLabelText(currentPlayerSettlementLabel, "available_settlements", String.valueOf(players[currentPlayerIndex].getRemainingSettlements()));
+        //setLabelText(currentTerrainLabel, "terrain_card", null);
+        updateTerrainLabel();
+        setButtonText(drawTerrainCardButton, "draw_terrain_card");
+        setButtonText(endTurnButton, "end_turn");
+        setButtonText(backToMenuButton, "back_to_menu");
+    }
+
+    private void setLabelText(Label label, String key, String suffix) {
+        if (label != null) {
+            String text = bundle.getString(key);
+            if (suffix != null) {
+                text += ": " + suffix;
+            }
+            label.setText(text);
+        } else {
+            logger.log(Level.SEVERE, key + " label is null.");
+        }
+    }
+
+    private void setButtonText(Button button, String key) {
+        if (button != null) {
+            button.setText(bundle.getString(key));
+        } else {
+            logger.log(Level.SEVERE, key + " button is null.");
+        }
+    }
+
+    @FXML
+    public void initialize() {
+        instance = this;
+        try {
+            initializeModel();
+            view = new GameBoardView(model);
+            view.setController(this);
+            boardPane.getChildren().add(view);
+        } catch (IOException e) {
+            logger.log(Level.SEVERE, "Initialisierung fehlgeschlagen.", e);
+        }
+        updateTexts();
+    }
+
+    public static GameBoardController getInstance() {
+        return instance;
+    }
+
+    private void initializeModel() throws IOException {
+        model = new GameBoard(20, 20, Arrays.asList("Fischer", "Bergleute", "Arbeiter"));
+        int[][] positions = {{0, 0}, {0, 10}, {10, 0}, {10, 10}};
+        for (int i = 0; i < positions.length; i++) {
+            model.initialize(i, positions[i][0], positions[i][1]);
+        }
+    }
+
+    public void handleHexagonClick(Group hexGroup, int row, int col) {
+        try {
+            Player currentPlayer = players[currentPlayerIndex];
+            PlayerController playerController = playerControllers.get(currentPlayer);
+
+            if (currentPlayer.canPlaceSettlement() && model.isNotOccupied(row, col)) {
+                playerController.placeSettlement(currentPlayer, row, col);
+                view.addHouseToHexagon(hexGroup, currentPlayer.getColor());
+                updateCurrentPlayerSettlementLabel();
+                if (playerController.canEndTurn()) {
+                    endTurnButton.setDisable(false);
+                }
+            } else {
+                System.out.println("Maximale Anzahl von Siedlungen für diesen Zug erreicht oder Feld ist bereits besetzt.");
+            }
+        } catch (InvalidPlacementException e) {
+            System.out.println(e.getMessage());
+        }
+        updateTerrainLabel();
+    }
+
+    private void updateTerrainLabel() {
+        setLabelText(currentTerrainLabel, "terrain_card", currentTerrain != null ? bundle.getString(currentTerrain) : null);
+    }
+
+    @FXML
+    public void switchPlayer() {
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+        updateCurrentPlayerInfo();
+        updateTexts();
+        terrainDrawnThisTurn = false;
+        currentTerrain = null; // Reset current terrain
+        updateTerrainLabel(); // Clear terrain label
+        playerControllers.get(players[currentPlayerIndex]).resetTurn();
+        endTurnButton.setDisable(true);
+        drawTerrainCardButton.setDisable(false);
     }
 
     @FXML
@@ -204,13 +243,9 @@ public class GameBoardController {
         }
 
         if (!terrainDrawnThisTurn) {
-            String currentTerrain = terrainsBuildable[new Random().nextInt(terrainsBuildable.length)];
+            currentTerrain = terrainsBuildable[new Random().nextInt(terrainsBuildable.length)];
             currentPlayer.drawTerrainCard(currentTerrain);
-            if (currentTerrainLabel != null) {
-                currentTerrainLabel.setText("Geländekarte:\n" + currentTerrain);
-            } else {
-                logger.log(Level.SEVERE, "currentTerrainLabel is null.");
-            }
+            updateTerrainLabel();
             terrainDrawnThisTurn = true;
             drawTerrainCardButton.setDisable(true);
         }
@@ -229,7 +264,18 @@ public class GameBoardController {
 
     @FXML
     public void handleReturnToMenu() {
-        GameMenuView.showMenu();
-        ((Stage) boardPane.getScene().getWindow()).close();
+        System.out.println("Handling return to menu: gameStage = " + gameStage);
+        if (gameStage != null) {
+            gameStage.hide();
+            GameMenuView.showMenu();
+        } else {
+            logger.log(Level.SEVERE, "gameStage is null.");
+        }
+    }
+
+    public void refreshTexts() {
+        Locale currentLocale = LanguageSettings.getCurrentLocale();
+        bundle = ResourceBundle.getBundle("messages", currentLocale);
+        updateTexts();
     }
 }

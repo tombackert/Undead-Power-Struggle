@@ -22,16 +22,16 @@
                     <Insets bottom="10.0" top="10.0" />
                 </VBox.margin>
                 <Label fx:id="currentPlayerLabel" minWidth="200" text="Aktueller Spieler: ">
-               <font>
-                  <Font size="14.0" />
-               </font></Label>
+                    <font>
+                        <Font size="14.0" />
+                    </font></Label>
                 <Label fx:id="currentPlayerSettlementLabel" minWidth="200" text="Noch verfügbare Siedlungen: ">
                     <padding>
                         <Insets top="20.0" />
                     </padding>
-               <font>
-                  <Font size="14.0" />
-               </font>
+                    <font>
+                        <Font size="14.0" />
+                    </font>
                 </Label>
             </TextFlow>
             <TextFlow layoutX="20.0" layoutY="30.0" prefHeight="95.0" prefWidth="281.0">
@@ -44,20 +44,20 @@
                     </padding>
                 </Label>
                 <Button fx:id="drawTerrainCardButton" minWidth="200" onAction="#switchTerrain" text="Geländekarte ziehen">
-               <font>
-                  <Font size="14.0" />
-               </font></Button>
+                    <font>
+                        <Font size="14.0" />
+                    </font></Button>
             </TextFlow>
-         <ButtonBar prefHeight="351.0" prefWidth="328.0" />
-         <BorderPane prefHeight="0.0" prefWidth="328.0">
-            <left>
-                   <Button fx:id="endTurnButton" disable="true" minWidth="200" onAction="#endTurn" prefHeight="170.0" prefWidth="200.0" text="Zug beenden" BorderPane.alignment="CENTER">
-                  <font>
-                     <Font size="14.0" />
-                  </font>
-               </Button>
-            </left>
-         </BorderPane>
+            <ButtonBar prefHeight="351.0" prefWidth="328.0" />
+            <BorderPane prefHeight="0.0" prefWidth="328.0">
+                <left>
+                    <Button fx:id="endTurnButton" disable="true" minWidth="200" onAction="#endTurn" prefHeight="170.0" prefWidth="200.0" text="Zug beenden" BorderPane.alignment="CENTER">
+                        <font>
+                            <Font size="14.0" />
+                        </font>
+                    </Button>
+                </left>
+            </BorderPane>
         </VBox>
     </left>
     <right>
@@ -67,40 +67,40 @@
             </padding>
         </VBox>
     </right>
-   <bottom>
-      <ButtonBar prefHeight="26.0" prefWidth="537.0">
-        <buttons>
-               <Button minWidth="200" onAction="#handleReturnToMenu" text="Zurück zum Hauptmenü">
-               <font>
-                  <Font size="14.0" />
-               </font></Button>
-        </buttons>
-         <BorderPane.margin>
-            <Insets bottom="20.0" left="50.0" right="50.0" top="20.0" />
-         </BorderPane.margin>
-      </ButtonBar>
-   </bottom>
-   <center>
-      <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <center>
-              <StackPane fx:id="boardPane" BorderPane.alignment="CENTER">
-                  <padding>
-                      <Insets bottom="10" left="10" right="10" top="10" />
-                  </padding>
-              </StackPane>
-         </center>
-         <top>
-            <Pane prefHeight="120.0" prefWidth="1062.0" BorderPane.alignment="CENTER" />
-         </top>
-         <left>
-            <Pane prefHeight="358.0" prefWidth="120.0" BorderPane.alignment="CENTER" />
-         </left>
-         <right>
-            <Pane prefHeight="422.0" prefWidth="120.0" BorderPane.alignment="CENTER" />
-         </right>
-         <bottom>
-            <Pane prefHeight="120.0" prefWidth="1062.0" BorderPane.alignment="CENTER" />
-         </bottom>
-      </BorderPane>
-   </center>
+    <bottom>
+        <ButtonBar prefHeight="26.0" prefWidth="537.0">
+            <buttons>
+                <Button fx:id="backToMenuButton" minWidth="200" onAction="#handleReturnToMenu" text="Zurück zum Hauptmenü">
+                    <font>
+                        <Font size="14.0" />
+                    </font></Button>
+            </buttons>
+            <BorderPane.margin>
+                <Insets bottom="20.0" left="50.0" right="50.0" top="20.0" />
+            </BorderPane.margin>
+        </ButtonBar>
+    </bottom>
+    <center>
+        <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <center>
+                <StackPane fx:id="boardPane" BorderPane.alignment="CENTER">
+                    <padding>
+                        <Insets bottom="10" left="10" right="10" top="10" />
+                    </padding>
+                </StackPane>
+            </center>
+            <top>
+                <Pane prefHeight="120.0" prefWidth="1062.0" BorderPane.alignment="CENTER" />
+            </top>
+            <left>
+                <Pane prefHeight="358.0" prefWidth="120.0" BorderPane.alignment="CENTER" />
+            </left>
+            <right>
+                <Pane prefHeight="422.0" prefWidth="120.0" BorderPane.alignment="CENTER" />
+            </right>
+            <bottom>
+                <Pane prefHeight="120.0" prefWidth="1062.0" BorderPane.alignment="CENTER" />
+            </bottom>
+        </BorderPane>
+    </center>
 </BorderPane>

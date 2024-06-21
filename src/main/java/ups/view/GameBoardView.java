@@ -1,4 +1,3 @@
-// GameBoardView.java
 package ups.view;
 
 import javafx.scene.Group;
@@ -15,11 +14,15 @@ import ups.model.GameBoard;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The GameBoardView class is responsible for displaying the game board.
  */
 public class GameBoardView extends Pane {
+    private static final Logger logger = Logger.getLogger(GameBoardView.class.getName());
+
     private final GameBoard model; // Referenz auf das Model
     public static final int BOARD_WIDTH = 20; // Breite des Spielfelds
     public static final int BOARD_HEIGHT = 20; // Höhe des Spielfelds
@@ -142,7 +145,9 @@ public class GameBoardView extends Pane {
      * @return the hexagon
      */
     private Polygon createHexagon() {
-        return new Polygon();
+        Polygon hex = new Polygon();
+        setHexagonPoints(hex, 10); // Standardgröße für Initialisierung
+        return hex;
     }
 
     /**
@@ -152,6 +157,7 @@ public class GameBoardView extends Pane {
      * @param size    the size of the hexagon
      */
     private void setHexagonPoints(Polygon hexagon, double size) {
+        hexagon.getPoints().clear(); // Leere die Punkte vor dem Setzen neuer Punkte
         for (int i = 0; i < 6; i++) { // Iteriere über die sechs Ecken
             double angle = 2 * Math.PI / 6 * (i + 0.5); // Berechne den Winkel
             double x = size * Math.cos(angle); // Berechne die X-Koordinate
@@ -218,7 +224,13 @@ public class GameBoardView extends Pane {
      */
     public void addHouseToHexagon(Group hexGroup, Color color) {
         String colorName = ColorMapping.getStringFromColor(color).toLowerCase();
-        ImageView houseImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/haus_" + colorName + ".png"))));
+        ImageView houseImageView;
+        try {
+            houseImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/haus_" + colorName + ".png"))));
+        } catch (NullPointerException e) {
+            logger.log(Level.SEVERE, "Image for color " + colorName + " not found.", e);
+            return;
+        }
         double hexSize = Math.min(getWidth() / (BOARD_WIDTH * Math.sqrt(3)), getHeight() / (BOARD_HEIGHT * 1.5));
         double hexWidth = Math.sqrt(3) * hexSize;
         double hexHeight = 2 * hexSize;
