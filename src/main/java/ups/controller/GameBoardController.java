@@ -1,9 +1,7 @@
 package ups.controller;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
@@ -23,6 +21,9 @@ import java.util.logging.Logger;
 import ups.utils.LanguageSettings;
 import java.util.ResourceBundle;
 
+/**
+ * The GameBoardController class is responsible for controlling the game board.
+ */
 public class GameBoardController {
     @FXML
     private StackPane boardPane;
@@ -55,6 +56,13 @@ public class GameBoardController {
     private static GameBoardController instance;
     private String currentTerrain;
 
+    /**
+     * Sets the players.
+     *
+     * @param playerNames the player names
+     * @param playerColors the player colors
+     * @param isAIPlayer the AI player status
+     */
     public void setPlayers(String[] playerNames, Color[] playerColors, boolean[] isAIPlayer) {
         this.playerNames = playerNames;
         this.playerColors = playerColors;
@@ -68,6 +76,9 @@ public class GameBoardController {
         }
     }
 
+    /**
+     * Initializes the players.
+     */
     private void initializePlayers() {
         players = new Player[playerNames.length];
         for (int i = 0; i < playerNames.length; i++) {
@@ -87,11 +98,17 @@ public class GameBoardController {
         }
     }
 
+    /**
+     * Updates the current player information.
+     */
     private void updateCurrentPlayerInfo() {
         updateCurrentPlayerLabel();
         updateCurrentPlayerSettlementLabel();
     }
 
+    /**
+     * Updates the current player label.
+     */
     private void updateCurrentPlayerLabel() {
         if (currentPlayerLabel == null) {
             logger.log(Level.SEVERE, "currentPlayerLabel is null.");
@@ -111,6 +128,9 @@ public class GameBoardController {
         }
     }
 
+    /**
+     * Updates the current player's settlement label.
+     */
     private void updateCurrentPlayerSettlementLabel() {
         if (currentPlayerSettlementLabel == null) {
             logger.log(Level.SEVERE, "currentPlayerSettlementLabel is null.");
@@ -131,16 +151,29 @@ public class GameBoardController {
         updateTexts();
     }
 
+    /**
+     * Sets the game stage.
+     *
+     * @param gameStageFromMenu the game stage
+     */
     public static void setGameStage(Stage gameStageFromMenu) {
         gameStage = gameStageFromMenu;
         System.out.println("Setting game stage: " + gameStage);
     }
 
+    /**
+     * Sets the resource bundle.
+     *
+     * @param bundle the resource bundle
+     */
     public void setResourceBundle(ResourceBundle bundle) {
         this.bundle = bundle;
         updateTexts();
     }
 
+    /**
+     * Updates the texts of the game board.
+     */
     private void updateTexts() {
         if (bundle == null) {
             logger.log(Level.SEVERE, "bundle is null.");
@@ -156,6 +189,13 @@ public class GameBoardController {
         setButtonText(backToMenuButton, "back_to_menu");
     }
 
+    /**
+     * Sets the text of the given label to the value of the given key.
+     *
+     * @param label the label
+     * @param key the key
+     * @param suffix the suffix
+     */
     private void setLabelText(Label label, String key, String suffix) {
         if (label != null) {
             String text = bundle.getString(key);
@@ -168,6 +208,12 @@ public class GameBoardController {
         }
     }
 
+    /**
+     * Sets the text of the given button to the value of the given key.
+     *
+     * @param button the button
+     * @param key the key
+     */
     private void setButtonText(Button button, String key) {
         if (button != null) {
             button.setText(bundle.getString(key));
@@ -176,6 +222,9 @@ public class GameBoardController {
         }
     }
 
+    /**
+     * Initializes the game board controller.
+     */
     @FXML
     public void initialize() {
         instance = this;
@@ -190,10 +239,20 @@ public class GameBoardController {
         updateTexts();
     }
 
+    /**
+     * Returns the instance of the game board controller.
+     *
+     * @return the instance of the game board controller
+     */
     public static GameBoardController getInstance() {
         return instance;
     }
 
+    /**
+     * Initializes the game board model.
+     *
+     * @throws IOException if an error occurs
+     */
     private void initializeModel() throws IOException {
         model = new GameBoard(20, 20, Arrays.asList("Fischer", "Bergleute", "Arbeiter"));
         int[][] positions = {{0, 0}, {0, 10}, {10, 0}, {10, 10}};
@@ -202,14 +261,31 @@ public class GameBoardController {
         }
     }
 
+    /**
+     * Returns the game board model.
+     *
+     * @return the game board model
+     */
     public GameBoard getModel() {
         return model;
     }
 
+    /**
+     * Returns the current terrain type.
+     *
+     * @return the current terrain type
+     */
     public String getCurrentTerrain() {
         return currentTerrain;
     }
 
+    /**
+     * Handles the click on a hexagon.
+     *
+     * @param hexGroup the group of the hexagon
+     * @param row the row of the hexagon
+     * @param col the column of the hexagon
+     */
     public void handleHexagonClick(Group hexGroup, int row, int col) {
         try {
             Player currentPlayer = players[currentPlayerIndex];
@@ -231,15 +307,27 @@ public class GameBoardController {
         updateTerrainLabel();
     }
 
+    /**
+     * Handles the click on a hexagon by the AI player.
+     *
+     * @param row the row of the hexagon
+     * @param col the column of the hexagon
+     */
     public void handleAIClick(int row, int col) {
         Group hexGroup = getHexGroup(row, col);
         handleHexagonClick(hexGroup, row, col);
     }
 
+    /**
+     * Updates the terrain label.
+     */
     private void updateTerrainLabel() {
         setLabelText(currentTerrainLabel, "terrain_card", currentTerrain != null ? bundle.getString(currentTerrain) : null);
     }
 
+    /**
+     * Switches the current player.
+     */
     @FXML
     public void switchPlayer() {
         currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
@@ -258,6 +346,11 @@ public class GameBoardController {
         }
     }
 
+    /**
+     * Makes a move for the AI player.
+     *
+     * @param aiPlayer the AI player
+     */
     private void makeAIMove(AIPlayer aiPlayer) {
         // Ziehe eine Geländekarte
         switchTerrain();
@@ -268,6 +361,11 @@ public class GameBoardController {
         updateBoardForAI(aiPlayer);
     }
 
+    /**
+     * Updates the game board for the AI player.
+     *
+     * @param aiPlayer the AI player
+     */
     public void updateBoardForAI(AIPlayer aiPlayer) {
         for (int i = 0; i < model.boardSizeX; i++) {
             for (int j = 0; j < model.boardSizeY; j++) {
@@ -279,11 +377,21 @@ public class GameBoardController {
         }
     }
 
+    /**
+     * Returns the group of the hexagon at the given row and column.
+     *
+     * @param row the row
+     * @param col the column
+     * @return the group of the hexagon
+     */
     private Group getHexGroup(int row, int col) {
         // Assuming that the hexagons are stored in a 2D array or a similar data structure.
         return (Group) view.getChildren().get(row * model.boardSizeY + col);
     }
 
+    /**
+     * Draws a terrain card for the current player.
+     */
     @FXML
     public void switchTerrain() {
         if (players == null || players.length == 0) {
@@ -306,6 +414,11 @@ public class GameBoardController {
         }
     }
 
+    /**
+     * Ends the turn of the current player.
+     *
+     * @return true if the turn was ended successfully, false otherwise
+     */
     @FXML
     public boolean endTurn() {
         if (playerControllers.get(players[currentPlayerIndex]).canEndTurn()) {
@@ -317,6 +430,9 @@ public class GameBoardController {
         }
     }
 
+    /**
+     * Handles the return to menu button.
+     */
     @FXML
     public void handleReturnToMenu() {
         System.out.println("Handling return to menu: gameStage = " + gameStage);
@@ -328,6 +444,9 @@ public class GameBoardController {
         }
     }
 
+    /**
+     * Refreshes the texts of the game board.
+     */
     public void refreshTexts() {
         Locale currentLocale = LanguageSettings.getCurrentLocale();
         bundle = ResourceBundle.getBundle("messages", currentLocale);
@@ -343,17 +462,5 @@ public class GameBoardController {
             }
         }
         return true;
-    }
-
-    public void checkGameEnd() {
-        if (isGameFinished()) {
-            Platform.runLater(() -> {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Spiel beendet");
-                alert.setHeaderText(null);
-                alert.setContentText("Das Spiel ist beendet!");
-                alert.showAndWait();
-            });
-        }
     }
 }

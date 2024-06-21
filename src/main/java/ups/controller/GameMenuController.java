@@ -16,6 +16,9 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * The GameMenuController class is responsible for controlling the game menu.
+ */
 public class GameMenuController {
     private static final Logger logger = Logger.getLogger(GameMenuController.class.getName());
     private Stage menuStage;
@@ -67,10 +70,18 @@ public class GameMenuController {
 
     private ResourceBundle bundle;
 
+    /**
+     * Sets the menu stage.
+     *
+     * @param menuStage the menu stage
+     */
     public void setMenuStage(Stage menuStage) {
         this.menuStage = menuStage;
     }
 
+    /**
+     * Initializes the game menu.
+     */
     @FXML
     public void initialize() {
         setLanguage(Locale.GERMAN); // Default to German
@@ -92,6 +103,11 @@ public class GameMenuController {
         }
     }
 
+    /**
+     * Sets the language to the given locale.
+     *
+     * @param locale the locale
+     */
     private void setLanguage(Locale locale) {
         LanguageSettings.setCurrentLocale(locale);
         bundle = ResourceBundle.getBundle("messages", locale);
@@ -102,6 +118,9 @@ public class GameMenuController {
         updateTexts();
     }
 
+    /**
+     * Updates the texts in the game menu.
+     */
     private void updateTexts() {
         if (bundle == null) {
             logger.log(Level.SEVERE, "bundle is null.");
@@ -141,6 +160,12 @@ public class GameMenuController {
         updateColorOptions(color4ComboBox);
     }
 
+    /**
+     * Sets the text of the given button to the value of the given key in the resource bundle.
+     *
+     * @param button the button
+     * @param key    the key
+     */
     private void setButtonText(ButtonBase button, String key) {
         if (button != null) {
             button.setText(bundle.getString(key));
@@ -149,6 +174,12 @@ public class GameMenuController {
         }
     }
 
+    /**
+     * Sets the prompt text of the given control to the value of the given key in the resource bundle.
+     *
+     * @param control the control
+     * @param key     the key
+     */
     private void setPromptText(Control control, String key) {
         if (control instanceof TextInputControl) {
             ((TextInputControl) control).setPromptText(bundle.getString(key));
@@ -159,6 +190,12 @@ public class GameMenuController {
         }
     }
 
+    /**
+     * Sets the text of the given labeled control to the value of the given key in the resource bundle.
+     *
+     * @param labeled the labeled control
+     * @param key     the key
+     */
     private void setText(Labeled labeled, String key) {
         if (labeled != null) {
             labeled.setText(bundle.getString(key));
@@ -167,6 +204,11 @@ public class GameMenuController {
         }
     }
 
+    /**
+     * Updates the color options for the given combo box.
+     *
+     * @param comboBox the combo box
+     */
     private void updateColorOptions(ComboBox<String> comboBox) {
         if (comboBox != null) {
             String selectedColor = comboBox.getValue();
@@ -177,6 +219,9 @@ public class GameMenuController {
         }
     }
 
+    /**
+     * Starts a new game.
+     */
     @FXML
     public void startNewGame() {
         List<String> playerNames = getPlayerNames();
@@ -218,24 +263,9 @@ public class GameMenuController {
         }
     }
 
-    private boolean allPlayersAreAI(boolean[] aiPlayers) {
-        for (boolean isAI : aiPlayers) {
-            if (!isAI) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean hasSingleAIPlayer(boolean[] aiPlayers) {
-        for (boolean isAI : aiPlayers) {
-            if (isAI) {
-                return true;
-            }
-        }
-        return false;
-    }
-
+    /**
+     * Continues the game.
+     */
     @FXML
     public void continueGame() {
         GameMenuView.continueGame();
@@ -248,6 +278,9 @@ public class GameMenuController {
         }
     }
 
+    /**
+     * Exits the game.
+     */
     @FXML
     public void exitGame() {
         System.exit(0);
@@ -262,12 +295,23 @@ public class GameMenuController {
         return names;
     }
 
+    /**
+     * Adds the name of the player to the list of names.
+     *
+     * @param names       the list of names
+     * @param playerField the player field
+     */
     private void addPlayerName(List<String> names, TextField playerField) {
         if (playerField != null && !playerField.getText().trim().isEmpty()) {
             names.add(playerField.getText().trim());
         }
     }
 
+    /**
+     * Returns the list of colors for the players.
+     *
+     * @return the list of colors
+     */
     private List<Color> getPlayerColors() {
         List<String> colorNames = new ArrayList<>();
         addPlayerColor(colorNames, player1Field, color1ComboBox);
@@ -287,12 +331,24 @@ public class GameMenuController {
         return colors;
     }
 
+    /**
+     * Adds the color of the player to the list of color names.
+     *
+     * @param colorNames     the list of color names
+     * @param playerField    the player field
+     * @param colorComboBox  the color combo box
+     */
     private void addPlayerColor(List<String> colorNames, TextField playerField, ComboBox<String> colorComboBox) {
         if (playerField != null && !playerField.getText().trim().isEmpty() && colorComboBox != null && colorComboBox.getValue() != null) {
             colorNames.add(colorComboBox.getValue());
         }
     }
 
+    /**
+     * Returns an array of booleans indicating whether each player is an AI player.
+     *
+     * @return the array of booleans
+     */
     private boolean[] getAIPlayers() {
         return new boolean[] {
                 aiPlayer1.isSelected(),
@@ -302,6 +358,11 @@ public class GameMenuController {
         };
     }
 
+    /**
+     * Shows an alert with the given message.
+     *
+     * @param message the message to show
+     */
     private void showAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setContentText(message);

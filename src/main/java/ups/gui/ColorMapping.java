@@ -46,7 +46,7 @@ public class ColorMapping {
         return colorMap.getOrDefault(colorName, Color.GRAY); // Default color is gray
     }
 
-    /*
+    /**
      * Returns the JavaFX Color object for the given player color.
      */
     public static Color getColorFromInt(int color) {
@@ -64,7 +64,7 @@ public class ColorMapping {
         }
     }
 
-    /*
+    /**
      * Returns the player color for the given JavaFX Color object.
      */
     public static int getIntFromColor(Color color) {

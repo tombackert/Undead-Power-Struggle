@@ -6,7 +6,9 @@ import java.util.ArrayList;
 import java.util.List;
 import javafx.scene.paint.Color;
 
-
+/**
+ * The Player class represents a player in the game.
+ */
 public class Player {
 
     //Number of villages left to place
@@ -41,6 +43,12 @@ public class Player {
     //Number of settlements placed this turn
     private int settlementsPlacedThisTurn;
 
+    /**
+     * Constructs a new Player with the given name and color.
+     *
+     * @param name  the name of the player
+     * @param color the color of the player
+     */
     public Player(String name, Color color) {
         this.numberOfVillages = 40;
         this.villageCoordinates = new int[40][2];
@@ -51,7 +59,14 @@ public class Player {
         this.settlementsPlacedThisTurn = 0; // Initialisiert mit 0
     }
 
-    //Return false if village can't be placed, else true and place village 
+    /**
+     * Places a village at the given coordinates.
+     *
+     * @param b the game board
+     * @param x the x-coordinate
+     * @param y the y-coordinate
+     * @return true if the village was placed successfully, false otherwise
+     */
     public boolean placeVillage(GameBoard b, int x, int y) {
         if (!(locationTile == b.getTerrainType(x, y) && (b.getOccupation(x, y) == 0) && (x >= 0 && x < 20 && y >= 0 && y < 20))) {
             System.out.println("Invalid coordinates. Try again!");
@@ -66,12 +81,26 @@ public class Player {
         return true;
     }
 
-    //Return false if village can't be placed, else true
+    /**
+     * Returns true if a village can be placed at the given coordinates.
+     *
+     * @param b the game board
+     * @param x the x-coordinate
+     * @param y the y-coordinate
+     * @return true if a village can be placed, false otherwise
+     */
     public boolean canPlaceVillage(GameBoard b, int x, int y) {
         return locationTile == b.getTerrainType(x, y) && (b.getOccupation(x, y) == 0);
     }
 
-    //Return true if village is adjacent to another village of the same color
+    /**
+     * Returns true if a village can be placed at the given coordinates.
+     *
+     * @param b the game board
+     * @param x the x-coordinate
+     * @param y the y-coordinate
+     * @return true if a village can be placed, false otherwise
+     */
     public boolean isAdjacent(GameBoard b, int x, int y) {
         b.resetNeighbourCoordinates(x, y);
         for (int i = 0; i < 6; i++) {
@@ -81,7 +110,14 @@ public class Player {
         return false;
     }
 
-    //Returns the gold value of a Position
+    /**
+     * Returns the gold value of a position based on the selected UPS cards.
+     *
+     * @param board the game board
+     * @param x the x-coordinate
+     * @param y the y-coordinate
+     * @return the gold value of the position
+     */
     public int evaluatePosition(GameBoard board, int x, int y) {
         int gold = 0;
 
@@ -109,7 +145,14 @@ public class Player {
 
     
 
-    // Returns 1 if there is Water adjacent to the position
+    /**
+     * Returns 1 if there is a Water hex adjacent to the position.
+     *
+     * @param board the game board
+     * @param x the x-coordinate
+     * @param y the y-coordinate
+     * @return 1 if there is a Water hex adjacent to the position, 0 otherwise
+     */
     int evaluateFischer(GameBoard board, int x, int y) {
         String[] neighbours = board.getNeighbourTerrain(x, y);
         for (String neighbour : neighbours) {
@@ -120,7 +163,14 @@ public class Player {
         return 0;
     }
 
-    // Returns 1 if there is a Mountain adjacent to the position
+    /**
+     * Returns 1 if there is a Berg hex adjacent to the position.
+     *
+     * @param board the game board
+     * @param x the x-coordinate
+     * @param y the y-coordinate
+     * @return 1 if there is a Berg hex adjacent to the position, 0 otherwise
+     */
     int evaluateBergleute(GameBoard board, int x, int y) {
         String[] neighbours = board.getNeighbourTerrain(x, y);
         for (String neighbour : neighbours) {
@@ -131,7 +181,14 @@ public class Player {
         return 0;
     }
 
-    // Returns 1 if there is a Castle or Special Location adjacent to the position
+    /**
+     * Returns 1 if there is a Castle hex adjacent to the position.
+     *
+     * @param board the game board
+     * @param x the x-coordinate
+     * @param y the y-coordinate
+     * @return 1 if there is a Castle hex adjacent to the position, 0 otherwise
+     */
     int evaluateArbeiter(GameBoard board, int x, int y) {
         String[] neighbours = board.getNeighbourTerrain(x, y);
         for (String neighbour : neighbours) {
@@ -142,7 +199,14 @@ public class Player {
         return 0;
     }
 
-    // Returns the gold value of a position based on static bonuses (e.g., adjacent to Castle or Location)
+    /**
+     * Returns 3 if there is a Castle or Location hex adjacent to the position.
+     *
+     * @param board the game board
+     * @param x the x-coordinate
+     * @param y the y-coordinate
+     * @return 3 if there is a Castle or Location hex adjacent to the position, 0 otherwise
+     */
     int evaluateStaticBonuses(GameBoard board, int x, int y) {
         int gold = 0;
         String[] neighbours = board.getNeighbourTerrain(x, y);
@@ -154,7 +218,12 @@ public class Player {
         return gold;
     }
 
-    //Returns the amount of gold a player currently has
+    /**
+     * Returns the total gold value of all villages placed by the player.
+     *
+     * @param board the game board
+     * @return the total gold value of all villages placed by the player
+     */
     public int calculateGold(GameBoard board) {
         int gold = 0;
         for (int i = 0; i < this.villageCoordinates.length; i++) {
@@ -166,14 +235,25 @@ public class Player {
         return gold;
     }
 
+
     public boolean canPlaceSettlement() {
         return settlementsPlacedThisTurn < 3 && remainingSettlements > 0;
     }
 
+    /**
+     * Returns the name of the player.
+     *
+     * @return the name of the player
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Returns the color of the player.
+     *
+     * @return the color of the player
+     */
     public Color getColor() {
         return ColorMapping.getColorFromInt(this.color);
     }

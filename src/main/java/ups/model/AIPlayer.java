@@ -7,14 +7,26 @@ import javafx.scene.paint.Color;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * The AIPlayer class represents an AI player in the game.
+ */
 public class AIPlayer extends Player {
     private static final Logger logger = Logger.getLogger(AIPlayer.class.getName());
-
+    /**
+     * Constructs a new AIPlayer with the given name and color.
+     *
+     * @param name  the name of the player
+     * @param color the color of the player
+     */
     public AIPlayer(String name, Color color) {
         super(name, color);
     }
 
-    // Method to make a move
+    /**
+     * Makes a move for the AI player.
+     *
+     * @param controller the game board controller
+     */
     public void makeMove(GameBoardController controller) {
         Task<Void> task = new Task<>() {
             @Override
@@ -25,7 +37,6 @@ public class AIPlayer extends Player {
                         Platform.runLater(() -> {
                             controller.handleAIClick(move[0], move[1]);
                             controller.updateBoardForAI(AIPlayer.this);
-                            controller.checkGameEnd();
                         });
                         try {
                             Thread.sleep(1000); // 1 Sekunde Pause zwischen dem Setzen der Häuser
@@ -51,7 +62,13 @@ public class AIPlayer extends Player {
         thread.start();
     }
 
-    // Method to find the best move based on gold value
+    /**
+     * Finds the best move for the AI player.
+     *
+     * @param board the game board
+     * @param currentTerrain the current terrain type
+     * @return the best move
+     */
     public int[] findBestMove(GameBoard board, String currentTerrain) {
         int bestGold = -1;
         int[] bestMove = null;
@@ -83,7 +100,7 @@ public class AIPlayer extends Player {
                     int[] neighbourPosition = board.coordinatesOfLastNeighbours[j];
                     int xNeighbour = neighbourPosition[0];
                     int yNeighbour = neighbourPosition[1];
-                    if (this.canPlaceVillage(board, xNeighbour, yNeighbour)) {
+                    if (this.canPlaceVillage(board, xNeighbour, yNeighbour, currentTerrain)) {
                         int gold = this.evaluatePosition(board, xNeighbour, yNeighbour);
                         System.out.printf("Position (%d, %d) has gold %d%n", xNeighbour, yNeighbour, gold);
                         if (gold > bestGold) {
@@ -98,7 +115,7 @@ public class AIPlayer extends Player {
             if (bestMove == null) {
                 for (int x = 0; x < board.boardSizeX; x++) {
                     for (int y = 0; y < board.boardSizeY; y++) {
-                        if (this.canPlaceVillage(board, x, y)) {
+                        if (this.canPlaceVillage(board, x, y, currentTerrain)) {
                             int gold = this.evaluatePosition(board, x, y);
                             System.out.printf("Position (%d, %d) has gold %d%n", x, y, gold);
                             if (gold > bestGold) {
@@ -110,18 +127,20 @@ public class AIPlayer extends Player {
                 }
             }
         }
-
+        assert bestMove != null;
+        System.out.println("Best move: " + bestMove[0] + ", " + bestMove[1] + " with gold " + bestGold);
         return bestMove;
     }
 
+    /**
+     * Evaluates the gold value of a position on the game board.
+     *
+     * @param board the game board
+     * @param x the x-coordinate of the position
+     * @param y the y-coordinate of the position
+     * @return the gold value of the position
+     */
     private boolean canPlaceVillage(GameBoard board, int x, int y, String currentTerrain) {
-        // Add logic to check if a village can be placed at the coordinates (x, y)
         return board.isNotOccupied(x, y) && board.getTerrainType(x, y).equals(currentTerrain);
     }
-
-    // Overloaded method to check if a village can be placed without terrain constraint
-    public boolean canPlaceVillage(GameBoard board, int x, int y) {
-        return board.isNotOccupied(x, y);
-    }
-
 }
