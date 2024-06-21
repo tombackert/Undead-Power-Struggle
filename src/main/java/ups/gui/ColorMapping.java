@@ -29,6 +29,11 @@ public class ColorMapping {
         colorMap.put("Schwarz", Color.BLACK);
         colorMap.put("Blau", Color.BLUE);
         colorMap.put("Weiß", Color.WHITE);
+
+        colorMap.put("Red", Color.RED);
+        colorMap.put("Black", Color.BLACK);
+        colorMap.put("Blue", Color.BLUE);
+        colorMap.put("White", Color.WHITE);
     }
 
     /**

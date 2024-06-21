@@ -100,13 +100,13 @@ public class GameBoard {
     private String getFilePathByIndex(int index) {
         switch (index) {
             case 0:
-                return "src/main/resources/One.json";
+                return "src/main/resources/quadrants/One.json";
             case 1:
-                return "src/main/resources/Two.json";
+                return "src/main/resources/quadrants/Two.json";
             case 2:
-                return "src/main/resources/Three.json";
+                return "src/main/resources/quadrants/Three.json";
             case 3:
-                return "src/main/resources/Four.json";
+                return "src/main/resources/quadrants/Four.json";
             default:
                 return null;
         }
@@ -213,17 +213,6 @@ public class GameBoard {
      */
     public void setOwner(int x, int y, Player player) {
         hexagonOwnership.put(new Point(x, y), player);
-    }
-
-    /**
-     * Returns the owner of the hexagon at the given row and column.
-     *
-     * @param x the row
-     * @param y the column
-     * @return the owner
-     */
-    public Object getOwner(int x, int y) {
-        return hexagonOwnership.get(new Point(x, y));
     }
 
     /**

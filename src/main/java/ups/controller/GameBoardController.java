@@ -1,15 +1,19 @@
 package ups.controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
+import ups.gui.ColorMapping;
 import ups.model.GameBoard;
 import ups.model.InvalidPlacementException;
 import ups.model.Player;
+import ups.model.AIPlayer;
 import ups.view.GameBoardView;
 import ups.view.GameMenuView;
 import java.io.IOException;
@@ -45,27 +49,34 @@ public class GameBoardController {
     private static Stage gameStage;
     private String[] playerNames;
     private Color[] playerColors;
-    private static final Logger logger = Logger.getLogger(GameBoardController.class.getName());
+    private boolean[] isAIPlayer;
+    public static final Logger logger = Logger.getLogger(GameBoardController.class.getName());
     private ResourceBundle bundle;
     private static GameBoardController instance;
     private String currentTerrain;
 
-    public void setPlayers(String[] playerNames, Color[] playerColors) {
+    public void setPlayers(String[] playerNames, Color[] playerColors, boolean[] isAIPlayer) {
         this.playerNames = playerNames;
         this.playerColors = playerColors;
+        this.isAIPlayer = isAIPlayer;
 
-        if (playerNames != null && playerColors != null) {
+        if (playerNames != null && playerColors != null && isAIPlayer != null) {
             initializePlayers();
             updateCurrentPlayerInfo();
         } else {
-            logger.log(Level.SEVERE, "Player names or colors are null.");
+            logger.log(Level.SEVERE, "Player names, colors or AI status are null.");
         }
     }
 
     private void initializePlayers() {
         players = new Player[playerNames.length];
         for (int i = 0; i < playerNames.length; i++) {
-            Player player = new Player(playerNames[i], playerColors[i]);
+            Player player;
+            if (isAIPlayer[i]) {
+                player = new AIPlayer(playerNames[i], playerColors[i]);
+            } else {
+                player = new Player(playerNames[i], playerColors[i]);
+            }
             players[i] = player;
             playerControllers.put(player, new PlayerController(player, model) {
                 @Override
@@ -191,6 +202,14 @@ public class GameBoardController {
         }
     }
 
+    public GameBoard getModel() {
+        return model;
+    }
+
+    public String getCurrentTerrain() {
+        return currentTerrain;
+    }
+
     public void handleHexagonClick(Group hexGroup, int row, int col) {
         try {
             Player currentPlayer = players[currentPlayerIndex];
@@ -212,6 +231,11 @@ public class GameBoardController {
         updateTerrainLabel();
     }
 
+    public void handleAIClick(int row, int col) {
+        Group hexGroup = getHexGroup(row, col);
+        handleHexagonClick(hexGroup, row, col);
+    }
+
     private void updateTerrainLabel() {
         setLabelText(currentTerrainLabel, "terrain_card", currentTerrain != null ? bundle.getString(currentTerrain) : null);
     }
@@ -227,6 +251,37 @@ public class GameBoardController {
         playerControllers.get(players[currentPlayerIndex]).resetTurn();
         endTurnButton.setDisable(true);
         drawTerrainCardButton.setDisable(false);
+
+        // Wenn der nächste Spieler ein Computergegner ist, mache einen Zug
+        if (players[currentPlayerIndex] instanceof AIPlayer) {
+            makeAIMove((AIPlayer) players[currentPlayerIndex]);
+        }
+    }
+
+    private void makeAIMove(AIPlayer aiPlayer) {
+        // Ziehe eine Geländekarte
+        switchTerrain();
+        System.out.println("AI zieht Geländekarte: " + currentTerrain);
+        // Mache den Zug des AI
+        aiPlayer.makeMove(this);
+        System.out.println("AI macht Zug.");
+        updateBoardForAI(aiPlayer);
+    }
+
+    public void updateBoardForAI(AIPlayer aiPlayer) {
+        for (int i = 0; i < model.boardSizeX; i++) {
+            for (int j = 0; j < model.boardSizeY; j++) {
+                if (model.getOccupation(i, j) == ColorMapping.getIntFromColor(aiPlayer.getColor())) {
+                    Group hexGroup = getHexGroup(i, j);
+                    view.addHouseToHexagon(hexGroup, aiPlayer.getColor());
+                }
+            }
+        }
+    }
+
+    private Group getHexGroup(int row, int col) {
+        // Assuming that the hexagons are stored in a 2D array or a similar data structure.
+        return (Group) view.getChildren().get(row * model.boardSizeY + col);
     }
 
     @FXML
@@ -277,5 +332,28 @@ public class GameBoardController {
         Locale currentLocale = LanguageSettings.getCurrentLocale();
         bundle = ResourceBundle.getBundle("messages", currentLocale);
         updateTexts();
+    }
+
+    private boolean isGameFinished() {
+        // Logik zur Überprüfung, ob das Spiel beendet ist
+        // Zum Beispiel: Überprüfen, ob alle Siedlungen gesetzt wurden
+        for (Player player : players) {
+            if (player.getRemainingSettlements() > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public void checkGameEnd() {
+        if (isGameFinished()) {
+            Platform.runLater(() -> {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Spiel beendet");
+                alert.setHeaderText(null);
+                alert.setContentText("Das Spiel ist beendet!");
+                alert.showAndWait();
+            });
+        }
     }
 }

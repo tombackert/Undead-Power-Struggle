@@ -181,6 +181,7 @@ public class GameMenuController {
     public void startNewGame() {
         List<String> playerNames = getPlayerNames();
         List<Color> playerColors = getPlayerColors();
+        boolean[] aiPlayers = getAIPlayers();
 
         if (playerNames.size() < 2) {
             showAlert("Es müssen mindestens zwei Spielernamen eingegeben werden.");
@@ -197,7 +198,7 @@ public class GameMenuController {
             Parent root = loader.load();
 
             GameBoardController gameBoardController = loader.getController();
-            gameBoardController.setPlayers(playerNames.toArray(new String[0]), playerColors.toArray(new Color[0]));
+            gameBoardController.setPlayers(playerNames.toArray(new String[0]), playerColors.toArray(new Color[0]), aiPlayers);
             gameBoardController.setResourceBundle(bundle);
 
             Stage gameStage = new Stage();
@@ -211,9 +212,28 @@ public class GameMenuController {
 
             menuStage.hide();
             gameStage.show();
+
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Failed to start new game", e);
         }
+    }
+
+    private boolean allPlayersAreAI(boolean[] aiPlayers) {
+        for (boolean isAI : aiPlayers) {
+            if (!isAI) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean hasSingleAIPlayer(boolean[] aiPlayers) {
+        for (boolean isAI : aiPlayers) {
+            if (isAI) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @FXML
@@ -271,6 +291,15 @@ public class GameMenuController {
         if (playerField != null && !playerField.getText().trim().isEmpty() && colorComboBox != null && colorComboBox.getValue() != null) {
             colorNames.add(colorComboBox.getValue());
         }
+    }
+
+    private boolean[] getAIPlayers() {
+        return new boolean[] {
+                aiPlayer1.isSelected(),
+                aiPlayer2.isSelected(),
+                aiPlayer3.isSelected(),
+                aiPlayer4.isSelected()
+        };
     }
 
     private void showAlert(String message) {

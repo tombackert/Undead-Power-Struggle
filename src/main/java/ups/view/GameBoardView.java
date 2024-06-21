@@ -92,7 +92,7 @@ public class GameBoardView extends Pane {
     /**
      * Updates the game board.
      */
-    private void updateBoard() {
+    public void updateBoard() {
         double hexSize = Math.min(getWidth() / (BOARD_WIDTH * Math.sqrt(3)), getHeight() / (BOARD_HEIGHT * 1.5)); // Berechne die Größe der Hexagone
         double hexWidth = Math.sqrt(3) * hexSize; // Berechne die Breite der Hexagone
         double hexHeight = 2 * hexSize; // Berechne die Höhe der Hexagone
@@ -226,7 +226,7 @@ public class GameBoardView extends Pane {
         String colorName = ColorMapping.getStringFromColor(color).toLowerCase();
         ImageView houseImageView;
         try {
-            houseImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/haus_" + colorName + ".png"))));
+            houseImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/settlements/haus_" + colorName + ".png"))));
         } catch (NullPointerException e) {
             logger.log(Level.SEVERE, "Image for color " + colorName + " not found.", e);
             return;

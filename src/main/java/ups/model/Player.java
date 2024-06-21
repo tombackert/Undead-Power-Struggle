@@ -65,7 +65,7 @@ public class Player {
         System.out.println(String.format("%s placed a village at (%d, %d)", this.name, x, y));
         return true;
     }
-    
+
     //Return false if village can't be placed, else true
     public boolean canPlaceVillage(GameBoard b, int x, int y) {
         return locationTile == b.getTerrainType(x, y) && (b.getOccupation(x, y) == 0);
@@ -80,7 +80,6 @@ public class Player {
         }
         return false;
     }
-    
 
     //Returns the gold value of a Position
     public int evaluatePosition(GameBoard board, int x, int y) {
@@ -111,7 +110,7 @@ public class Player {
     
 
     // Returns 1 if there is Water adjacent to the position
-    private int evaluateFischer(GameBoard board, int x, int y) {
+    int evaluateFischer(GameBoard board, int x, int y) {
         String[] neighbours = board.getNeighbourTerrain(x, y);
         for (String neighbour : neighbours) {
             if (neighbour.equals("Wasser")) {
@@ -122,7 +121,7 @@ public class Player {
     }
 
     // Returns 1 if there is a Mountain adjacent to the position
-    private int evaluateBergleute(GameBoard board, int x, int y) {
+    int evaluateBergleute(GameBoard board, int x, int y) {
         String[] neighbours = board.getNeighbourTerrain(x, y);
         for (String neighbour : neighbours) {
             if (neighbour.equals("Berg")) {
@@ -133,7 +132,7 @@ public class Player {
     }
 
     // Returns 1 if there is a Castle or Special Location adjacent to the position
-    private int evaluateArbeiter(GameBoard board, int x, int y) {
+    int evaluateArbeiter(GameBoard board, int x, int y) {
         String[] neighbours = board.getNeighbourTerrain(x, y);
         for (String neighbour : neighbours) {
             if (neighbour.equals("GoldCastle") || neighbour.startsWith("SilverCastle")) {
@@ -144,7 +143,7 @@ public class Player {
     }
 
     // Returns the gold value of a position based on static bonuses (e.g., adjacent to Castle or Location)
-    private int evaluateStaticBonuses(GameBoard board, int x, int y) {
+    int evaluateStaticBonuses(GameBoard board, int x, int y) {
         int gold = 0;
         String[] neighbours = board.getNeighbourTerrain(x, y);
         for (String neighbour : neighbours) {
