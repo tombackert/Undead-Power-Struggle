@@ -26,6 +26,7 @@ public abstract class PlayerController {
 
     public void placeSettlement(Player player, int x, int y) throws InvalidPlacementException {
         String terrainType = gameBoard.getTerrainType(x, y);
+        //System.out.println("Funktion wird aufgerufen");
 
         if (gameBoard.isTerrainAvailable(player.getCurrentTerrainCard())) {
             if (terrainType.equals(player.getCurrentTerrainCard()) && isValidPlacement(x, y, terrainType) && player.canPlaceSettlement()) {
@@ -33,6 +34,7 @@ public abstract class PlayerController {
                 player.getSettlements().add(new Settlement(x, y, player.getColor()));
                 player.placeSettlement();
                 placedSettlementsThisTurn++;
+                //System.out.println("Placed Settlements: " + Integer.toString(placedSettlementsThisTurn));
                 if (canEndTurn()) {
                     notifyCanEndTurn();
                 }
@@ -65,6 +67,7 @@ public abstract class PlayerController {
     }
 
     public boolean canEndTurn() {
+        System.out.println("Placed Settlements: " + Integer.toString(placedSettlementsThisTurn));
         return placedSettlementsThisTurn >= 3;
     }
 

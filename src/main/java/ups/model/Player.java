@@ -12,7 +12,7 @@ import javafx.scene.paint.Color;
 public class Player {
 
     //Number of villages left to place
-    int numberOfVillages;
+    public int numberOfVillages;
     
     //0=Oracle; 1=Farm; 2=Oasis; 3=Tower; 4=Tavern; 5=Barn; 6=Harbour; 7=Paddock
     int[] locationCards;

@@ -115,3 +115,33 @@ Anzahl der übrigen Dörfer wird doppelt gespeichert.
 ### Doppeltes Abspeichern
 - Farbe wird für Spieler und Dörfer (Klasse Settlement) gespeichert
 - GameBoard speichert Bordstatus mehrfach
+
+if (villageCoordinate[0] == 0 && villageCoordinate[1] == 0) continue;
+                int x = villageCoordinate[0];
+                int y = villageCoordinate[1];
+                String[] neighbours = board.getNeighbourTerrain(x, y);
+                for (int j = 0; j < neighbours.length; j++) System.out.println("N: " + Integer.toString(board.coordinatesOfLastNeighbours[j][0]) + ", " + Integer.toString(board.coordinatesOfLastNeighbours[j][1]));
+                for (int j = 0; j < neighbours.length; j++) {
+
+                    int[] neighbourPosition = board.coordinatesOfLastNeighbours[j];
+                    int xNeighbour = neighbourPosition[0];
+                    int yNeighbour = neighbourPosition[1];
+
+                    if (this.canPlaceVillage(board, xNeighbour, yNeighbour, currentTerrain)) {
+                    System.out.println("\nFeld: " + Integer.toString(villageCoordinate[0]) + ", " + Integer.toString(villageCoordinate[0]));
+                    System.out.println("Neighbour terrain: " + neighbours[j]);
+                    System.out.println("Neighbour position: " + neighbourPosition[0] + ", " + neighbourPosition[1] + "\n");
+                    //System.out.println("canPlaceVillage = " + Boolean.toString(this.canPlaceVillage(board, xNeighbour, yNeighbour, currentTerrain)) + "\n");
+                    }
+                    if (this.canPlaceVillage(board, xNeighbour, yNeighbour, currentTerrain)) {
+                        
+                        int gold = this.evaluatePosition(board, xNeighbour, yNeighbour);
+                        //System.out.printf("Position (%d, %d) has gold %d%n", xNeighbour, yNeighbour, gold);
+                        
+                        if (gold > bestGold) {
+                            bestGold = gold;
+                            bestMove = neighbourPosition;
+                            //System.out.println(bestMove[0] + ", " + bestMove[1]);
+                        }
+                    }
+                }

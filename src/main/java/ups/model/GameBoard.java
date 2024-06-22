@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import ups.gui.ColorMapping;
 
 /**
@@ -189,7 +190,7 @@ public class GameBoard {
      * @return true if the hexagon is not occupied, false otherwise
      */
     public boolean isNotOccupied(int x, int y) {
-        return !occupied[x][y];
+        return occupiedBy[x][y] == 0;
     }
 
 
@@ -229,20 +230,20 @@ public class GameBoard {
     public void resetNeighbourCoordinates(int x, int y) {
 
         if ((y % 2) == 0) {
-            this.coordinatesOfLastNeighbours[0] = new int[]{x - 1, y - 1};
-            this.coordinatesOfLastNeighbours[1] = new int[]{x - 1, y};
-            this.coordinatesOfLastNeighbours[2] = new int[]{x, y - 1};
-            this.coordinatesOfLastNeighbours[3] = new int[]{x, y + 1};
-            this.coordinatesOfLastNeighbours[4] = new int[]{x + 1, y - 1};
-            this.coordinatesOfLastNeighbours[5] = new int[]{x + 1, y};
+            this.coordinatesOfLastNeighbours[0] = new int[]{x - 1, y - 1}; //
+            this.coordinatesOfLastNeighbours[1] = new int[]{x, y - 1};
+            this.coordinatesOfLastNeighbours[2] = new int[]{x - 1, y};
+            this.coordinatesOfLastNeighbours[3] = new int[]{x + 1, y};
+            this.coordinatesOfLastNeighbours[4] = new int[]{x - 1, y + 1}; //
+            this.coordinatesOfLastNeighbours[5] = new int[]{x, y + 1};
         }
         else {
-            this.coordinatesOfLastNeighbours[0] = new int[]{x - 1, y};
-            this.coordinatesOfLastNeighbours[1] = new int[]{x - 1, y + 1};
-            this.coordinatesOfLastNeighbours[2] = new int[]{x, y - 1};
-            this.coordinatesOfLastNeighbours[3] = new int[]{x, y + 1};
-            this.coordinatesOfLastNeighbours[4] = new int[]{x + 1, y};
-            this.coordinatesOfLastNeighbours[5] = new int[]{x + 1, y + 1};
+            this.coordinatesOfLastNeighbours[0] = new int[]{x, y - 1};
+            this.coordinatesOfLastNeighbours[1] = new int[]{x + 1, y - 1}; //
+            this.coordinatesOfLastNeighbours[2] = new int[]{x - 1, y};
+            this.coordinatesOfLastNeighbours[3] = new int[]{x + 1, y};
+            this.coordinatesOfLastNeighbours[4] = new int[]{x, y + 1};
+            this.coordinatesOfLastNeighbours[5] = new int[]{x + 1, y + 1}; //
         }
         
     }

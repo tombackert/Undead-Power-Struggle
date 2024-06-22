@@ -287,11 +287,20 @@ public class GameBoardController {
      * @param col the column of the hexagon
      */
     public void handleHexagonClick(Group hexGroup, int row, int col) {
+        
+        // Main loop
         try {
             Player currentPlayer = players[currentPlayerIndex];
+            System.out.println("Name Player: " + currentPlayer.name);
+            
+            int gold = currentPlayer.calculateGold(model);
+            System.out.println("Player " + currentPlayer.name + " has " + gold + " Gold");
             PlayerController playerController = playerControllers.get(currentPlayer);
-
+            
+            //System.out.println("currentPlayer.canPlaceSettlement() = " + Boolean.toString(currentPlayer.canPlaceSettlement()) + "; model.isNotOccupied(row, col) = " + Boolean.toString(model.isNotOccupied(row, col)));
+            
             if (currentPlayer.canPlaceSettlement() && model.isNotOccupied(row, col)) {
+                //System.out.println("Rufe placeSettlement auf.");
                 playerController.placeSettlement(currentPlayer, row, col);
                 view.addHouseToHexagon(hexGroup, currentPlayer.getColor());
                 updateCurrentPlayerSettlementLabel();
@@ -356,7 +365,7 @@ public class GameBoardController {
         switchTerrain();
         System.out.println("AI zieht Geländekarte: " + currentTerrain);
         // Mache den Zug des AI
-        aiPlayer.makeMove(this);
+        aiPlayer.makeMove(this, this.model);
         System.out.println("AI macht Zug.");
         updateBoardForAI(aiPlayer);
     }
