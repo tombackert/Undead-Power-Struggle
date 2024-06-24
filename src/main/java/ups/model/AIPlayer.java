@@ -146,7 +146,7 @@ public class AIPlayer extends Player {
                     {x    , y - 1}, // West
                     {x + 1, y - 1}  // South-West
             };
-        } else { // odd column
+        } else { // odd row
             return new int[][]{
                     {x - 1, y + 1}, // North-East
                     {x    , y + 1}, // East
@@ -159,12 +159,11 @@ public class AIPlayer extends Player {
     }
 
     /**
-     * Evaluates the gold value of a position on the game board.
+     * Checks if a given position is a neighbor of an existing village.
      *
-     * @param board the game board
      * @param x the x-coordinate of the position
      * @param y the y-coordinate of the position
-     * @return the gold value of the position
+     * @return true if the position is a neighbor of an existing village, false otherwise
      */
     private boolean canPlaceVillage(GameBoard board, int x, int y, String currentTerrain) {
         return board.isNotOccupied(x, y) && board.getTerrainType(x, y).equals(currentTerrain);
