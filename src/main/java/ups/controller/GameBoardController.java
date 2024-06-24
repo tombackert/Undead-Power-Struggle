@@ -287,23 +287,22 @@ public class GameBoardController {
      * @param col the column of the hexagon
      */
     public void handleHexagonClick(Group hexGroup, int row, int col) {
-        
-        // Main loop
         try {
             Player currentPlayer = players[currentPlayerIndex];
-            System.out.println("Name Player: " + currentPlayer.name);
-            
-            int gold = currentPlayer.calculateGold(model);
-            System.out.println("Player " + currentPlayer.name + " has " + gold + " Gold");
             PlayerController playerController = playerControllers.get(currentPlayer);
-            
-            //System.out.println("currentPlayer.canPlaceSettlement() = " + Boolean.toString(currentPlayer.canPlaceSettlement()) + "; model.isNotOccupied(row, col) = " + Boolean.toString(model.isNotOccupied(row, col)));
-            
+
+            // Calculate gold for the clicked position
+            int goldPerTurn = calculateGoldForPosition(currentPlayer, row, col);
+
             if (currentPlayer.canPlaceSettlement() && model.isNotOccupied(row, col)) {
-                //System.out.println("Rufe placeSettlement auf.");
                 playerController.placeSettlement(currentPlayer, row, col);
                 view.addHouseToHexagon(hexGroup, currentPlayer.getColor());
                 updateCurrentPlayerSettlementLabel();
+
+                // Recalculate the total gold after placing the settlement
+                int goldInTotal = currentPlayer.calculateGold(model);
+                System.out.println("Player: " + currentPlayer.getName() + " placed settlement on row: " + row + " and column: " + col + " with move gold: " + goldPerTurn + " and new total gold: " + goldInTotal);
+
                 if (playerController.canEndTurn()) {
                     endTurnButton.setDisable(false);
                 }
@@ -315,6 +314,20 @@ public class GameBoardController {
         }
         updateTerrainLabel();
     }
+
+
+    /**
+     * Calculates the gold for the given position.
+     *
+     * @param player the player
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @return the gold value
+     */
+    public int calculateGoldForPosition(Player player, int x, int y) {
+        return player.evaluatePosition(model, x, y);
+    }
+
 
     /**
      * Handles the click on a hexagon by the AI player.

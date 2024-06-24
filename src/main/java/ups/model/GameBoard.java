@@ -226,26 +226,30 @@ public class GameBoard {
         return terrainCount.getOrDefault(terrainType, 0) > 0;
     }
 
-    //Returns the tile types of the neighbours in an array and stores the coordinates in the 2D array coordinatesOfLastNeighbours
+    /*
+     * Returns the coordinates of the neighbours of the hexagon at the given row and column.
+     * @param x the row
+     * @param y the column
+     */
     public void resetNeighbourCoordinates(int x, int y) {
 
-        if ((y % 2) == 0) {
-            this.coordinatesOfLastNeighbours[0] = new int[]{x - 1, y - 1}; //
-            this.coordinatesOfLastNeighbours[1] = new int[]{x, y - 1};
-            this.coordinatesOfLastNeighbours[2] = new int[]{x - 1, y};
-            this.coordinatesOfLastNeighbours[3] = new int[]{x + 1, y};
-            this.coordinatesOfLastNeighbours[4] = new int[]{x - 1, y + 1}; //
-            this.coordinatesOfLastNeighbours[5] = new int[]{x, y + 1};
+        if ((x % 2) == 0) {
+            this.coordinatesOfLastNeighbours[0] = new int[]{x - 1, y};     // North-East
+            this.coordinatesOfLastNeighbours[1] = new int[]{x    , y + 1}; // East
+            this.coordinatesOfLastNeighbours[2] = new int[]{x + 1, y};     // South-East
+            this.coordinatesOfLastNeighbours[3] = new int[]{x + 1, y - 1}; // South-West
+            this.coordinatesOfLastNeighbours[4] = new int[]{x - 1, y};     // West
+            this.coordinatesOfLastNeighbours[5] = new int[]{x - 1, y - 1}; // North-West
         }
         else {
-            this.coordinatesOfLastNeighbours[0] = new int[]{x, y - 1};
-            this.coordinatesOfLastNeighbours[1] = new int[]{x + 1, y - 1}; //
-            this.coordinatesOfLastNeighbours[2] = new int[]{x - 1, y};
-            this.coordinatesOfLastNeighbours[3] = new int[]{x + 1, y};
-            this.coordinatesOfLastNeighbours[4] = new int[]{x, y + 1};
-            this.coordinatesOfLastNeighbours[5] = new int[]{x + 1, y + 1}; //
+            this.coordinatesOfLastNeighbours[0] = new int[]{x - 1, y + 1}; // North-East
+            this.coordinatesOfLastNeighbours[1] = new int[]{x    , y + 1}; // East
+            this.coordinatesOfLastNeighbours[2] = new int[]{x + 1, y + 1}; // South-East
+            this.coordinatesOfLastNeighbours[3] = new int[]{x + 1, y};     // South-West
+            this.coordinatesOfLastNeighbours[4] = new int[]{x - 1, y};     // West
+            this.coordinatesOfLastNeighbours[5] = new int[]{x - 1, y};     // North-West
         }
-        
+
     }
 
     /*

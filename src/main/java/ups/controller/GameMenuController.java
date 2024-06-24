@@ -212,7 +212,7 @@ public class GameMenuController {
     private void updateColorOptions(ComboBox<String> comboBox) {
         if (comboBox != null) {
             String selectedColor = comboBox.getValue();
-            comboBox.getItems().setAll(bundle.getString("red"), bundle.getString("black"), bundle.getString("blue"), bundle.getString("white"));
+            comboBox.getItems().setAll(bundle.getString("red"), bundle.getString("black"), bundle.getString("blue"), bundle.getString("orange"));
             comboBox.setValue(selectedColor); // Re-set the selected color
         } else {
             logger.log(Level.SEVERE, "ComboBox is null.");

@@ -24,7 +24,7 @@
                         <String fx:value="Rot" />
                         <String fx:value="Schwarz" />
                         <String fx:value="Blau" />
-                        <String fx:value="Weiß" />
+                        <String fx:value="Orange" />
                     </FXCollections>
                 </items>
             </ComboBox>
@@ -34,7 +34,7 @@
                         <String fx:value="Rot" />
                         <String fx:value="Schwarz" />
                         <String fx:value="Blau" />
-                        <String fx:value="Weiß" />
+                        <String fx:value="Orange" />
                     </FXCollections>
                 </items>
             </ComboBox>
@@ -44,7 +44,7 @@
                         <String fx:value="Rot" />
                         <String fx:value="Schwarz" />
                         <String fx:value="Blau" />
-                        <String fx:value="Weiß" />
+                        <String fx:value="Orange" />
                     </FXCollections>
                 </items>
             </ComboBox>
@@ -54,7 +54,7 @@
                         <String fx:value="Rot" />
                         <String fx:value="Schwarz" />
                         <String fx:value="Blau" />
-                        <String fx:value="Weiß" />
+                        <String fx:value="Orange" />
                     </FXCollections>
                 </items>
             </ComboBox>

@@ -28,12 +28,12 @@ public class ColorMapping {
         colorMap.put("Rot", Color.RED);
         colorMap.put("Schwarz", Color.BLACK);
         colorMap.put("Blau", Color.BLUE);
-        colorMap.put("Weiß", Color.WHITE);
+
+        colorMap.put("Orange", Color.ORANGE);
 
         colorMap.put("Red", Color.RED);
         colorMap.put("Black", Color.BLACK);
         colorMap.put("Blue", Color.BLUE);
-        colorMap.put("White", Color.WHITE);
     }
 
     /**
@@ -58,7 +58,7 @@ public class ColorMapping {
             case 3:
                 return Color.BLUE;
             case 4:
-                return Color.WHITE;
+                return Color.ORANGE;
             default:
                 throw new IllegalArgumentException("Ungültige Spielerfarbe: " + color);
         }
@@ -74,7 +74,7 @@ public class ColorMapping {
             return 2;
         } else if (color.equals(Color.BLUE)) {
             return 3;
-        } else if (color.equals(Color.WHITE)) {
+        } else if (color.equals(Color.ORANGE)) {
             return 4;
         } else {
             throw new IllegalArgumentException("Ungültige Spielerfarbe: " + color);
