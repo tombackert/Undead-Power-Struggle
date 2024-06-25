@@ -1,10 +1,7 @@
 // PlayerController.java
 package ups.controller;
 
-import ups.model.GameBoard;
-import ups.model.InvalidPlacementException;
-import ups.model.Player;
-import ups.model.Settlement;
+import ups.model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,20 +10,21 @@ public abstract class PlayerController {
     private final List<Player> players;
     private GameBoard gameBoard;
     private int placedSettlementsThisTurn = 0;
+    private final GameBoardController gameBoardController;
 
-    public PlayerController() {
+    public PlayerController(GameBoardController gameBoardController) {
         this.players = new ArrayList<>();
+        this.gameBoardController = gameBoardController;
     }
 
-    public PlayerController(Player player, GameBoard gameBoard) {
-        this();
+    public PlayerController(Player player, GameBoard gameBoard, GameBoardController gameBoardController) {
+        this(gameBoardController);
         this.players.add(player);
         this.gameBoard = gameBoard;
     }
 
     public void placeSettlement(Player player, int x, int y) throws InvalidPlacementException {
         String terrainType = gameBoard.getTerrainType(x, y);
-        //System.out.println("Funktion wird aufgerufen");
 
         if (gameBoard.isTerrainAvailable(player.getCurrentTerrainCard())) {
             if (terrainType.equals(player.getCurrentTerrainCard()) && isValidPlacement(x, y, terrainType) && player.canPlaceSettlement()) {
@@ -34,7 +32,11 @@ public abstract class PlayerController {
                 player.getSettlements().add(new Settlement(x, y, player.getColor()));
                 player.placeSettlement();
                 placedSettlementsThisTurn++;
-                //System.out.println("Placed Settlements: " + Integer.toString(placedSettlementsThisTurn));
+                if (player.getRemainingSettlements() == 0) {
+                    gameBoardController.updateBoardForPlayer(player);
+                    gameBoardController.endGame();
+                    return; // Exit the method to prevent further placements
+                }
                 if (canEndTurn()) {
                     notifyCanEndTurn();
                 }
@@ -47,6 +49,11 @@ public abstract class PlayerController {
                 player.getSettlements().add(new Settlement(x, y, player.getColor()));
                 player.placeSettlement();
                 placedSettlementsThisTurn++;
+                if (player.getRemainingSettlements() == 0) {
+                    gameBoardController.updateBoardForPlayer(player);
+                    gameBoardController.endGame();
+                    return; // Exit the method to prevent further placements
+                }
                 if (canEndTurn()) {
                     notifyCanEndTurn();
                 }
@@ -55,6 +62,11 @@ public abstract class PlayerController {
             }
         }
         gameBoard.setOwner(x, y, player);
+
+        if (player.getRemainingSettlements() == 0) {
+            gameBoardController.updateBoardForPlayer(player);
+            gameBoardController.endGame();
+        }
     }
 
     private boolean isValidPlacement(int x, int y, String terrainType) {
@@ -67,8 +79,8 @@ public abstract class PlayerController {
     }
 
     public boolean canEndTurn() {
-        System.out.println("Placed Settlements: " + Integer.toString(placedSettlementsThisTurn));
-        return placedSettlementsThisTurn >= 3;
+        //System.out.println("Placed Settlements: " + Integer.toString(placedSettlementsThisTurn));
+        return placedSettlementsThisTurn >= gameBoardController.getSettlementsPerTurn();
     }
 
     protected abstract void notifyCanEndTurn();

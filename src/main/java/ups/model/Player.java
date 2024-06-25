@@ -1,49 +1,31 @@
 package ups.model;
 
-import ups.gui.ColorMapping;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-
 import javafx.scene.paint.Color;
+import ups.gui.ColorMapping;
 
 /**
  * The Player class represents a player in the game.
  */
 public class Player {
 
-    //Number of villages left to place
-    public int numberOfVillages;
-    
     //0=Oracle; 1=Farm; 2=Oasis; 3=Tower; 4=Tavern; 5=Barn; 6=Harbour; 7=Paddock
     int[] locationCards;
-    
+
     //G=GRASS; C=CANYON; D=DESERT; F=FLOWER; T=FOREST;
-    public String locationTile;
+    public String locationTile; // Location tile of the player
 
-    //Array of coordinates of Player's villages
-    int[][] villageCoordinates;
-    
-    // Player's name
-    public String name;
-    
-    //1=Red; 2=Black; 3=Blue; 4=White
-    int color;
-
-    
-
-    //Current terrain card
-    private String currentTerrainCard;
-
-    //List of settlements 
-    private final List<Settlement> settlements;
-
-    //Number of settlements left to place
-    private int remainingSettlements;
-
-    //Number of settlements placed this turn
-    private int settlementsPlacedThisTurn;
+    public int numberOfVillages; // Number of villages left to place
+    int[][] villageCoordinates; // Array of coordinates of Player's villages (x, y)
+    public String name; // Name of the player
+    int color; // Color of the player as an integer (1=Red, 2=Black, 3=Blue, 4=Orange)
+    private String currentTerrainCard; // The current terrain card of the player
+    private final List<Settlement> settlements; // List of settlements placed by the player
+    private int remainingSettlements; // Number of settlements left to place
+    private int settlementsPlacedThisTurn; // Number of settlements placed this turn
+    private final int settlementsPerTurn; // Number of settlements that can be placed per turn
+    private GameBoard board; // Reference to the game board
 
     /**
      * Constructs a new Player with the given name and color.
@@ -51,14 +33,16 @@ public class Player {
      * @param name  the name of the player
      * @param color the color of the player
      */
-    public Player(String name, Color color) {
+    public Player(String name, Color color, int settlementsPerTurn, int settlementsCount) {
         this.numberOfVillages = 40;
         this.villageCoordinates = new int[40][2];
         this.name = name;
         this.color = ColorMapping.getIntFromColor(color);
         this.settlements = new ArrayList<>();
-        this.remainingSettlements = 40; // Initiale Anzahl der Siedlungen
+        this.remainingSettlements = settlementsCount; // Initialize with the configurable number of settlements
         this.settlementsPlacedThisTurn = 0; // Initialisiert mit 0
+        this.settlementsPerTurn = settlementsPerTurn; // Initialize settlementsPerTurn
+        //System.out.println("Player created with settlements per turn: " + settlementsPerTurn); // Debug statement
     }
 
     /**
@@ -70,6 +54,8 @@ public class Player {
      * @return the gold value of the position
      */
     public int evaluatePosition(GameBoard board, int x, int y) {
+        if (board == null) return 0; // Return 0 if board is null
+
         int gold = 0;
 
         // Evaluate gold based on selected Kindom Builder cards
@@ -94,7 +80,7 @@ public class Player {
         return gold;
     }
 
-    
+
 
     /**
      * Returns 1 if there is a Water hex adjacent to the position.
@@ -170,12 +156,26 @@ public class Player {
     }
 
     /**
+     * Calculates the gold for the given position.
+     *
+     * @param board the game board
+     * @param x the x coordinate
+     * @param y the y coordinate
+     * @return the gold value
+     */
+    public int calculateGoldForPosition(GameBoard board, int x, int y) {
+        return evaluatePosition(board, x, y);
+    }
+
+    /**
      * Returns the total gold value of all villages placed by the player.
      *
      * @param board the game board
      * @return the total gold value of all villages placed by the player
      */
     public int calculateGold(GameBoard board) {
+        if (board == null) return 0; // Return 0 if board is null
+
         int totalGold = 0;
         for (Settlement settlement : settlements) {
             int x = settlement.getX();
@@ -185,20 +185,9 @@ public class Player {
         return totalGold;
     }
 
-//    public int calculateGold(GameBoard board) {
-//        int gold = 0;
-//        for (int i = 0; i < this.villageCoordinates.length; i++) {
-//            if (this.villageCoordinates[i][0] == 0 && this.villageCoordinates[i][1] == 0) {
-//                continue;  // Skip uninitialized coordinates
-//            }
-//            gold += evaluatePosition(board, this.villageCoordinates[i][0], this.villageCoordinates[i][1]);
-//        }
-//        return gold;
-//    }
-
-
     public boolean canPlaceSettlement() {
-        return settlementsPlacedThisTurn < 3 && remainingSettlements > 0;
+        //System.out.println("Can place settlement check: " + (settlementsPlacedThisTurn < settlementsPerTurn) + " settlements placed: " + settlementsPlacedThisTurn + " settlements per turn: " + settlementsPerTurn + " remaining settlements: " + remainingSettlements); // Debug statement
+        return settlementsPlacedThisTurn < settlementsPerTurn && remainingSettlements > 0;
     }
 
     /**
@@ -248,54 +237,3 @@ public class Player {
         settlementsPlacedThisTurn = 0;
     }
 }
-
-//    /**
-//     * Places a village at the given coordinates.
-//     *
-//     * @param b the game board
-//     * @param x the x-coordinate
-//     * @param y the y-coordinate
-//     * @return true if the village was placed successfully, false otherwise
-//     */
-//    public boolean placeVillage(GameBoard b, int x, int y) {
-//        if (!(Objects.equals(locationTile, b.getTerrainType(x, y)) && (b.getOccupation(x, y) == 0) && (x >= 0 && x < 20 && y >= 0 && y < 20))) {
-//            System.out.println("Invalid coordinates. Try again!");
-//            return false;
-//        }
-//        this.villageCoordinates[40 - this.numberOfVillages][0] = x;
-//        this.villageCoordinates[40 - this.numberOfVillages][1] = y;
-//        b.placeSettlement(x, y, ColorMapping.getColorFromInt(this.color));
-//        this.numberOfVillages--;
-//
-//        System.out.printf("%s placed a village at (%d, %d)%n", this.name, x, y);
-//        return true;
-//    }
-//
-//    /**
-//     * Returns true if a village can be placed at the given coordinates.
-//     *
-//     * @param b the game board
-//     * @param x the x-coordinate
-//     * @param y the y-coordinate
-//     * @return true if a village can be placed, false otherwise
-//     */
-//    public boolean canPlaceVillage(GameBoard b, int x, int y) {
-//        return Objects.equals(locationTile, b.getTerrainType(x, y)) && (b.getOccupation(x, y) == 0);
-//    }
-//
-//    /**
-//     * Returns true if a village can be placed at the given coordinates.
-//     *
-//     * @param b the game board
-//     * @param x the x-coordinate
-//     * @param y the y-coordinate
-//     * @return true if a village can be placed, false otherwise
-//     */
-//    public boolean isAdjacent(GameBoard b, int x, int y) {
-//        b.resetNeighbourCoordinates(x, y);
-//        for (int i = 0; i < 6; i++) {
-//            if (b.getOccupation(b.coordinatesOfLastNeighbours[i][0], b.coordinatesOfLastNeighbours[i][1]) == this.color)
-//                return true;
-//        }
-//        return false;
-//    }

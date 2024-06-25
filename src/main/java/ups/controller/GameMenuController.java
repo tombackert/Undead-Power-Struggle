@@ -8,6 +8,10 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
 import ups.gui.ColorMapping;
+import ups.model.AIPlayer;
+import ups.model.Player;
+import ups.utils.HighscoreEntry;
+import ups.utils.HighscoreManager;
 import ups.utils.LanguageSettings;
 import ups.view.GameMenuView;
 
@@ -15,6 +19,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * The GameMenuController class is responsible for controlling the game menu.
@@ -227,6 +232,8 @@ public class GameMenuController {
         List<String> playerNames = getPlayerNames();
         List<Color> playerColors = getPlayerColors();
         boolean[] aiPlayers = getAIPlayers();
+        int settlementsPerTurnValue = getSettlementsPerTurn();
+        int settlementsCountValue = getSettlementsCount();
 
         if (playerNames.size() < 2) {
             showAlert("Es müssen mindestens zwei Spielernamen eingegeben werden.");
@@ -243,8 +250,11 @@ public class GameMenuController {
             Parent root = loader.load();
 
             GameBoardController gameBoardController = loader.getController();
+            gameBoardController.setSettlementsPerTurn(settlementsPerTurnValue); // Set the value here
+            gameBoardController.setSettlementsCount(settlementsCountValue); // Set the total settlements value here
             gameBoardController.setPlayers(playerNames.toArray(new String[0]), playerColors.toArray(new Color[0]), aiPlayers);
             gameBoardController.setResourceBundle(bundle);
+            List<Player> players = new ArrayList<>();
 
             Stage gameStage = new Stage();
             GameBoardController.setGameStage(gameStage);
@@ -261,6 +271,30 @@ public class GameMenuController {
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Failed to start new game", e);
         }
+    }
+
+    private int getSettlementsPerTurn() {
+        try {
+            System.out.println("SpT: " + settlementsPerTurn.getText());
+            return Integer.parseInt(settlementsPerTurn.getText());
+        } catch (NumberFormatException e) {
+            return 3; // Default value if parsing fails
+        }
+    }
+
+    private int getSettlementsCount() {
+        try {
+            int value = Integer.parseInt(settlementsCount.getText());
+            System.out.println("Total settlements from TextField: " + value); // Debug statement
+            return value;
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid number format for total settlements, using default value 40."); // Debug statement
+            return 40; // Default value if parsing fails
+        }
+    }
+
+    private boolean areAllPlayersAI(List<Player> players) {
+        return players.stream().allMatch(player -> player instanceof AIPlayer);
     }
 
     /**
@@ -366,6 +400,30 @@ public class GameMenuController {
     private void showAlert(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    @FXML
+    private void showHighscore() {
+        HighscoreManager highscoreManager = new HighscoreManager();
+        List<HighscoreEntry> highscores = highscoreManager.loadHighscores();
+
+        if (highscores.isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Keine Highscores vorhanden.", ButtonType.OK);
+            alert.setHeaderText("Highscores");
+            alert.setTitle("Highscores");
+            alert.showAndWait();
+            return;
+        }
+
+        String highscoreText = highscores.stream()
+                .sorted((e1, e2) -> Integer.compare(e2.getScore(), e1.getScore()))
+                .map(entry -> String.format("%s: %d Gold", entry.getPlayerName(), entry.getScore()))
+                .collect(Collectors.joining("\n"));
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, highscoreText, ButtonType.OK);
+        alert.setHeaderText("Highscores");
+        alert.setTitle("Highscores");
         alert.showAndWait();
     }
 }

@@ -1,25 +1,22 @@
 package ups.model;
 
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import ups.controller.GameBoardController;
 import javafx.scene.paint.Color;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The AIPlayer class represents an AI player in the game.
  */
 public class AIPlayer extends Player {
-    private static final Logger logger = Logger.getLogger(AIPlayer.class.getName());
     /**
      * Constructs a new AIPlayer with the given name and color.
      *
      * @param name  the name of the player
      * @param color the color of the player
      */
-    public AIPlayer(String name, Color color) {
-        super(name, color);
+    public AIPlayer(String name, Color color, int settlementsPerTurn, int settlementsCount) {
+        super(name, color, settlementsPerTurn, settlementsCount);
+        //System.out.println("AI Player created with settlements per turn: " + settlementsPerTurn); // Debug statement
     }
 
     /**
@@ -28,38 +25,15 @@ public class AIPlayer extends Player {
      * @param controller the game board controller
      */
     public void makeMove(GameBoardController controller, GameBoard board) {
-        Task<Void> task = new Task<>() {
-            @Override
-            protected Void call() {
-                for (int i = 0; i < 3; i++) {
-                    int[] move = findBestMove(controller.getModel(), controller.getCurrentTerrain());
-                    numberOfVillages--;
-                    villageCoordinates[40 - numberOfVillages] = move;
-                    System.out.println("AI move: " + move[0] + ", " + move[1] + " with gold " + evaluatePosition(controller.getModel(), move[0], move[1]));
-                    Platform.runLater(() -> {
-                        controller.handleAIClick(move[0], move[1]);
-                        board.occupiedBy[move[0]][move[1]] = color;
-                        controller.updateBoardForAI(AIPlayer.this);
-                    });
-                    try {
-                        Thread.sleep(1000); // 1 Sekunde Pause zwischen dem Setzen der Häuser
-                    } catch (InterruptedException e) {
-                        logger.log(Level.SEVERE, "AI move interrupted", e);
-                    }
-                }
-                Platform.runLater(() -> {
-                    if (controller.endTurn()) {
-                        System.out.println("Zug beendet.");
-                    } else {
-                        System.out.println("Fehler: Zug konnte nicht beendet werden.");
-                    }
-                });
-                return null;
-            }
-        };
-        Thread thread = new Thread(task);
-        thread.setDaemon(true);
-        thread.start();
+        int[] move = findBestMove(controller.getModel(), controller.getCurrentTerrain());
+        numberOfVillages--;
+        villageCoordinates[getRemainingSettlements() - 1] = move;
+        System.out.println("AI move: " + move[0] + ", " + move[1] + " with gold " + evaluatePosition(controller.getModel(), move[0], move[1]));
+        Platform.runLater(() -> {
+            controller.handleAIClick(move[0], move[1]);
+            board.occupiedBy[move[0]][move[1]] = color;
+            controller.updateBoardForAI(AIPlayer.this);
+        });
     }
 
     /**
@@ -98,8 +72,8 @@ public class AIPlayer extends Player {
                 // Überprüfe die Nachbarpositionen, die innerhalb der Spielfeldgrenzen liegen
                 int[][] potentialNeighbours = this.getHexagonalNeighbors(x, y);
 
-                System.out.println("\n\nPosition: " + x + ", " + y);
-                for (int[] pN : potentialNeighbours) System.out.println("Hopefully a Neighbour: " + pN[0] + ", " + pN[1] + "\n");
+                //System.out.println("\n\nPosition: " + x + ", " + y);
+                //for (int[] pN : potentialNeighbours) System.out.println("Hopefully a Neighbour: " + pN[0] + ", " + pN[1] + "\n");
                 for (int[] neighbourPosition : potentialNeighbours) {
                     int xNeighbour = neighbourPosition[0];
                     int yNeighbour = neighbourPosition[1];

@@ -92,7 +92,7 @@
             <Button fx:id="saveGameState" text="Speichern"/>
         </VBox>
         <VBox prefHeight="202.0" prefWidth="193.0">
-            <Button fx:id="highscoreButton" prefHeight="26.0" prefWidth="142.0" text="Highscore anzeigen">
+            <Button fx:id="highscoreButton" prefHeight="26.0" prefWidth="142.0" onAction="#showHighscore" text="Highscore anzeigen">
                 <VBox.margin>
                     <Insets top="10.0"/>
                 </VBox.margin>
@@ -132,7 +132,7 @@
         </VBox>
         <VBox alignment="TOP_CENTER" prefHeight="50.0" prefWidth="231.0">
             <TextField fx:id="settlementsPerTurn" alignment="CENTER" prefHeight="26.0" prefWidth="177.0"
-                       promptText="Anzahl der Siedlungen pro Spielzug">
+                       promptText="Anzahl d. Siedlungen p. Spielzug (3)">
                 <VBox.margin>
                     <Insets/>
                 </VBox.margin>
