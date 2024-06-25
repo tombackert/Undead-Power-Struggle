@@ -10,6 +10,7 @@ import ups.view.OptionsMenuView;
 import ups.view.SinglePlayerMenuView;
 import ups.view.TutorialView;
 import ups.view.LocationCardsView;
+import ups.view.GameMenuView;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,9 +20,9 @@ public class MenuController {
     public static List<Pair<String, Runnable>> getMenuData(Stage primaryStage) {
         return Arrays.asList(
                 
-                new Pair<>("Single Player", () -> {
+                new Pair<>("Start Game", () -> {
                     try {
-                        new SinglePlayerMenuView().start(primaryStage);
+                        new GameMenuView().start(primaryStage);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

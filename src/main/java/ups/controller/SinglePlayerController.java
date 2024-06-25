@@ -5,6 +5,7 @@ import javafx.util.Pair;
 import ups.view.MenuView;
 import ups.model.MenuItem;
 import ups.model.PlayerMenuItem;
+import ups.view.GameMenuView;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,7 +17,13 @@ public class SinglePlayerController {
     public static List<Pair<String, Runnable>> getMenuData(Stage primaryStage) {
         return Arrays.asList(
 
-                new Pair<>("Start Game", () -> System.out.println("Game started!!!")),
+                new Pair<>("Start Game", () -> {
+                    try {
+                        new GameMenuView().start(primaryStage);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }),
                 new Pair<>(player1Name, () -> updatePlayerName(1)),
                 new Pair<>("Back", () -> {
                     try {

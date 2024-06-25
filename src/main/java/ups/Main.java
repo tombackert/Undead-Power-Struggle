@@ -11,6 +11,6 @@ public class Main {
      * @param args The command line arguments passed to the application.
      */
     public static void main(String[] args) {
-        GameMenuView.main(args);
+        ups.view.MenuView.main(args);
     }
 }
