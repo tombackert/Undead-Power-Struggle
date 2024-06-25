@@ -1,5 +1,6 @@
 /**
  * The main module of the ups application.
+ * The main module of the ups application.
  */
 module ups {
     requires javafx.controls;
