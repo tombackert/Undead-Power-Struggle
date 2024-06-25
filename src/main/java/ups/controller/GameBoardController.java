@@ -12,10 +12,7 @@ import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
 import ups.gui.ColorMapping;
-import ups.model.GameBoard;
-import ups.model.InvalidPlacementException;
-import ups.model.Player;
-import ups.model.AIPlayer;
+import ups.model.*;
 import ups.utils.HighscoreManager;
 import ups.view.GameBoardView;
 import ups.view.GameMenuView;
@@ -24,6 +21,8 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ups.utils.LanguageSettings;
+import ups.view.HighscoreView;
+
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -538,24 +537,18 @@ public class GameBoardController {
                 .sorted((p1, p2) -> Integer.compare(p2.calculateGold(model), p1.calculateGold(model)))
                 .collect(Collectors.toList());
 
-        StringBuilder results = new StringBuilder();
-        for (int i = 0; i < sortedPlayers.size(); i++) {
-            Player player = sortedPlayers.get(i);
-            results.append(String.format("%d. Platz: %s mit %d Gold%n", i + 1, player.getName(), player.calculateGold(model)));
-        }
+        saveHighscore(sortedPlayers, model);
+        HighscoreView highscoreView = new HighscoreView();
+        highscoreView.showHighscoreView();
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, results.toString(), ButtonType.OK);
-        alert.setHeaderText("Spiel beendet!");
-        alert.setTitle("Spielergebnisse");
-        alert.showAndWait();
-
-        saveHighscore(sortedPlayers);
         GameMenuView.showMenu();  // Zurück zum Hauptmenü
         gameStage.close(); // Schließe das Spiel
     }
 
-    private void saveHighscore(List<Player> sortedPlayers) {
+    private void saveHighscore(List<Player> sortedPlayers, GameBoard model) {
         HighscoreManager highscoreManager = new HighscoreManager();
-        highscoreManager.saveHighscore(sortedPlayers, model);
+        for (Player player : sortedPlayers) {
+            highscoreManager.saveHighscore(new Highscore(player.getName(), player.calculateGold(model)));
+        }
     }
 }

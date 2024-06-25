@@ -5,15 +5,17 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.Scene;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
 import ups.gui.ColorMapping;
 import ups.model.AIPlayer;
+import ups.model.Highscore;
 import ups.model.Player;
-import ups.utils.HighscoreEntry;
 import ups.utils.HighscoreManager;
 import ups.utils.LanguageSettings;
 import ups.view.GameMenuView;
+import ups.view.HighscoreView;
 
 import java.io.IOException;
 import java.util.*;
@@ -406,24 +408,31 @@ public class GameMenuController {
     @FXML
     private void showHighscore() {
         HighscoreManager highscoreManager = new HighscoreManager();
-        List<HighscoreEntry> highscores = highscoreManager.loadHighscores();
+        List<Highscore> highscores = highscoreManager.loadHighscores();
 
         if (highscores.isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Keine Highscores vorhanden.", ButtonType.OK);
-            alert.setHeaderText("Highscores");
-            alert.setTitle("Highscores");
-            alert.showAndWait();
+            // Optional: Eine Methode, um eine leere Highscore-Anzeige zu behandeln
+            showEmptyHighscoreMessage();
             return;
         }
 
-        String highscoreText = highscores.stream()
-                .sorted((e1, e2) -> Integer.compare(e2.getScore(), e1.getScore()))
-                .map(entry -> String.format("%s: %d Gold", entry.getPlayerName(), entry.getScore()))
-                .collect(Collectors.joining("\n"));
+        HighscoreView highscoreView = new HighscoreView();
+        highscoreView.showHighscoreView();
+    }
 
-        Alert alert = new Alert(Alert.AlertType.INFORMATION, highscoreText, ButtonType.OK);
-        alert.setHeaderText("Highscores");
-        alert.setTitle("Highscores");
-        alert.showAndWait();
+    @FXML
+    private void showEmptyHighscoreMessage() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ups/view/EmptyHighscoreView.fxml"));
+            Parent root = loader.load();
+
+            Stage stage = new Stage();
+            stage.setTitle("Highscores");
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

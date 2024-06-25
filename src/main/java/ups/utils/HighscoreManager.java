@@ -1,7 +1,6 @@
 package ups.utils;
 
-import ups.model.GameBoard;
-import ups.model.Player;
+import ups.model.Highscore;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -19,24 +18,21 @@ public class HighscoreManager {
         }
     }
 
-    public void saveHighscore(List<Player> players, GameBoard board) {
-        List<HighscoreEntry> existingHighscores = loadHighscores();
+    public void saveHighscore(Highscore entry) {
+        List<Highscore> existingHighscores = loadHighscores();
 
-        for (Player player : players) {
-            int newGold = player.calculateGold(board);
-            Optional<HighscoreEntry> existingEntry = existingHighscores.stream()
-                    .filter(entry -> entry.getPlayerName().equals(player.getName()))
-                    .findFirst();
+        Optional<Highscore> existingEntry = existingHighscores.stream()
+                .filter(e -> e.getPlayerName().equals(entry.getPlayerName()))
+                .findFirst();
 
-            if (existingEntry.isPresent()) {
-                if (newGold > existingEntry.get().getScore()) {
-                    existingEntry.get().setScore(newGold);
-                    System.out.printf("Updated highscore for player %s: %d%n", player.getName(), newGold); // Debug output
-                }
-            } else {
-                existingHighscores.add(new HighscoreEntry(player.getName(), newGold));
-                System.out.printf("Added new highscore for player %s: %d%n", player.getName(), newGold); // Debug output
+        if (existingEntry.isPresent()) {
+            if (entry.getScore() > existingEntry.get().getScore()) {
+                existingEntry.get().setScore(entry.getScore());
+                System.out.printf("Updated highscore for player %s: %d%n", entry.getPlayerName(), entry.getScore());
             }
+        } else {
+            existingHighscores.add(entry);
+            System.out.printf("Added new highscore for player %s: %d%n", entry.getPlayerName(), entry.getScore());
         }
 
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(HIGHSCORE_FILE))) {
@@ -47,15 +43,13 @@ public class HighscoreManager {
     }
 
     @SuppressWarnings("unchecked")
-    public List<HighscoreEntry> loadHighscores() {
+    public List<Highscore> loadHighscores() {
         File file = new File(HIGHSCORE_FILE);
         if (!file.exists() || file.length() == 0) {
             return new ArrayList<>();
         }
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-            List<HighscoreEntry> highscoreEntries = (List<HighscoreEntry>) ois.readObject();
-            System.out.println("Loaded Highscores: " + highscoreEntries); // Debug output
-            return highscoreEntries;
+            return (List<Highscore>) ois.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
