@@ -1,8 +1,6 @@
 package ups;
 
-import ups.gui.Gui;
-
-import java.util.Arrays;
+import ups.view.GameMenuView;
 
 /**
  * The common starting point of the GUI.
@@ -13,6 +11,6 @@ public class Main {
      * @param args The command line arguments passed to the application.
      */
     public static void main(String[] args) {
-        Gui.main(args);
+        ups.view.MenuView.main(args);
     }
 }

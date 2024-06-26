@@ -1,115 +1,136 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <!-- The modelVersion is the version of the POM format and must be always 4.0.0 -->
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- the id of the project's group -->
     <groupId>ups</groupId>
-    <!-- the id of the artifact (project) -->
     <artifactId>ups</artifactId>
-    <!-- the version of the artifact under the specified group -->
     <version>0.1-SNAPSHOT</version>
 
     <properties>
-        <!-- Set file encoding for all source files. This avoids warnings about Maven copying files without knowing their encoding. -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <java.version>11</java.version>
+        <javafx.version>16</javafx.version>
     </properties>
 
     <dependencies>
         <dependency>
-            <!-- JUnit 5 API - see https://junit.org/junit5/docs/current/user-guide/ -->
+            <!-- JUnit 5 API -->
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>5.7.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <!-- JUnit 5 Engine - see https://junit.org/junit5/docs/current/user-guide/ -->
+            <!-- JUnit 5 Engine -->
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>5.7.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <!-- JavaFX - see https://openjfx.io/openjfx-docs/#maven -->
+            <!-- JavaFX Controls -->
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>16</version>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <!-- JavaFX FXML -->
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-fxml</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <!-- JavaFX Base -->
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-base</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <!-- JavaFX Graphics -->
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+        <dependency>
+            <!-- Jackson Databind -->
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.13.4.1</version>
+        </dependency>
+        <dependency>
+            <!-- Jackson Core -->
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.12.3</version>
+        </dependency>
+        <dependency>
+            <!-- JUnit -->
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13.1</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-                <!-- The Compiler plugin is used to compile the sources of your project. -->
+                <!-- Compiler plugin -->
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <!-- We are using Java 11 which is the current LTS release -->
-                    <source>11</source>
-                    <target>11</target>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
                 </configuration>
             </plugin>
             <plugin>
-                <!-- The Surefire Plugin is used during the test phase of the build lifecycle to execute the unit tests of an application. It generates XML reports in target/surefire-reports -->
+                <!-- Surefire plugin -->
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.22.2</version>
             </plugin>
             <plugin>
-                <!-- The Failsafe plugin is designed to run integration tests while the Surefire Plugin is designed to run unit tests -->
+                <!-- Failsafe plugin -->
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>2.22.2</version>
             </plugin>
             <plugin>
-                <!-- The Site plugin generates a site for the project which includes the project's reports configured below -->
+                <!-- Site plugin -->
                 <artifactId>maven-site-plugin</artifactId>
                 <version>3.9.1</version>
             </plugin>
             <plugin>
-                <!-- The Maven Project Info Reports plugin reports information about the project for the site -->
+                <!-- Project Info Reports plugin -->
                 <artifactId>maven-project-info-reports-plugin</artifactId>
                 <version>3.1.1</version>
             </plugin>
             <plugin>
-                <!-- The JaCoCo plugin runs JaCoCo to compute coverage of the test cases -->
+                <!-- JaCoCo plugin -->
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.6</version>
                 <executions>
                     <execution>
                         <goals>
-                            <!-- Prepares a property pointing to the JaCoCo runtime agent that can be passed as a VM argument to the application under test -->
                             <goal>prepare-agent</goal>
                         </goals>
                     </execution>
                 </executions>
             </plugin>
             <plugin>
-                <!-- Maven plugin to run JavaFX 11+ applications -->
+                <!-- JavaFX Maven plugin -->
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.5</version>
+                <version>0.0.8</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <!-- Strips debug information out when building with JLink -->
-                    <stripDebug>true</stripDebug>
-                    <!-- Use maximal compression level of the resources being used -->
-                    <compress>2</compress>
-                    <!-- Remove the includes directory in the resulting runtime image. -->
-                    <noHeaderFiles>true</noHeaderFiles>
-                    <!-- Removes the man directory in the resulting runtime image -->
-                    <noManPages>true</noManPages>
-                    <!-- Adds a launcher script with the given name -->
-                    <launcher>ups</launcher>
-                    <!-- The name of the folder with the resulting runtime image -->
-                    <jlinkImageName>ups</jlinkImageName>
-                    <!-- Create a zip of the resulting runtime image -->
-                    <jlinkZipName>ups</jlinkZipName>
-                    <!-- The main class, fully qualified name -->
-                    <mainClass>ups/ups.Main</mainClass>
-                    <!-- Make command line arguments setable with -Dargs="" -->
-                    <commandlineArgs>${args}</commandlineArgs>
+                    <mainClass>ups.Main</mainClass>
                 </configuration>
             </plugin>
         </plugins>
@@ -118,38 +139,35 @@
     <reporting>
         <plugins>
             <plugin>
-                <!-- The JXR Plugin produces a cross-reference of the project's sources, which is handy when used with the PMD Plugin for referencing errors found in the code. -->
+                <!-- JXR Plugin -->
                 <artifactId>maven-jxr-plugin</artifactId>
                 <version>3.0.0</version>
             </plugin>
             <plugin>
-                <!-- The Surefire Report Plugin parses the generated XML files under target/surefire-reports and renders them using DOXIA, which creates the web interface version of the test results. -->
+                <!-- Surefire Report Plugin -->
                 <artifactId>maven-surefire-report-plugin</artifactId>
                 <version>2.22.2</version>
             </plugin>
             <plugin>
-                <!-- The PMD plugin runs the PMD code analysis tool on your project's source code and generate a site report with its results. It also supports the separate Copy/Paste Detector tool (or CPD) distributed with PMD. -->
+                <!-- PMD plugin -->
                 <artifactId>maven-pmd-plugin</artifactId>
                 <version>3.14.0</version>
                 <configuration>
-                    <!-- Run PMD and CPD on the tests, too -->
                     <includeTests>true</includeTests>
                     <rulesets>
-                        <!-- We are using a custom PMD rule set -->
-                        <ruleset>https://projects.isp.uni-luebeck.de/isp2022/pmd/-/raw/master/rules.xml</ruleset>
+                        <ruleset>https://projects.isp.uni-luebeck.de/isp/pmd/-/raw/master/rules.xml</ruleset>
                     </rulesets>
                 </configuration>
             </plugin>
             <plugin>
-                <!-- The Javadoc plugin uses the Javadoc tool to generate javadocs for the project -->
+                <!-- Javadoc plugin -->
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.2.0</version>
                 <configuration>
-                    <!-- Ignore module definition to avoid module related issues -->
                     <sourceFileExcludes>module-info.java</sourceFileExcludes>
                     <additionalOptions>
-                      <option>--show-module-contents all</option>
-                      <option>--show-packages all</option>
+                        <option>--show-module-contents all</option>
+                        <option>--show-packages all</option>
                     </additionalOptions>
                 </configuration>
                 <reportSets>
@@ -162,20 +180,18 @@
                 </reportSets>
             </plugin>
             <plugin>
-                <!-- The JaCoCo plugin runs JaCoCo to compute coverage of the test cases -->
+                <!-- JaCoCo plugin -->
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <reportSets>
                     <reportSet>
                         <reports>
-                            <!-- Disable the JaCoCo Aggregate report by explicitly selecting only the simple report -->
                             <report>report</report>
                         </reports>
                     </reportSet>
                 </reportSets>
                 <configuration>
                     <excludes>
-                        <!-- Ignore GUI classes for coverage -->
                         <exclude>ups/gui/**/*</exclude>
                         <exclude>ups/Main.class</exclude>
                     </excludes>
@@ -184,3 +200,4 @@
         </plugins>
     </reporting>
 </project>
+

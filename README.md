@@ -104,3 +104,44 @@ For open source projects, say how it is licensed.
 
 ## Project status
 If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+
+## Zu Überarbeiten
+
+### Klasse Player
+Anzahl der übrigen Dörfer wird doppelt gespeichert.
+- remainingSettlements
+- numberOfVillages
+
+### Doppeltes Abspeichern
+- Farbe wird für Spieler und Dörfer (Klasse Settlement) gespeichert
+- GameBoard speichert Bordstatus mehrfach
+
+if (villageCoordinate[0] == 0 && villageCoordinate[1] == 0) continue;
+                int x = villageCoordinate[0];
+                int y = villageCoordinate[1];
+                String[] neighbours = board.getNeighbourTerrain(x, y);
+                for (int j = 0; j < neighbours.length; j++) System.out.println("N: " + Integer.toString(board.coordinatesOfLastNeighbours[j][0]) + ", " + Integer.toString(board.coordinatesOfLastNeighbours[j][1]));
+                for (int j = 0; j < neighbours.length; j++) {
+
+                    int[] neighbourPosition = board.coordinatesOfLastNeighbours[j];
+                    int xNeighbour = neighbourPosition[0];
+                    int yNeighbour = neighbourPosition[1];
+
+                    if (this.canPlaceVillage(board, xNeighbour, yNeighbour, currentTerrain)) {
+                    System.out.println("\nFeld: " + Integer.toString(villageCoordinate[0]) + ", " + Integer.toString(villageCoordinate[0]));
+                    System.out.println("Neighbour terrain: " + neighbours[j]);
+                    System.out.println("Neighbour position: " + neighbourPosition[0] + ", " + neighbourPosition[1] + "\n");
+                    //System.out.println("canPlaceVillage = " + Boolean.toString(this.canPlaceVillage(board, xNeighbour, yNeighbour, currentTerrain)) + "\n");
+                    }
+                    if (this.canPlaceVillage(board, xNeighbour, yNeighbour, currentTerrain)) {
+                        
+                        int gold = this.evaluatePosition(board, xNeighbour, yNeighbour);
+                        //System.out.printf("Position (%d, %d) has gold %d%n", xNeighbour, yNeighbour, gold);
+                        
+                        if (gold > bestGold) {
+                            bestGold = gold;
+                            bestMove = neighbourPosition;
+                            //System.out.println(bestMove[0] + ", " + bestMove[1]);
+                        }
+                    }
+                }
