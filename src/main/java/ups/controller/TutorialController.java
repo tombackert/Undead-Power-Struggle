@@ -10,9 +10,7 @@ import ups.view.MenuView;
 public class TutorialController {
     public static List<Pair<String, Runnable>> getMenuData(Stage primaryStage) {
         return Arrays.asList(
-                new Pair<>("", null),
-                new Pair<>("", null),
-                new Pair<>("", null),
+                
                 new Pair<>("Back", () -> {
                     try {
                         new MenuView().start(primaryStage);

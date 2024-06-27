@@ -3,11 +3,8 @@ package ups.controller;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import javafx.util.Pair;
-import ups.view.CreditsMenuView;
+import ups.view.CreatorsMenuView;
 import ups.view.KingdomBuilderCardsView;
-import ups.view.MultiPlayerMenuView;
-import ups.view.OptionsMenuView;
-import ups.view.SinglePlayerMenuView;
 import ups.view.TutorialView;
 import ups.view.LocationCardsView;
 import ups.view.GameMenuView;
@@ -23,22 +20,6 @@ public class MenuController {
                 new Pair<>("Start Game", () -> {
                     try {
                         new GameMenuView().start(primaryStage);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }),
-                        
-                new Pair<>("Multiplayer", () -> {
-                    try {
-                        new MultiPlayerMenuView().start(primaryStage);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }),
-                        
-                new Pair<>("Game Options", () -> {
-                    try {
-                        new OptionsMenuView().start(primaryStage);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -69,9 +50,9 @@ public class MenuController {
                     }
                 }),
                         
-                new Pair<>("Credits", () -> {
+                new Pair<>("Creators", () -> {
                     try {
-                        new CreditsMenuView().start(primaryStage);
+                        new CreatorsMenuView().start(primaryStage);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

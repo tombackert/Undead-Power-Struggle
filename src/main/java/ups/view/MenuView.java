@@ -9,12 +9,12 @@ public class MenuView extends BaseMenuView {
 
     @Override
     protected String getTitle() {
-        return "Kingdom Builder Menu";
+        return "Undead Power Struggle";
     }
 
     @Override
     protected String getTitleText() {
-        return "KINGDOM BUILDER";
+        return "Undead Power Struggle";
     }
 
     @Override

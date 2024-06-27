@@ -32,7 +32,7 @@ public class GameMenuView extends Application {
         controller.setMenuStage(menuStage); // Set the menu stage
 
         menuStage.setTitle("Undead Power Struggle - Hauptmenü"); // Set the title
-        menuStage.setScene(new Scene(root, 1024, 768)); // Set the scene
+        menuStage.setScene(new Scene(root, 1488, 850)); // Set the scene
         Image icon = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/icon.png"))); // Load the icon
         menuStage.getIcons().add(icon); // Add the icon
         menuStage.show(); // Show the stage
