@@ -2,16 +2,26 @@ package ups.controller;
 
 import java.util.Arrays;
 import java.util.List;
-
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import ups.view.MenuView;
 
+/**
+ * Controls the creators view.
+ */
 public class CreatorsController {
     
+    /**
+     * Returns the menu data of the view.
+     *
+     * @param primaryStage the primary stage
+     * @return the menu data of the view
+     */
     public static List<Pair<String, Runnable>> getMenuData(Stage primaryStage) {
+        
+        // list of all creators
         return Arrays.asList(
-                
+            
             new Pair<>("@Christopher Horn", () -> System.out.println("christopher.horn@student.uni-luebeck.de")),
                     
             new Pair<>("@Baris Kaya", () -> System.out.println("baris.kaya@student.uni-luebeck.de")),
@@ -19,7 +29,8 @@ public class CreatorsController {
             new Pair<>("@Marvin Detzkeit", () -> System.out.println("marvin.detzkeit@student.uni-luebeck.de")),
                     
             new Pair<>("@Tom Backert", () -> System.out.println("tom.backert@student.uni-luebeck.de")),
-                    
+               
+            // Go back one stage
             new Pair<>("Back", () -> {
                 try {
                     new MenuView().start(primaryStage);
@@ -28,6 +39,7 @@ public class CreatorsController {
                 }
             })
         );
+
     }
 
 }
