@@ -1,0 +1,5 @@
+.background-pane {
+    -fx-background-image: url('bg8.png');
+    -fx-background-size: cover;
+    -fx-background-position: center center;
+}

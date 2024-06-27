@@ -11,6 +11,7 @@ import ups.controller.GameBoardController;
 import ups.gui.ColorMapping;
 import ups.model.GameBoard;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -224,22 +225,36 @@ public class GameBoardView extends Pane {
      */
     public void addHouseToHexagon(Group hexGroup, Color color) {
         String colorName = ColorMapping.getStringFromColor(color).toLowerCase();
-        ImageView houseImageView;
+        ImageView houseImageView = loadHouseImage(colorName);
+        if (houseImageView != null) {
+            updateHouseImageView(houseImageView, getHexSize(), getHexWidth(), getHexHeight());
+
+            if (hexGroup.getChildren().size() > 1) {
+                hexGroup.getChildren().remove(1);
+            }
+
+            hexGroup.getChildren().add(houseImageView);
+        }
+    }
+
+    private ImageView loadHouseImage(String colorName) {
         try {
-            houseImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/settlements/haus_" + colorName + ".png"))));
+            return new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/settlements/haus_" + colorName + ".png"))));
         } catch (NullPointerException e) {
             logger.log(Level.SEVERE, "Image for color " + colorName + " not found.", e);
-            return;
+            return null;
         }
-        double hexSize = Math.min(getWidth() / (BOARD_WIDTH * Math.sqrt(3)), getHeight() / (BOARD_HEIGHT * 1.5));
-        double hexWidth = Math.sqrt(3) * hexSize;
-        double hexHeight = 2 * hexSize;
-        updateHouseImageView(houseImageView, hexSize, hexWidth, hexHeight);
+    }
 
-        if (hexGroup.getChildren().size() > 1) {
-            hexGroup.getChildren().remove(1);
-        }
+    private double getHexSize() {
+        return Math.min(getWidth() / (BOARD_WIDTH * Math.sqrt(3)), getHeight() / (BOARD_HEIGHT * 1.5));
+    }
 
-        hexGroup.getChildren().add(houseImageView);
+    private double getHexWidth() {
+        return Math.sqrt(3) * getHexSize();
+    }
+
+    private double getHexHeight() {
+        return 2 * getHexSize();
     }
 }

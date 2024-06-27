@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
@@ -14,14 +15,13 @@ import ups.model.*;
 import ups.utils.HighscoreManager;
 import ups.view.GameBoardView;
 import ups.view.GameMenuView;
+import ups.utils.LanguageSettings;
+import ups.view.HighscoreView;
+
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import ups.utils.LanguageSettings;
-import ups.view.HighscoreView;
-
-import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 /**
@@ -58,39 +58,59 @@ public class GameBoardController {
     private ResourceBundle bundle;
     private static GameBoardController instance;
     private String currentTerrain;
-    // Add a flag to indicate if the game has ended
     private int settlementsPerTurn = 3; // Default value
     private int settlementsCount = 40; // Default value
 
+    /**
+     * Default constructor for FXML loading
+     */
     public GameBoardController() {
-        // Default constructor for FXML loading
     }
 
+    /**
+     * Constructs a new GameBoardController with the given model and players.
+     *
+     * @param model   the game board model
+     * @param players the list of players
+     */
     public GameBoardController(GameBoard model, List<Player> players) {
         this.model = model;
         this.players = players.toArray(new Player[0]);
     }
 
+    /**
+     * Sets the number of settlements per turn.
+     *
+     * @param settlementsPerTurn the number of settlements per turn
+     */
     public void setSettlementsPerTurn(int settlementsPerTurn) {
         this.settlementsPerTurn = settlementsPerTurn;
-        //System.out.println("Settlements per turn set to: " + settlementsPerTurn); // Debug statement
     }
 
+    /**
+     * Returns the number of settlements per turn.
+     *
+     * @return the number of settlements per turn
+     */
     public int getSettlementsPerTurn() {
         return settlementsPerTurn;
     }
 
+    /**
+     * Sets the total number of settlements.
+     *
+     * @param settlementsCount the total number of settlements
+     */
     public void setSettlementsCount(int settlementsCount) {
         this.settlementsCount = settlementsCount;
-        //System.out.println("Total settlements set to: " + settlementsCount); // Debug statement
     }
 
     /**
-     * Sets the players.
+     * Sets the players' names, colors, and AI status.
      *
-     * @param playerNames the player names
+     * @param playerNames  the player names
      * @param playerColors the player colors
-     * @param isAIPlayer the AI player status
+     * @param isAIPlayer   the AI player status
      */
     public void setPlayers(String[] playerNames, Color[] playerColors, boolean[] isAIPlayer) {
         this.playerNames = playerNames;
@@ -125,7 +145,7 @@ public class GameBoardController {
                 }
             });
         }
-        System.out.println("Players initialized with settlements per turn: " + settlementsPerTurn); // Debug statement
+        System.out.println("Players initialized with settlements per turn: " + settlementsPerTurn);
     }
 
     /**
@@ -202,7 +222,7 @@ public class GameBoardController {
     }
 
     /**
-     * Refreshes the texts of the game board.
+     * Refreshes the texts based on the current locale.
      */
     public void refreshTexts() {
         Locale currentLocale = LanguageSettings.getCurrentLocale();
@@ -211,7 +231,7 @@ public class GameBoardController {
     }
 
     /**
-     * Updates the texts of the game board.
+     * Updates the texts for the game board.
      */
     private void updateTexts() {
         if (bundle == null) {
@@ -221,7 +241,6 @@ public class GameBoardController {
 
         setLabelText(currentPlayerLabel, "current_player", players[currentPlayerIndex].getName());
         setLabelText(currentPlayerSettlementLabel, "available_settlements", String.valueOf(players[currentPlayerIndex].getRemainingSettlements()));
-        //setLabelText(currentTerrainLabel, "terrain_card", null);
         updateTerrainLabel();
         setButtonText(drawTerrainCardButton, "draw_terrain_card");
         setButtonText(endTurnButton, "end_turn");
@@ -229,10 +248,10 @@ public class GameBoardController {
     }
 
     /**
-     * Sets the text of the given label to the value of the given key.
+     * Sets the text of the given label.
      *
-     * @param label the label
-     * @param key the key
+     * @param label  the label
+     * @param key    the key
      * @param suffix the suffix
      */
     private void setLabelText(Label label, String key, String suffix) {
@@ -248,10 +267,10 @@ public class GameBoardController {
     }
 
     /**
-     * Sets the text of the given button to the value of the given key.
+     * Sets the text of the given button.
      *
      * @param button the button
-     * @param key the key
+     * @param key    the key
      */
     private void setButtonText(Button button, String key) {
         if (button != null) {
@@ -290,7 +309,7 @@ public class GameBoardController {
     /**
      * Initializes the game board model.
      *
-     * @throws IOException if an error occurs
+     * @throws IOException if an I/O error occurs
      */
     private void initializeModel() throws IOException {
         model = new GameBoard(20, 20, Arrays.asList("Fischer", "Bergleute", "Arbeiter"));
@@ -310,56 +329,69 @@ public class GameBoardController {
     }
 
     /**
-     * Returns the current terrain type.
+     * Returns the current terrain.
      *
-     * @return the current terrain type
+     * @return the current terrain
      */
     public String getCurrentTerrain() {
         return currentTerrain;
     }
 
     /**
-     * Handles the click on a hexagon.
+     * Handles the hexagon click event.
      *
-     * @param hexGroup the group of the hexagon
-     * @param row the row of the hexagon
-     * @param col the column of the hexagon
+     * @param hexGroup the hexagon group
+     * @param row      the row
+     * @param col      the column
      */
     public void handleHexagonClick(Group hexGroup, int row, int col) {
         try {
-            Player currentPlayer = players[currentPlayerIndex];
-            PlayerController playerController = playerControllers.get(currentPlayer);
-
-            // Calculate gold for the clicked position
-            int goldPerTurn = currentPlayer.calculateGoldForPosition(model, row, col);
-
-            if (currentPlayer.canPlaceSettlement() && model.isNotOccupied(row, col)) {
-                playerController.placeSettlement(currentPlayer, row, col);
-                view.addHouseToHexagon(hexGroup, currentPlayer.getColor());
+            if (tryPlaceSettlement(row, col)) {
+                view.addHouseToHexagon(hexGroup, players[currentPlayerIndex].getColor());
                 updateCurrentPlayerSettlementLabel();
+                updateTerrainLabel();
 
-                // Recalculate the total gold after placing the settlement
-                int goldInTotal = currentPlayer.calculateGold(model);
-                System.out.println("Player: " + currentPlayer.getName() + " placed settlement on row: " + row + " and column: " + col + " with move gold: " + goldPerTurn + " and new total gold: " + goldInTotal);
-
-                if (playerController.canEndTurn()) {
+                if (playerControllers.get(players[currentPlayerIndex]).canEndTurn()) {
                     endTurnButton.setDisable(false);
                 }
-            } else {
-                System.out.println("Maximale Anzahl von Siedlungen für diesen Zug erreicht oder Feld ist bereits besetzt.");
             }
         } catch (InvalidPlacementException e) {
             System.out.println(e.getMessage());
         }
-        updateTerrainLabel();
     }
 
     /**
-     * Handles the click on a hexagon by the AI player.
+     * Attempts to place a settlement on the given row and column.
      *
-     * @param row the row of the hexagon
-     * @param col the column of the hexagon
+     * @param row the row
+     * @param col the column
+     * @return true if the settlement was placed successfully, false otherwise
+     * @throws InvalidPlacementException if the placement is invalid
      */
+    private boolean tryPlaceSettlement(int row, int col) throws InvalidPlacementException {
+        if (!terrainDrawnThisTurn) {
+            showAlert();
+            return false;
+        }
+
+        Player currentPlayer = players[currentPlayerIndex];
+        PlayerController playerController = playerControllers.get(currentPlayer);
+
+        if (currentPlayer.canPlaceSettlement() && model.isNotOccupied(row, col)) {
+            playerController.placeSettlement(currentPlayer, row, col);
+            return true;
+        }
+        return false;
+    }
+
+
+    /**
+     * Handles the AI player click event.
+     *
+     * @param row the row
+     * @param col the column
+     */
+    @FXML
     public void handleAIClick(int row, int col) {
         Group hexGroup = getHexGroup(row, col);
         handleHexagonClick(hexGroup, row, col);
@@ -371,26 +403,34 @@ public class GameBoardController {
      * @param aiPlayer the AI player
      */
     private void makeAIMove(AIPlayer aiPlayer) {
-        // Draw a terrain card
-        switchTerrain();
-        System.out.println("AI zieht Geländekarte: " + currentTerrain);
-
+        disableHumanInteraction();
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() {
+                Platform.runLater(() -> {
+                    if (!terrainDrawnThisTurn) {
+                        switchTerrain();
+                    }
+                });
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    logger.log(Level.SEVERE, "AI move interrupted", e);
+                }
                 for (int i = 0; i < settlementsPerTurn; i++) {
                     Platform.runLater(() -> {
                         aiPlayer.makeMove(GameBoardController.this, model);
                         updateBoardForAI(aiPlayer);
                     });
                     try {
-                        Thread.sleep(1500); // 2-second delay between moves
+                        Thread.sleep(1500);
                     } catch (InterruptedException e) {
                         logger.log(Level.SEVERE, "AI move interrupted", e);
                     }
                 }
                 Platform.runLater(() -> {
                     System.out.println("AI moves completed");
+                    enableHumanInteraction();
                     endTurn();
                 });
                 return null;
@@ -403,7 +443,7 @@ public class GameBoardController {
     }
 
     /**
-     * Updates the game board for the AI player.
+     * Updates the board for the given AI player.
      *
      * @param aiPlayer the AI player
      */
@@ -419,9 +459,9 @@ public class GameBoardController {
     }
 
     /**
-     * Updates the game board for the AI player.
+     * Updates the board for the given player.
      *
-     * @param player the AI player
+     * @param player the player
      */
     public void updateBoardForPlayer(Player player) {
         for (int i = 0; i < model.boardSizeX; i++) {
@@ -449,28 +489,26 @@ public class GameBoardController {
         currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
         updateCurrentPlayerInfo();
         updateTexts();
-        terrainDrawnThisTurn = false;
+        terrainDrawnThisTurn = false; // Flag zurücksetzen
         currentTerrain = null; // Reset current terrain
         updateTerrainLabel(); // Clear terrain label
         playerControllers.get(players[currentPlayerIndex]).resetTurn();
         endTurnButton.setDisable(true);
         drawTerrainCardButton.setDisable(false);
 
-        // Wenn der nächste Spieler ein Computergegner ist, mache einen Zug
         if (players[currentPlayerIndex] instanceof AIPlayer) {
             makeAIMove((AIPlayer) players[currentPlayerIndex]);
         }
     }
 
     /**
-     * Returns the group of the hexagon at the given row and column.
+     * Returns the hexagon group for the given row and column.
      *
      * @param row the row
      * @param col the column
-     * @return the group of the hexagon
+     * @return the hexagon group
      */
     private Group getHexGroup(int row, int col) {
-        // Assuming that the hexagons are stored in a 2D array or a similar data structure.
         return (Group) view.getChildren().get(row * model.boardSizeY + col);
     }
 
@@ -508,6 +546,7 @@ public class GameBoardController {
     public boolean endTurn() {
         if (playerControllers.get(players[currentPlayerIndex]).canEndTurn()) {
             switchPlayer();
+            terrainDrawnThisTurn = false;
             return true;
         } else {
             System.out.println("Du musst 3 Siedlungen setzen, bevor du deinen Zug beenden kannst.");
@@ -516,7 +555,7 @@ public class GameBoardController {
     }
 
     /**
-     * Handles the return to menu button.
+     * Handles the return to menu button click.
      */
     @FXML
     public void handleReturnToMenu() {
@@ -529,6 +568,9 @@ public class GameBoardController {
         }
     }
 
+    /**
+     * Ends the game and shows the highscore view.
+     */
     @FXML
     public void endGame() {
         List<Player> sortedPlayers = playerControllers.keySet().stream()
@@ -539,14 +581,55 @@ public class GameBoardController {
         HighscoreView highscoreView = new HighscoreView();
         highscoreView.showHighscoreView();
 
-        GameMenuView.showMenu();  // Zurück zum Hauptmenü
-        gameStage.close(); // Schließe das Spiel
+        GameMenuView.showMenu();
+        gameStage.close();
     }
 
+    /**
+     * Saves the highscore for the given players and model.
+     *
+     * @param sortedPlayers the sorted list of players
+     * @param model         the game board model
+     */
     private void saveHighscore(List<Player> sortedPlayers, GameBoard model) {
         HighscoreManager highscoreManager = new HighscoreManager();
         for (Player player : sortedPlayers) {
             highscoreManager.saveHighscore(new Highscore(player.getName(), player.calculateGold(model)));
         }
     }
+
+    /**
+     * Disables human interaction during the AI player's turn.
+     */
+    private void disableHumanInteraction() {
+        drawTerrainCardButton.setDisable(true);
+        endTurnButton.setDisable(true);
+        boardPane.setDisable(true); // Deaktiviert die gesamte Spielfläche
+    }
+
+    /**
+     * Enables human interaction after the AI player's turn.
+     */
+    private void enableHumanInteraction() {
+        drawTerrainCardButton.setDisable(false);
+        endTurnButton.setDisable(false);
+        boardPane.setDisable(false); // Aktiviert die gesamte Spielfläche
+    }
+
+    /**
+     * Shows an alert with the given key to fetch the title, header, and content from the resource bundle.
+     *
+     */
+    private void showAlert() {
+        String title = bundle.getString("alert.no_terrain_drawn.title");
+        String header = bundle.getString("alert.no_terrain_drawn.header");
+        String content = bundle.getString("alert.no_terrain_drawn.content");
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
 }

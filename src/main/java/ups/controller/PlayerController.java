@@ -26,47 +26,29 @@ public abstract class PlayerController {
     public void placeSettlement(Player player, int x, int y) throws InvalidPlacementException {
         String terrainType = gameBoard.getTerrainType(x, y);
 
-        if (gameBoard.isTerrainAvailable(player.getCurrentTerrainCard())) {
-            if (terrainType.equals(player.getCurrentTerrainCard()) && isValidPlacement(x, y, terrainType) && player.canPlaceSettlement()) {
-                gameBoard.placeSettlement(x, y, player.getColor());
-                player.getSettlements().add(new Settlement(x, y, player.getColor()));
-                player.placeSettlement();
-                placedSettlementsThisTurn++;
-                if (player.getRemainingSettlements() == 0) {
-                    gameBoardController.updateBoardForPlayer(player);
-                    gameBoardController.endGame();
-                    return; // Exit the method to prevent further placements
-                }
-                if (canEndTurn()) {
-                    notifyCanEndTurn();
-                }
-            } else {
-                throw new InvalidPlacementException("Platzierung ist auf diesem Feld nicht erlaubt, Geländetyp stimmt nicht überein oder maximale Siedlungen erreicht.");
+        if (!gameBoard.isNotOccupied(x, y)) {
+            throw new InvalidPlacementException("Das Feld ist bereits besetzt.");
+        }
+
+        if (terrainType.equals(player.getCurrentTerrainCard()) && player.canPlaceSettlement()) {
+            gameBoard.placeSettlement(x, y, player.getColor());
+            player.getSettlements().add(new Settlement(x, y, player.getColor()));
+            player.placeSettlement();
+            placedSettlementsThisTurn++;
+
+            if (player.getRemainingSettlements() == 0) {
+                gameBoardController.updateBoardForPlayer(player);
+                gameBoardController.endGame();
+            }
+
+            if (canEndTurn()) {
+                notifyCanEndTurn();
             }
         } else {
-            if (isValidPlacement(x, y, terrainType) && player.canPlaceSettlement()) {
-                gameBoard.placeSettlement(x, y, player.getColor());
-                player.getSettlements().add(new Settlement(x, y, player.getColor()));
-                player.placeSettlement();
-                placedSettlementsThisTurn++;
-                if (player.getRemainingSettlements() == 0) {
-                    gameBoardController.updateBoardForPlayer(player);
-                    gameBoardController.endGame();
-                    return; // Exit the method to prevent further placements
-                }
-                if (canEndTurn()) {
-                    notifyCanEndTurn();
-                }
-            } else {
-                throw new InvalidPlacementException("Platzierung ist auf diesem Feld nicht erlaubt oder maximale Siedlungen erreicht.");
-            }
+            throw new InvalidPlacementException("Platzierung ist auf diesem Feld nicht erlaubt oder maximale Siedlungen erreicht.");
         }
-        gameBoard.setOwner(x, y, player);
 
-        if (player.getRemainingSettlements() == 0) {
-            gameBoardController.updateBoardForPlayer(player);
-            gameBoardController.endGame();
-        }
+        gameBoard.setOwner(x, y, player);
     }
 
     private boolean isValidPlacement(int x, int y, String terrainType) {

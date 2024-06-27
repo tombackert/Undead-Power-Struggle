@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<BorderPane prefHeight="730.0" prefWidth="1430.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ups.controller.GameBoardController">
+<BorderPane prefHeight="730.0" prefWidth="1430.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ups.controller.GameBoardController" stylesheets="@style_GameBoard.css" styleClass="background-pane">
     <left>
         <VBox alignment="CENTER_LEFT" prefHeight="660.0" prefWidth="264.0" spacing="10">
             <padding>

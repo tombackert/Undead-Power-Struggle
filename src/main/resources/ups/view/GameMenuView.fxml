@@ -6,7 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ups.controller.GameMenuController">
+<BorderPane xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ups.controller.GameMenuController" stylesheets="@style_GameBoard.css" styleClass="background-pane">
     <center>
         <VBox alignment="CENTER" prefHeight="418.0" prefWidth="657.0" spacing="10" BorderPane.alignment="CENTER">
             <padding>
