@@ -110,28 +110,6 @@ public class AIPlayer extends Player {
         return bestMove;
     }
 
-    public int[][] getHexagonalNeighbors(int x, int y) {
-        if (x % 2 == 0) { // even row
-            return new int[][]{
-                    {x - 1, y},     // North-East
-                    {x    , y + 1}, // East
-                    {x + 1, y},     // South-East
-                    {x - 1, y - 1}, // North-West
-                    {x    , y - 1}, // West
-                    {x + 1, y - 1}  // South-West
-            };
-        } else { // odd row
-            return new int[][]{
-                    {x - 1, y + 1}, // North-East
-                    {x    , y + 1}, // East
-                    {x + 1, y + 1}, // South-East
-                    {x - 1, y},     // North-West
-                    {x    , y - 1},     // West
-                    {x + 1, y}      // South-West
-            };
-        }
-    }
-
     /**
      * Checks if a given position is a neighbor of an existing village.
      *
