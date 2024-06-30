@@ -25,7 +25,7 @@ public class AIPlayer extends Player {
      * @param controller the game board controller
      */
     public void makeMove(GameBoardController controller, GameBoard board) {
-        int[] move = findBestMove(controller.getModel(), controller.getCurrentTerrain());
+        int[] move = findBestMove(controller.getModel(), controller.getCurrentTerrain(), controller.getSettlementsCount());
         numberOfVillages--;
         villageCoordinates[getRemainingSettlements() - 1] = move;
         System.out.println("AI move: " + move[0] + ", " + move[1] + " with gold " + evaluatePosition(controller.getModel(), move[0], move[1]));
@@ -43,12 +43,12 @@ public class AIPlayer extends Player {
      * @param currentTerrain the current terrain type
      * @return the best move
      */
-    public int[] findBestMove(GameBoard board, String currentTerrain) {
+    public int[] findBestMove(GameBoard board, String currentTerrain, int settlementsCount) {
         int bestGold = -1;
         int[] bestMove = null;
 
         // Erster Zug, kann überall platziert werden
-        if (super.numberOfVillages == 40) { // Angenommen, das bedeutet, dass es der erste Zug ist
+        if (super.numberOfVillages == settlementsCount) { // Angenommen, das bedeutet, dass es der erste Zug ist
             System.out.println("Erster Zug, platziere überall, wo der Goldwert maximiert wird");
             for (int x = 0; x < board.boardSizeX; x++) {
                 for (int y = 0; y < board.boardSizeY; y++) {

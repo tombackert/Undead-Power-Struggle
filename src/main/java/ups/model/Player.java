@@ -37,8 +37,8 @@ public class Player {
      * @param color the color of the player
      */
     public Player(String name, Color color, int settlementsPerTurn, int settlementsCount) {
-        this.numberOfVillages = 40;
-        this.villageCoordinates = new int[40][2];
+        this.numberOfVillages = settlementsCount;
+        this.villageCoordinates = new int[settlementsCount][2];
         this.name = name;
         this.color = ColorMapping.getIntFromColor(color);
         this.settlements = new ArrayList<>();

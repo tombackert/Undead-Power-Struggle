@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import javafx.scene.paint.Color;
 import ups.gui.ColorMapping;
 import ups.model.*;
+import ups.utils.AlertManager;
 import ups.utils.HighscoreManager;
 import ups.view.GameBoardView;
 import ups.view.GameMenuView;
@@ -103,6 +104,14 @@ public class GameBoardController {
      */
     public void setSettlementsCount(int settlementsCount) {
         this.settlementsCount = settlementsCount;
+    }
+
+    /**
+     * Sets the total number of settlements.
+
+     */
+    public int getSettlementsCount() {
+        return settlementsCount;
     }
 
     /**
@@ -370,7 +379,7 @@ public class GameBoardController {
      */
     private boolean tryPlaceSettlement(int row, int col) throws InvalidPlacementException {
         if (!terrainDrawnThisTurn) {
-            showAlert();
+            AlertManager.showAlert("alert.no_terrain_drawn");
             return false;
         }
 
@@ -616,20 +625,20 @@ public class GameBoardController {
         boardPane.setDisable(false); // Aktiviert die gesamte Spielfläche
     }
 
-    /**
-     * Shows an alert with the given key to fetch the title, header, and content from the resource bundle.
-     *
-     */
-    private void showAlert() {
-        String title = bundle.getString("alert.no_terrain_drawn.title");
-        String header = bundle.getString("alert.no_terrain_drawn.header");
-        String content = bundle.getString("alert.no_terrain_drawn.content");
-
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(header);
-        alert.setContentText(content);
-        alert.showAndWait();
+    public boolean checkAvailableBuildableFields(int requiredSettlements) {
+        int buildableFields = 0;
+        for (int i = 0; i < model.boardSizeX; i++) {
+            for (int j = 0; j < model.boardSizeY; j++) {
+                String terrain = model.getTerrainType(i, j);
+                // Zählen Sie nur die bebaubaren Felder
+                if (!terrain.equals("Wasser") && !terrain.equals("Berg") && !terrain.equals("GoldCastle") && !terrain.equals("SilverCastle")) {
+                    buildableFields++;
+                }
+            }
+        }
+        // Überprüfen, ob genügend Felder für die benötigten Siedlungen vorhanden sind
+        System.out.println("Buildable fields: " + buildableFields);
+        return buildableFields >= requiredSettlements;
     }
 
 }

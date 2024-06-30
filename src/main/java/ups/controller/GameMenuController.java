@@ -12,6 +12,7 @@ import ups.gui.ColorMapping;
 import ups.model.AIPlayer;
 import ups.model.Highscore;
 import ups.model.Player;
+import ups.utils.AlertManager;
 import ups.utils.HighscoreManager;
 import ups.utils.LanguageSettings;
 import ups.view.GameMenuView;
@@ -76,6 +77,7 @@ public class GameMenuController {
     private TextField settlementsPerTurn;
 
     private ResourceBundle bundle;
+    private GameBoardController gameBoardController;
 
     /**
      * Sets the menu stage.
@@ -237,13 +239,14 @@ public class GameMenuController {
         int settlementsPerTurnValue = getSettlementsPerTurn();
         int settlementsCountValue = getSettlementsCount();
 
+        // Überprüfen, ob die Mindestanzahl von Spielern erreicht ist
         if (playerNames.size() < 2) {
-            showAlert("Es müssen mindestens zwei Spielernamen eingegeben werden.");
+            AlertManager.showAlert("alert.minimum_players");
             return;
         }
 
-        if (playerColors == null) {
-            showAlert("Jeder Spieler muss eine eindeutige Farbe auswählen.");
+        if (playerColors == null || playerColors.size() != getPlayerNames().size()) {
+            AlertManager.showAlert("alert.duplicate_colors");
             return;
         }
 
@@ -252,11 +255,17 @@ public class GameMenuController {
             Parent root = loader.load();
 
             GameBoardController gameBoardController = loader.getController();
+
+            int totalSettlementsNeeded = settlementsCountValue * playerNames.size();
+            if (!gameBoardController.checkAvailableBuildableFields(totalSettlementsNeeded)) {
+                AlertManager.showAlert("alert.not_enough_buildable_fields");
+                return;
+            }
+
             gameBoardController.setSettlementsPerTurn(settlementsPerTurnValue); // Set the value here
             gameBoardController.setSettlementsCount(settlementsCountValue); // Set the total settlements value here
             gameBoardController.setPlayers(playerNames.toArray(new String[0]), playerColors.toArray(new Color[0]), aiPlayers);
             gameBoardController.setResourceBundle(bundle);
-            List<Player> players = new ArrayList<>();
 
             Stage gameStage = new Stage();
             GameBoardController.setGameStage(gameStage);
@@ -343,29 +352,34 @@ public class GameMenuController {
         }
     }
 
-    /**
-     * Returns the list of colors for the players.
-     *
-     * @return the list of colors
-     */
     private List<Color> getPlayerColors() {
+        // Verwenden einer Map, um die Zuordnung von Spielerfeld zu Farbe sicherzustellen
+        Map<TextField, ComboBox<String>> playerColorMap = new LinkedHashMap<>();
+        playerColorMap.put(player1Field, color1ComboBox);
+        playerColorMap.put(player2Field, color2ComboBox);
+        playerColorMap.put(player3Field, color3ComboBox);
+        playerColorMap.put(player4Field, color4ComboBox);
+
         List<String> colorNames = new ArrayList<>();
-        addPlayerColor(colorNames, player1Field, color1ComboBox);
-        addPlayerColor(colorNames, player2Field, color2ComboBox);
-        addPlayerColor(colorNames, player3Field, color3ComboBox);
-        addPlayerColor(colorNames, player4Field, color4ComboBox);
+        for (Map.Entry<TextField, ComboBox<String>> entry : playerColorMap.entrySet()) {
+            if (!entry.getKey().getText().trim().isEmpty() && entry.getValue().getValue() != null) {
+                colorNames.add(entry.getValue().getValue());
+            }
+        }
 
+        // Überprüfen, ob es Duplikate in den Farbauswahlen gibt
         if (colorNames.size() != new HashSet<>(colorNames).size()) {
-            return null; // Duplicate colors found
+            return null; // Frühzeitiger Rückkehr, wenn Duplikate gefunden wurden
         }
 
-        List<Color> colors = new ArrayList<>();
-        for (String colorName : colorNames) {
-            colors.add(ColorMapping.getColorFromString(colorName));
-        }
+        // Konvertieren der Farbnamen in Color-Objekte
+        List<Color> colors = colorNames.stream()
+                .map(ColorMapping::getColorFromString)
+                .collect(Collectors.toList());
 
         return colors;
     }
+
 
     /**
      * Adds the color of the player to the list of color names.
@@ -392,17 +406,6 @@ public class GameMenuController {
                 aiPlayer3.isSelected(),
                 aiPlayer4.isSelected()
         };
-    }
-
-    /**
-     * Shows an alert with the given message.
-     *
-     * @param message the message to show
-     */
-    private void showAlert(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setContentText(message);
-        alert.showAndWait();
     }
 
     @FXML

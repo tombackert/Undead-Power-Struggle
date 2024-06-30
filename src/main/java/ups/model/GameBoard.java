@@ -263,6 +263,4 @@ public class GameBoard {
         }
         return arr;
     }
-
-
 }
