@@ -279,9 +279,33 @@ public class GameMenuController {
             menuStage.hide();
             gameStage.show();
 
+            // Prüfen, ob alle eingegebenen Spieler KI-Spieler sind
+            if (areAllEnteredPlayersAI(playerNames, aiPlayers) || isAIPlayerBeforeHuman(aiPlayers)) {
+                System.out.println("Ja, sind alles KI-Spieler");
+                gameBoardController.startAiGame();
+            }
+
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Failed to start new game", e);
         }
+    }
+
+    private boolean areAllEnteredPlayersAI(List<String> playerNames, boolean[] aiPlayers) {
+        for (int i = 0; i < playerNames.size(); i++) {
+            if (!aiPlayers[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean isAIPlayerBeforeHuman(boolean[] isAIPlayer) {
+        for (int i = 0; i < isAIPlayer.length - 1; i++) {  // Durchlaufe das Array bis zum vorletzten Element
+            if (isAIPlayer[i] && !isAIPlayer[i + 1]) {
+                return true;  // Ein KI-Spieler ist direkt vor einem menschlichen Spieler
+            }
+        }
+        return false;  // Kein KI-Spieler ist direkt vor einem menschlichen Spieler
     }
 
     private int getSettlementsPerTurn() {

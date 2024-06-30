@@ -4,7 +4,6 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
@@ -422,7 +421,7 @@ public class GameBoardController {
                     }
                 });
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(500);
                 } catch (InterruptedException e) {
                     logger.log(Level.SEVERE, "AI move interrupted", e);
                 }
@@ -432,7 +431,7 @@ public class GameBoardController {
                         updateBoardForAI(aiPlayer);
                     });
                     try {
-                        Thread.sleep(1500);
+                        Thread.sleep(500);
                     } catch (InterruptedException e) {
                         logger.log(Level.SEVERE, "AI move interrupted", e);
                     }
@@ -507,6 +506,9 @@ public class GameBoardController {
 
         if (players[currentPlayerIndex] instanceof AIPlayer) {
             makeAIMove((AIPlayer) players[currentPlayerIndex]);
+        } else {
+            // Es ist ein menschlicher Spieler, aktiviere UI-Interaktionen für menschliche Eingaben
+            enableHumanInteraction();
         }
     }
 
@@ -621,7 +623,7 @@ public class GameBoardController {
      */
     private void enableHumanInteraction() {
         drawTerrainCardButton.setDisable(false);
-        endTurnButton.setDisable(false);
+        endTurnButton.setDisable(true);
         boardPane.setDisable(false); // Aktiviert die gesamte Spielfläche
     }
 
@@ -641,4 +643,12 @@ public class GameBoardController {
         return buildableFields >= requiredSettlements;
     }
 
+    public void startAiGame() {
+        if (players[currentPlayerIndex] instanceof AIPlayer) {
+            makeAIMove((AIPlayer) players[currentPlayerIndex]);
+        } else {
+            System.out.println("Der aktuelle Spieler ist kein KI-Spieler.");
+            // Fehlerbehandlung oder Logik zur Handhabung dieses Falls
+        }
+    }
 }
