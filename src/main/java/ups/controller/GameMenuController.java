@@ -2,6 +2,9 @@ package ups.controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.layout.VBox;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.Scene;
@@ -75,6 +78,10 @@ public class GameMenuController {
     private TextField settlementsCount;
     @FXML
     private TextField settlementsPerTurn;
+    @FXML
+    private VBox spinnerContainer;
+    @FXML
+    private Spinner<Integer> cardCountSpinner;
 
     private ResourceBundle bundle;
     private GameBoardController gameBoardController;
@@ -328,10 +335,6 @@ public class GameMenuController {
         }
     }
 
-    private boolean areAllPlayersAI(List<Player> players) {
-        return players.stream().allMatch(player -> player instanceof AIPlayer);
-    }
-
     /**
      * Continues the game.
      */
@@ -408,9 +411,9 @@ public class GameMenuController {
     /**
      * Adds the color of the player to the list of color names.
      *
-     * @param colorNames     the list of color names
-     * @param playerField    the player field
-     * @param colorComboBox  the color combo box
+     * @param colorNames    the list of color names
+     * @param playerField   the player field
+     * @param colorComboBox the color combo box
      */
     private void addPlayerColor(List<String> colorNames, TextField playerField, ComboBox<String> colorComboBox) {
         if (playerField != null && !playerField.getText().trim().isEmpty() && colorComboBox != null && colorComboBox.getValue() != null) {
@@ -424,7 +427,7 @@ public class GameMenuController {
      * @return the array of booleans
      */
     private boolean[] getAIPlayers() {
-        return new boolean[] {
+        return new boolean[]{
                 aiPlayer1.isSelected(),
                 aiPlayer2.isSelected(),
                 aiPlayer3.isSelected(),
@@ -438,13 +441,13 @@ public class GameMenuController {
         List<Highscore> highscores = highscoreManager.loadHighscores();
 
         if (highscores.isEmpty()) {
-            // Optional: Eine Methode, um eine leere Highscore-Anzeige zu behandeln
+            // Eine Methode, um eine leere Highscore-Anzeige zu behandeln
             showEmptyHighscoreMessage();
             return;
         }
 
         HighscoreView highscoreView = new HighscoreView();
-        highscoreView.showHighscoreView();
+        highscoreView.showHighscoreView(highscores); // Angepasst, um sortierte Highscores zu akzeptieren
     }
 
     @FXML
@@ -460,6 +463,18 @@ public class GameMenuController {
             stage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void generateSpinners() {
+        spinnerContainer.getChildren().clear(); // Löscht vorherige Spinner, falls vorhanden
+        int numberOfSpinners = cardCountSpinner.getValue();
+
+        for (int i = 0; i < numberOfSpinners; i++) {
+            Spinner<Integer> spinner = new Spinner<>(1, 10, 1); // Hier können die Parameter angepasst werden
+            spinnerContainer.getChildren().add(spinner);
+
         }
     }
 }

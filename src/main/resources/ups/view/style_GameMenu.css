@@ -3,3 +3,15 @@
     -fx-background-size: cover;
     -fx-background-position: center center;
 }
+
+.transparent-box {
+    -fx-background-color: rgba(200, 200, 200, 0.7); /* Weiß mit 70% Deckkraft */
+}
+
+.white-background-vbox {
+    /* -fx-background-color: white; -fx-text-fill: black; /* Weiß mit schwarzer Schrift */
+    -fx-background-color: transparent; -fx-text-fill: black; /* Weiß mit schwarzer Schrift */
+}
+
+
+

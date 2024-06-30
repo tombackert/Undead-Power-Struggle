@@ -588,10 +588,11 @@ public class GameBoardController {
                 .sorted((p1, p2) -> Integer.compare(p2.calculateGold(model), p1.calculateGold(model)))
                 .collect(Collectors.toList());
 
-        saveHighscore(sortedPlayers, model);
-        HighscoreView highscoreView = new HighscoreView();
-        highscoreView.showHighscoreView();
+        Player winner = sortedPlayers.get(0); // Der Spieler mit dem meisten Gold ist der Gewinner
 
+        saveHighscore(sortedPlayers, model);
+
+        AlertManager.showWinner("alert.winner_is", winner.getName(), winner.calculateGold(model)); // Übergeben Sie Name und Goldmenge
         GameMenuView.showMenu();
         gameStage.close();
     }
