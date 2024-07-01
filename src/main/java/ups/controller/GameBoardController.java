@@ -585,14 +585,14 @@ public class GameBoardController {
     @FXML
     public void endGame() {
         List<Player> sortedPlayers = playerControllers.keySet().stream()
-                .sorted((p1, p2) -> Integer.compare(p2.calculateGold(model), p1.calculateGold(model)))
+                .sorted((p1, p2) -> Integer.compare(p2.evaluateGameboard(model), p1.evaluateGameboard(model)))
                 .collect(Collectors.toList());
 
         Player winner = sortedPlayers.get(0); // Der Spieler mit dem meisten Gold ist der Gewinner
 
         saveHighscore(sortedPlayers, model);
 
-        AlertManager.showWinner("alert.winner_is", winner.getName(), winner.calculateGold(model)); // Übergeben Sie Name und Goldmenge
+        AlertManager.showWinner("alert.winner_is", winner.getName(), winner.evaluateGameboard(model)); // Übergeben Sie Name und Goldmenge
         GameMenuView.showMenu();
         gameStage.close();
     }
@@ -606,7 +606,7 @@ public class GameBoardController {
     private void saveHighscore(List<Player> sortedPlayers, GameBoard model) {
         HighscoreManager highscoreManager = new HighscoreManager();
         for (Player player : sortedPlayers) {
-            highscoreManager.saveHighscore(new Highscore(player.getName(), player.calculateGold(model)));
+            highscoreManager.saveHighscore(new Highscore(player.getName(), player.evaluateGameboard(model)));
         }
     }
 

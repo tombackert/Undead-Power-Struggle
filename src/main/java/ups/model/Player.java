@@ -19,13 +19,13 @@ public class Player {
     //G=GRASS; C=CANYON; D=DESERT; F=FLOWER; T=FOREST;
     public String locationTile; // Location tile of the player
 
-    public int numberOfVillages; // Number of villages left to place
+    public int numberOfVillages; // Number of villages the player starts with
     int[][] villageCoordinates; // Array of coordinates of Player's villages (x, y)
     public String name; // Name of the player
     int color; // Color of the player as an integer (1=Red, 2=Black, 3=Blue, 4=Orange)
     private String currentTerrainCard; // The current terrain card of the player
     private final List<Settlement> settlements; // List of settlements placed by the player
-    private int remainingSettlements; // Number of settlements left to place
+    protected int remainingSettlements; // Number of settlements left to place
     private int settlementsPlacedThisTurn; // Number of settlements placed this turn
     private final int settlementsPerTurn; // Number of settlements that can be placed per turn
     private GameBoard board; // Reference to the game board
@@ -71,7 +71,53 @@ public class Player {
     }
 
     /**
-     * Returns the gold value of a position based on the selected UPS cards.
+     * Evaluates the game board for the player and returns the gold the player gets based on the selected cards.
+     * 
+     * @param board the game board
+     * @return the amount of gold the player would get
+     */
+    public int evaluateGameboard(GameBoard board) {
+        int gold = 0;
+        for (String card : board.selectedCards) {
+            switch (card) {
+                case "Fischer":
+                    gold += evaluateFischer(board);
+                    break;
+                case "Bergleute":
+                    gold += evaluateBergleute(board);
+                    break;
+                case "Arbeiter":
+                    gold += evaluateArbeiter(board);
+                    break;
+                case "Einsiedler":
+                    gold += evaluateEinsiedler(board);
+                    break;
+                case "Haendler":
+                    gold += evaluateHaendler(board);
+                    break;
+                case "Entdecker":
+                    gold += evaluateEntdecker(board);
+                    break;
+                case "Ritter":
+                    gold += evaluateRitter(board);
+                    break;
+                case "Lords":
+                    gold += evaluateLords(board);
+                    break;
+                case "Buerger":
+                    gold += evaluateBuerger(board);
+                    break;
+                case "Bauern":
+                    gold += evaluateBauern(board);
+                    break;
+            }
+        }
+        gold += evaluateStaticBonuses(board);
+        return gold;
+    }
+
+    /**
+     * Returns the difference in gold if the player places at (x,y) vs if he doesn't.
      *
      * @param board the game board
      * @param x the x-coordinate
@@ -83,24 +129,16 @@ public class Player {
 
         int gold = 0;
 
-        // Evaluate gold based on selected Kindom Builder cards
-        for (String card : board.selectedCards) {
-            switch (card) {
-                case "Fischer":
-                    gold += evaluateFischer(board, x, y);
-                    break;
-                case "Bergleute":
-                    gold += evaluateBergleute(board, x, y);
-                    break;
-                case "Arbeiter":
-                    gold += evaluateArbeiter(board, x, y);
-                    break;
-                // Add cases for other cards
-            }
-        }
+        // Evaluate board if player places at (x,y)
+        board.occupiedBy[x][y] = this.color; //Change gameboard as if player had placed at (x,y)
+        this.remainingSettlements--;
+        this.villageCoordinates[this.numberOfVillages - this.remainingSettlements] = new int[]{x, y};
+        gold += evaluateGameboard(board);
 
-        // Bonus for being adjacent to Castles or Locations
-        gold += evaluateStaticBonuses(board, x, y);
+        //Subtract gold value of board if player hadn't placed at (x,y)
+        board.occupiedBy[x][y] = 0; //Reset changes made prior to measure gold value before placing at (x,y)
+        this.remainingSettlements++;
+        gold -= evaluateGameboard(board);
 
         return gold;
     }
@@ -108,57 +146,79 @@ public class Player {
 
 
     /**
-     * Returns 1 if there is a Water hex adjacent to the position.
-     *
+     * Returns the evaluation of the Fischer card.
+     * 
      * @param board the game board
-     * @param x the x-coordinate
-     * @param y the y-coordinate
-     * @return 1 if there is a Water hex adjacent to the position, 0 otherwise
+     * @return evaluation of the Fischer card
      */
-    public int evaluateFischer(GameBoard board, int x, int y) {
-        String[] neighbours = board.getNeighbourTerrain(x, y);
-        for (String neighbour : neighbours) {
-            if (neighbour.equals("Wasser")) {
-                return 1;
+    public int evaluateFischer(GameBoard board) {
+        int gold = 0;
+        int[][] neighbours;
+        int x;
+        int y;
+        for (int i = 0; i < this.numberOfVillages - this.remainingSettlements; i++){
+            x = this.villageCoordinates[i][0];
+            y = this.villageCoordinates[i][1];
+            neighbours = this.getHexagonalNeighbors(x, y);
+            for (int[] n : neighbours) {
+                if (board.getTerrainType(n[0], n[1]).equals("Wasser")) {
+                    gold++;
+                    break;
+                }
             }
-        }
-        return 0;
+            }
+        return gold;
     }
 
     /**
-     * Returns 1 if there is a Berg hex adjacent to the position.
-     *
+     * Returns the evaluation of the Bergleute card.
+     * 
      * @param board the game board
-     * @param x the x-coordinate
-     * @param y the y-coordinate
-     * @return 1 if there is a Berg hex adjacent to the position, 0 otherwise
+     * @return evaluation of the Bergleute card
      */
-    public int evaluateBergleute(GameBoard board, int x, int y) {
-        String[] neighbours = board.getNeighbourTerrain(x, y);
-        for (String neighbour : neighbours) {
-            if (neighbour.equals("Berg")) {
-                return 1;
+    public int evaluateBergleute(GameBoard board) {
+        int gold = 0;
+        int[][] neighbours;
+        int x;
+        int y;
+        for (int i = 0; i < this.numberOfVillages - this.remainingSettlements; i++){
+            x = this.villageCoordinates[i][0];
+            y = this.villageCoordinates[i][1];
+            neighbours = this.getHexagonalNeighbors(x, y);
+            for (int[] n : neighbours) {
+                if (board.getTerrainType(n[0], n[1]).equals("Berg")) {
+                    gold++;
+                    break;
+                }
             }
-        }
-        return 0;
+            }
+        return gold;
     }
 
     /**
-     * Returns 1 if there is a Castle hex adjacent to the position.
-     *
+     * Returns the evaluation of the Arbeiter card.
+     * 
      * @param board the game board
-     * @param x the x-coordinate
-     * @param y the y-coordinate
-     * @return 1 if there is a Castle hex adjacent to the position, 0 otherwise
+     * @return evaluation of the Arbeiter card
      */
-    public int evaluateArbeiter(GameBoard board, int x, int y) {
-        String[] neighbours = board.getNeighbourTerrain(x, y);
-        for (String neighbour : neighbours) {
-            if (neighbour.equals("GoldCastle") || neighbour.startsWith("SilverCastle")) {
-                return 1;
+    public int evaluateArbeiter(GameBoard board) {
+        int gold = 0;
+        int[][] neighbours;
+        int x;
+        int y;
+        for (int i = 0; i < this.numberOfVillages - this.remainingSettlements; i++){
+            x = this.villageCoordinates[i][0];
+            y = this.villageCoordinates[i][1];
+            neighbours = this.getHexagonalNeighbors(x, y);
+            for (int[] n : neighbours) {
+                if (board.getTerrainType(n[0], n[1]).equals("GoldCastle") || 
+                board.getTerrainType(n[0], n[1]).equals("SilverCastle")) {
+                    gold++;
+                    break;
+                }
             }
-        }
-        return 0;
+            }
+        return gold;
     }
 
     /**
@@ -189,7 +249,7 @@ public class Player {
                     eboard[current[0]][current[1]] = 0;
                     neighbours = this.getHexagonalNeighbors(current[0], current[1]);
                     for (int[] n : neighbours) {
-                        if (0 < n[0] && n[0] < board.boardSizeX && 0 < n[1] && n[1] < board.boardSizeY 
+                        if (0 <= n[0] && n[0] < board.boardSizeX && 0 <= n[1] && n[1] < board.boardSizeY 
                         && !(eboard[n[0]][n[1]] == 0)) queue.offer(n);
                     }
                 }
@@ -229,7 +289,7 @@ public class Player {
                     eboard[current[0]][current[1]] = 0;
                     neighbours = this.getHexagonalNeighbors(current[0], current[1]);
                     for (int[] n : neighbours) {
-                        if (!(0 < n[0] && n[0] < board.boardSizeX && 0 < n[1] && n[1] < board.boardSizeY)) continue;
+                        if (!(0 <= n[0] && n[0] < board.boardSizeX && 0 <= n[1] && n[1] < board.boardSizeY)) continue;
                         if (eboard[n[0]][n[1]] == this.color) queue.offer(n);
                         if (eboard[n[0]][n[1]] == 0
                         && (board.getTerrainType(n[0], n[1]).equals("GoldCastle") 
@@ -425,7 +485,7 @@ public class Player {
                     eboard[current[0]][current[1]] = 0;
                     neighbours = this.getHexagonalNeighbors(current[0], current[1]);
                     for (int[] n : neighbours) {
-                        if (0 < n[0] && n[0] < board.boardSizeX && 0 < n[1] && n[1] < board.boardSizeY 
+                        if (0 <= n[0] && n[0] < board.boardSizeX && 0 <= n[1] && n[1] < board.boardSizeY 
                         && !(eboard[n[0]][n[1]] == 0)) {
                             queue.offer(n);
                             eboard[n[0]][n[1]] = 0;
@@ -488,12 +548,18 @@ public class Player {
      * @param y the y-coordinate
      * @return 3 if there is a Castle or Location hex adjacent to the position, 0 otherwise
      */
-    int evaluateStaticBonuses(GameBoard board, int x, int y) {
+    public int evaluateStaticBonuses(GameBoard board) {
         int gold = 0;
-        String[] neighbours = board.getNeighbourTerrain(x, y);
-        for (String neighbour : neighbours) {
-            if (neighbour.equals("GoldCastle") || neighbour.equals("SilverCastle")) {
-                gold += 3;  // Assume 3 gold for adjacent to Castle or Location
+        int[][] neighbours;
+        for (int i = 0; i < board.boardSizeX; i++) {
+            for (int j = 0; j < board.boardSizeY; j++) {
+                if (!(board.getTerrainType(i, j).equals("SilverCastle"))) continue;
+                neighbours = this.getHexagonalNeighbors(i, j);
+                for (int[] n : neighbours) {
+                    if (board.getOccupation(n[0], n[1]) != this.color) continue;
+                    gold += 3;
+                    break;
+                }
             }
         }
         return gold;
@@ -509,24 +575,6 @@ public class Player {
      */
     public int calculateGoldForPosition(GameBoard board, int x, int y) {
         return evaluatePosition(board, x, y);
-    }
-
-    /**
-     * Returns the total gold value of all villages placed by the player.
-     *
-     * @param board the game board
-     * @return the total gold value of all villages placed by the player
-     */
-    public int calculateGold(GameBoard board) {
-        if (board == null) return 0; // Return 0 if board is null
-
-        int totalGold = 0;
-        for (Settlement settlement : settlements) {
-            int x = settlement.getX();
-            int y = settlement.getY();
-            totalGold += evaluatePosition(board, x, y);
-        }
-        return totalGold;
     }
 
     public boolean canPlaceSettlement() {
