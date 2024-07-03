@@ -166,7 +166,7 @@ public class Player {
                     break;
                 }
             }
-            }
+        }
         return gold;
     }
 
