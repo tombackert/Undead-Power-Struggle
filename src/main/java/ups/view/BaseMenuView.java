@@ -3,6 +3,7 @@ package ups.view;
 import javafx.animation.ScaleTransition;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -10,6 +11,7 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
@@ -36,6 +38,7 @@ public abstract class BaseMenuView extends Application {
     protected Pane root = new Pane();
     protected VBox menuBox = new VBox(-5);
     private Line line;
+    private ImageView imageView;
 
     /**
      * Start method for menu view. 
@@ -44,10 +47,15 @@ public abstract class BaseMenuView extends Application {
     @Override
     public void start(Stage primaryStage) {
         this.primaryStage = primaryStage;
-        Scene scene = new Scene(createContent());
+        Scene scene = new Scene(createContent(), WIDTH, HEIGHT);
         primaryStage.setTitle(getTitle());
         primaryStage.setScene(scene);
+        updateBackgroundSize();
         primaryStage.show();
+
+        // Add listeners to update background image on window resize
+        scene.widthProperty().addListener((obs, oldVal, newVal) -> updateBackgroundSize());
+        scene.heightProperty().addListener((obs, oldVal, newVal) -> updateBackgroundSize());
     }
     
     /**
@@ -57,12 +65,8 @@ public abstract class BaseMenuView extends Application {
     private Parent createContent() {
         addBackground();
         addTitle();
-
-        double lineX = WIDTH / 2 - 100;
-        double lineY = HEIGHT / 3 + 50;
-
-        addLine(lineX, lineY);
-        addMenu(lineX + 5, lineY + 5);
+        addLine();
+        addMenu();
 
         startAnimation();
 
@@ -76,12 +80,49 @@ public abstract class BaseMenuView extends Application {
         InputStream inputStream = getClass().getResourceAsStream(getBackgroundImage());
         if (inputStream != null) {
             Image image = new Image(inputStream);
-            ImageView imageView = new ImageView(image);
-            imageView.setFitWidth(WIDTH);
-            imageView.setFitHeight(HEIGHT);
+            imageView = new ImageView(image);
+            imageView.setPreserveRatio(true);
+            imageView.setSmooth(true);
+
+            root.widthProperty().addListener((obs, oldVal, newVal) -> updateBackgroundSize());
+            root.heightProperty().addListener((obs, oldVal, newVal) -> updateBackgroundSize());
+
             root.getChildren().add(imageView);
+            updateBackgroundSize();
         } else {
             System.err.println("Die Bilddatei wurde nicht gefunden!");
+        }
+    }
+
+    /**
+     * Update background size based on window size while preserving aspect ratio.
+     */
+    private void updateBackgroundSize() {
+        double windowWidth = root.getWidth();
+        double windowHeight = root.getHeight();
+
+        double imageWidth = imageView.getImage().getWidth();
+        double imageHeight = imageView.getImage().getHeight();
+
+        double widthRatio = windowWidth / imageWidth;
+        double heightRatio = windowHeight / imageHeight;
+
+        double scale = Math.max(widthRatio, heightRatio);
+
+        imageView.setFitWidth(imageWidth * scale);
+        imageView.setFitHeight(imageHeight * scale);
+
+        // Center the image if it exceeds window size
+        if (imageView.getFitWidth() > windowWidth) {
+            imageView.setTranslateX((windowWidth - imageView.getFitWidth()) / 2);
+        } else {
+            imageView.setTranslateX(0);
+        }
+
+        if (imageView.getFitHeight() > windowHeight) {
+            imageView.setTranslateY((windowHeight - imageView.getFitHeight()) / 2);
+        } else {
+            imageView.setTranslateY(0);
         }
     }
 
@@ -90,7 +131,7 @@ public abstract class BaseMenuView extends Application {
      */
     private void addTitle() {
         Title title = new Title(getTitleText());
-        title.setTranslateX(WIDTH / 2 - title.getTitleWidth() / 2);
+        title.translateXProperty().bind(root.widthProperty().subtract(title.widthProperty()).divide(2));
         title.setTranslateY(HEIGHT / 3);
 
         root.getChildren().add(title);
@@ -98,15 +139,17 @@ public abstract class BaseMenuView extends Application {
 
     /**
      * Add line to menu view.
-     * @param x x-coordinate of line
-     * @param y y-coordinate of line
      */
-    private void addLine(double x, double y) {
-        line = new Line(x, y, x, y + 300);
+    private void addLine() {
+        line = new Line(WIDTH / 2, HEIGHT / 3 + 50, WIDTH / 2, HEIGHT / 3 + 350);
         line.setStrokeWidth(3);
         line.setStroke(Color.color(1, 1, 1, 0.75));
         line.setEffect(new DropShadow(5, Color.BLACK));
         line.setScaleY(0);
+
+        // Bind the line's X position to be slightly left of the menuBox
+        line.startXProperty().bind(menuBox.translateXProperty().subtract(10));
+        line.endXProperty().bind(menuBox.translateXProperty().subtract(10));
 
         root.getChildren().add(line);
     }
@@ -132,14 +175,11 @@ public abstract class BaseMenuView extends Application {
 
     /**
      * Add menu to menu view.
-     * @param x x-coordinate of menu
-     * @param y y-coordinate of menu
      */
-    protected void addMenu(double x, double y) {
-        
-        // Set menu box position
-        menuBox.setTranslateX(x);
-        menuBox.setTranslateY(y);
+    protected void addMenu() {
+        // Bind menu box position to be centered
+        menuBox.translateXProperty().bind(root.widthProperty().subtract(menuBox.widthProperty()).divide(2));
+        menuBox.setTranslateY(HEIGHT / 3 + 55);
 
         // Add menu items
         List<Pair<String, Runnable>> menuData = getMenuData();

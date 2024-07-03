@@ -525,8 +525,9 @@ public class GameBoardController {
     public void handleReturnToMenu() {
         System.out.println("Handling return to menu: gameStage = " + gameStage);
         if (gameStage != null) {
-            gameStage.close();
             GameMenuView.showMenu();
+            gameStage.close();
+            
         } else {
             logger.log(Level.SEVERE, "gameStage is null.");
         }
