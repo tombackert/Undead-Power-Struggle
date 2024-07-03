@@ -25,8 +25,12 @@ import java.util.stream.Collectors;
  * The GameMenuController class is responsible for controlling the game menu.
  */
 public class GameMenuController {
+    
     private static final Logger logger = Logger.getLogger(GameMenuController.class.getName());
+    
     private Stage menuStage;
+    private Stage primaryStage;
+    private ResourceBundle bundle;
 
     @FXML
     private TextField player1Field;
@@ -73,8 +77,6 @@ public class GameMenuController {
     @FXML
     private TextField settlementsPerTurn;
 
-    private ResourceBundle bundle;
-
     /**
      * Sets the menu stage.
      *
@@ -82,6 +84,10 @@ public class GameMenuController {
      */
     public void setMenuStage(Stage menuStage) {
         this.menuStage = menuStage;
+    }
+
+    public void setPrimaryStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
     }
 
     /**
@@ -250,16 +256,17 @@ public class GameMenuController {
             Parent root = loader.load();
 
             GameBoardController gameBoardController = loader.getController();
-            gameBoardController.setSettlementsPerTurn(settlementsPerTurnValue); // Set the value here
-            gameBoardController.setSettlementsCount(settlementsCountValue); // Set the total settlements value here
+            gameBoardController.setSettlementsPerTurn(settlementsPerTurnValue);
+            gameBoardController.setSettlementsCount(settlementsCountValue);
             gameBoardController.setPlayers(playerNames.toArray(new String[0]), playerColors.toArray(new Color[0]), aiPlayers);
             gameBoardController.setResourceBundle(bundle);
+            
             List<Player> players = new ArrayList<>();
 
             Stage gameStage = new Stage();
             GameBoardController.setGameStage(gameStage);
 
-            Scene scene = new Scene(root, 1024, 768);
+            Scene scene = new Scene(root, 1488, 850);
             gameStage.setScene(scene);
             gameStage.setTitle(bundle.getString("title"));
 
@@ -285,10 +292,10 @@ public class GameMenuController {
     private int getSettlementsCount() {
         try {
             int value = Integer.parseInt(settlementsCount.getText());
-            System.out.println("Total settlements from TextField: " + value); // Debug statement
+            //System.out.println("Total settlements from TextField: " + value); // Debug statement
             return value;
         } catch (NumberFormatException e) {
-            System.out.println("Invalid number format for total settlements, using default value 40."); // Debug statement
+            //System.out.println("Invalid number format for total settlements, using default value 40."); // Debug statement
             return 40; // Default value if parsing fails
         }
     }
@@ -317,7 +324,7 @@ public class GameMenuController {
      */
     @FXML
     public void exitGame() {
-        System.exit(0);
+        GameMenuView.switchToMenu(primaryStage);
     }
 
     private List<String> getPlayerNames() {

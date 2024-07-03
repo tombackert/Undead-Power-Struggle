@@ -6,9 +6,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox alignment="CENTER" prefHeight="418.0" prefWidth="629.0" spacing="10" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ups.controller.GameMenuController">
+<VBox alignment="CENTER" prefHeight="418.0" prefWidth="629.0" spacing="10" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ups.controller.GameMenuController" stylesheets="styles.css">
     <padding>
-        <Insets bottom="10" left="10" right="10" top="10" />
+        <Insets bottom="10" left="500" right="500" top="10" />
     </padding>
     <HBox prefHeight="100.0" prefWidth="200.0">
         <VBox prefHeight="104.0" prefWidth="230.0">
@@ -151,6 +151,6 @@
                 <Insets right="50.0"/>
             </HBox.margin>
         </Button>
-        <Button fx:id="exitGameButton" alignment="CENTER" contentDisplay="CENTER" onAction="#exitGame" text="Beenden"/>
+        <Button fx:id="exitGameButton" alignment="CENTER" contentDisplay="CENTER" onAction="#exitGame" text="Back to Hauptmenü"/>
     </HBox>
 </VBox>

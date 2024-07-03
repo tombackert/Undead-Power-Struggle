@@ -11,7 +11,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.TextFlow?>
 
-<BorderPane prefHeight="730.0" prefWidth="1430.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ups.controller.GameBoardController">
+<BorderPane prefHeight="730.0" prefWidth="1430.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ups.controller.GameBoardController" stylesheets="styles.css">
     <left>
         <VBox alignment="CENTER_LEFT" prefHeight="642.0" prefWidth="348.0" spacing="10">
             <padding>
@@ -70,7 +70,7 @@
     <bottom>
         <ButtonBar prefHeight="26.0" prefWidth="537.0">
             <buttons>
-                <Button fx:id="backToMenuButton" minWidth="200" onAction="#handleReturnToMenu" text="Zurück zum Hauptmenü">
+                <Button fx:id="backToMenuButton" minWidth="200" onAction="#handleReturnToMenu" text="Zurück zum Menü">
                     <font>
                         <Font size="14.0" />
                     </font></Button>
@@ -85,7 +85,7 @@
             <center>
                 <StackPane fx:id="boardPane" BorderPane.alignment="CENTER">
                     <padding>
-                        <Insets bottom="10" left="10" right="10" top="10" />
+                        <Insets bottom="10" left="10" right="250" top="10" />
                     </padding>
                 </StackPane>
             </center>

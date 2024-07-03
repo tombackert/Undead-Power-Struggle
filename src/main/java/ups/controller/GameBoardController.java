@@ -128,7 +128,7 @@ public class GameBoardController {
                 }
             });
         }
-        System.out.println("Players initialized with settlements per turn: " + settlementsPerTurn); // Debug statement
+        // System.out.println("Players initialized with settlements per turn: " + settlementsPerTurn); // Debug statement
     }
 
     /**

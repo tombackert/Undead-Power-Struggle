@@ -21,6 +21,8 @@ import ups.model.MenuItem;
 import ups.model.Title;
 import java.io.InputStream;
 import java.util.List;
+import ups.controller.GameMenuController;
+import ups.view.GameMenuView;
 
 /**
  * Base class for menu views.
@@ -47,7 +49,7 @@ public abstract class BaseMenuView extends Application {
         primaryStage.setScene(scene);
         primaryStage.show();
     }
-
+    
     /**
      * Create content for menu view.
      * @return parent object
