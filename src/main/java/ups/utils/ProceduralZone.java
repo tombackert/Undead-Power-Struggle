@@ -92,6 +92,44 @@ public class ProceduralZone {
         return this.currentSize < this.goalSize;
     }
 
+    //Help function to create river
+    private int numWaterNeighbours(int[] tile) {
+        int waterNeighbours = 0;
+        int[][] neighs = ProceduralGameboard.getNeighbours(tile[0], tile[1]);
+        for (int[] n : neighs) {
+            if (0 <= n[0] && n[0] < this.board.sizeX && 0 <= n[1] && n[1] < this.board.sizeY &&
+             this.board.board[n[0]][n[1]] == 7) waterNeighbours++;
+        }
+
+        return waterNeighbours;
+    }
+    /**
+     * Creates a zone that has the form of a river. Only works for water terrain.
+     * 
+     * @return true if zone could be appended, false otherwise
+     */
+    protected boolean appendZoneRiver() {
+        int minNeighs = Integer.MAX_VALUE;
+        LinkedList<int[]> nextTiles = new LinkedList<int[]>();
+        for (int[] n : this.neighbours) {
+            minNeighs = Math.min(minNeighs, this.numWaterNeighbours(n));
+        }
+        for (int[] n : this.neighbours) {
+            if (minNeighs == this.numWaterNeighbours(n)) nextTiles.add(n);
+        }
+        this.neighbours = nextTiles;
+        //Return false if there is no tile to append zone
+        if (this.neighbours.size() == 0) return false;
+        //append to a random neighbour tile
+        Random r = new Random();
+        int j = r.nextInt(this.neighbours.size());
+        int[] tile = this.neighbours.get(j);
+        this.neighbours.remove(j);
+        this.addTile(tile);
+        //Returns true as long as goal size is not reached
+        return this.currentSize < this.goalSize;
+    }
+
     /**
      * Changes the terrain of a zone.
      * 
