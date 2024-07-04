@@ -60,6 +60,8 @@ public class GameBoardController {
     private String currentTerrain;
     private int settlementsPerTurn = 3; // Default value
     private int settlementsCount = 40; // Default value
+    // Add this field to the GameBoardController class
+    private boolean gameEnded = false;
 
     /**
      * Default constructor for FXML loading
@@ -107,7 +109,6 @@ public class GameBoardController {
 
     /**
      * Sets the total number of settlements.
-
      */
     public int getSettlementsCount() {
         return settlementsCount;
@@ -353,6 +354,8 @@ public class GameBoardController {
      * @param col      the column
      */
     public void handleHexagonClick(Group hexGroup, int row, int col) {
+        if (gameEnded) return; // Exit if the game has ended
+
         try {
             if (tryPlaceSettlement(row, col)) {
                 view.addHouseToHexagon(hexGroup, players[currentPlayerIndex].getColor());
@@ -361,6 +364,9 @@ public class GameBoardController {
 
                 if (playerControllers.get(players[currentPlayerIndex]).canEndTurn()) {
                     endTurnButton.setDisable(false);
+                }
+                if (checkAllPlayersNoSettlements()) {
+                    endGame();
                 }
             }
         } catch (InvalidPlacementException e) {
@@ -411,6 +417,8 @@ public class GameBoardController {
      * @param aiPlayer the AI player
      */
     private void makeAIMove(AIPlayer aiPlayer) {
+        if (gameEnded) return; // Exit if the game has ended
+
         disableHumanInteraction();
         Task<Void> task = new Task<>() {
             @Override
@@ -421,25 +429,36 @@ public class GameBoardController {
                     }
                 });
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(750);
                 } catch (InterruptedException e) {
                     logger.log(Level.SEVERE, "AI move interrupted", e);
                 }
                 for (int i = 0; i < settlementsPerTurn; i++) {
                     Platform.runLater(() -> {
-                        aiPlayer.makeMove(GameBoardController.this, model);
-                        updateBoardForAI(aiPlayer);
+                        if (aiPlayer.getRemainingSettlements() > 0) {
+                            aiPlayer.makeMove(GameBoardController.this, model);
+                            updateBoardForAI(aiPlayer);
+
+                            // Check if the game should end
+                            if (checkAllPlayersNoSettlements()) {
+                                endGame();
+                            }
+                        }
                     });
                     try {
-                        Thread.sleep(500);
+                        Thread.sleep(750);
                     } catch (InterruptedException e) {
                         logger.log(Level.SEVERE, "AI move interrupted", e);
                     }
+                    if (aiPlayer.getRemainingSettlements() <= 0) {
+                        break;
+                    }
                 }
                 Platform.runLater(() -> {
-                    System.out.println("AI moves completed");
-                    enableHumanInteraction();
-                    endTurn();
+                    if (!checkAllPlayersNoSettlements() && !gameEnded) {
+                        enableHumanInteraction();
+                        endTurn();
+                    }
                 });
                 return null;
             }
@@ -494,6 +513,8 @@ public class GameBoardController {
      */
     @FXML
     public void switchPlayer() {
+        if (gameEnded) return; // Exit if the game has ended
+
         currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
         updateCurrentPlayerInfo();
         updateTexts();
@@ -585,6 +606,9 @@ public class GameBoardController {
      */
     @FXML
     public void endGame() {
+        if (gameEnded) return; // Prevent multiple executions
+        gameEnded = true; // Set the flag to indicate the game has ended
+
         List<Player> sortedPlayers = playerControllers.keySet().stream()
                 .sorted((p1, p2) -> Integer.compare(p2.evaluateGameboard(model), p1.evaluateGameboard(model)))
                 .collect(Collectors.toList());
@@ -593,9 +617,11 @@ public class GameBoardController {
 
         saveHighscore(sortedPlayers, model);
 
-        AlertManager.showWinner("alert.winner_is", winner.getName(), winner.evaluateGameboard(model)); // Übergeben Sie Name und Goldmenge
-        GameMenuView.showMenu();
-        gameStage.close();
+        AlertManager.showWinner("alert.winner_is", winner.getName(), winner.evaluateGameboard(model)); // Pass name and gold amount
+        Platform.runLater(() -> {
+            GameMenuView.showMenu();
+            gameStage.close();
+        });
     }
 
     /**
@@ -643,6 +669,21 @@ public class GameBoardController {
         // Überprüfen, ob genügend Felder für die benötigten Siedlungen vorhanden sind
         System.out.println("Buildable fields: " + buildableFields);
         return buildableFields >= requiredSettlements;
+    }
+
+    /**
+     * Checks if all players have no remaining settlements.
+     *
+     * @return true if all players have no remaining settlements, false otherwise
+     */
+    public boolean checkAllPlayersNoSettlements() {
+        for (Player player : players) {
+            System.out.println("Remaining settlements for " + player.getName() + ": " + player.getRemainingSettlements());
+            if (player.getRemainingSettlements() > 0) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public void startAiGame() {

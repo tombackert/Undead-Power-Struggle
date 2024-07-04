@@ -25,8 +25,12 @@ public class AIPlayer extends Player {
      * @param controller the game board controller
      */
     public void makeMove(GameBoardController controller, GameBoard board) {
+        // Check if the game should end
+        if (controller.checkAllPlayersNoSettlements()) {
+            controller.endGame();
+        }
+
         int[] move = findBestMove(controller.getModel(), controller.getCurrentTerrain());
-        this.remainingSettlements--;
         villageCoordinates[this.numberOfVillages - getRemainingSettlements()] = move;
         Platform.runLater(() -> {
             controller.handleAIClick(move[0], move[1]);

@@ -132,8 +132,10 @@ public class Player {
         // Evaluate board if player places at (x,y)
         board.occupiedBy[x][y] = this.color; //Change gameboard as if player had placed at (x,y)
         this.remainingSettlements--;
-        this.villageCoordinates[this.numberOfVillages - this.remainingSettlements] = new int[]{x, y};
-        gold += evaluateGameboard(board);
+        int index = this.numberOfVillages - this.remainingSettlements;
+        if (index >= 0 && index < this.villageCoordinates.length) {
+            this.villageCoordinates[index] = new int[]{x, y};
+        }
 
         //Subtract gold value of board if player hadn't placed at (x,y)
         board.occupiedBy[x][y] = 0; //Reset changes made prior to measure gold value before placing at (x,y)
@@ -544,8 +546,6 @@ public class Player {
      * Returns 3 if there is a Castle or Location hex adjacent to the position.
      *
      * @param board the game board
-     * @param x the x-coordinate
-     * @param y the y-coordinate
      * @return 3 if there is a Castle or Location hex adjacent to the position, 0 otherwise
      */
     public int evaluateStaticBonuses(GameBoard board) {
