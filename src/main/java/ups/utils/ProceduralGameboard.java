@@ -14,7 +14,7 @@ public class ProceduralGameboard {
         this.board = new int[sX][sY];
         this.sizeX = sX;
         this.sizeY = sY;
-        this.sizes = new int[6];
+        this.sizes = new int[5];
         this.freeSpace = sX * sY;
     }
 
@@ -80,10 +80,10 @@ public class ProceduralGameboard {
         int min = Integer.MAX_VALUE;
         LinkedList<Integer> minima = new LinkedList<Integer>();
         Random r = new Random();
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 5; i++) {
             min = Math.min(min, this.sizes[i]);
         }
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 5; i++) {
             if (this.sizes[i] == min) minima.add(i);
         }
         
@@ -103,7 +103,9 @@ public class ProceduralGameboard {
         //Collect potential substitus; Potential substitutes are the terrain types of the neighbours of the zone's start tile
         for (int[] n : neighbours) {
             if (!(0 <= n[0] && n[0] < this.sizeX && 0 <= n[1] && n[1] < this.sizeY)) continue;
-            if (this.board[n[0]][n[1]] == 7) return 7;
+            if (this.board[n[0]][n[1]] > 7) continue;
+            if (this.board[n[0]][n[1]] > 6) return 7;
+            if (this.board[n[0]][n[1]] > 5) return 6;
             //Exclude tile that belongs to zone
             if (!(Arrays.equals(n, z.coordinates[1]))) potentialSubstitutes.add(this.board[n[0]][n[1]]);
         }
@@ -116,6 +118,28 @@ public class ProceduralGameboard {
         return minIndex;
     }
 
+    private void fillNeighbours(int[] tile, int terrain) {
+        int[][] neighbours = getNeighbours(tile[0], tile[1]);
+        for (int[] n : neighbours) {
+            if (!(0 <= n[0] && n[0] < this.sizeX && 0 <= n[1] && n[1] < this.sizeY)) continue;
+            this.board[n[0]][n[1]] = terrain;
+        }
+    }
+
+    private  int[] quadrantCoordinates(int q) {
+        switch (q) {
+            case 0:
+                return new int[]{0,0};
+            case 1:
+                return new int[]{0, this.sizeY / 2};
+            case 2:
+                return new int[]{this.sizeX / 2, 0};
+            case 3:
+                return new int[]{this.sizeX / 2, this.sizeY / 2};
+            default:
+                return new int[]{-1,-1};
+        }
+    }
     /**
      * Generates a random Gameboard.
      * 
@@ -124,6 +148,41 @@ public class ProceduralGameboard {
     public String[][] generateProceduralGameboard() {
         String[][] terrainMap = new String[this.sizeX][this.sizeY];
         Random r = new Random();
+        //Fill map with castles
+        int[][] castleCoordinates = new int[12][2];
+        ProceduralZone c;
+        int[] castlePos;
+        //iterate over quadrants
+        for (int q = 0; q < 4; q++) {
+            //Add silver castle to quadrant
+            castlePos = new int[2];
+            do {
+                castlePos[0] = 1 + this.quadrantCoordinates(q)[0] + r.nextInt((this.sizeX / 2) - 1);
+                castlePos[1] = 1 + this.quadrantCoordinates(q)[1] + r.nextInt((this.sizeY / 2) - 1);
+            } while (!(this.isAvailable(castlePos)));
+            castleCoordinates[q * 3] = castlePos;
+            c = new ProceduralZone(this, 1, 8, castlePos);
+            this.fillNeighbours(castlePos, 1); //Fill out neighbours to block water and mountains 
+            //Add gold castles
+            castlePos = new int[2];
+            do {
+                castlePos[0] = 1 + this.quadrantCoordinates(q)[0] + r.nextInt((this.sizeX / 2) - 1);
+                castlePos[1] = 1 + this.quadrantCoordinates(q)[1] + r.nextInt((this.sizeY / 2) - 1);
+            } while (!(this.isAvailable(castlePos)));
+            castleCoordinates[(q * 3) + 1] = castlePos;
+            c = new ProceduralZone(this, 1, 9, castlePos);
+            this.fillNeighbours(castlePos, 1); //Fill out neighbours to block water and mountains 
+            castlePos = new int[2];
+            do {
+                castlePos[0] = 1 + this.quadrantCoordinates(q)[0] + r.nextInt((this.sizeX / 2) - 1);
+                castlePos[1] = 1 + this.quadrantCoordinates(q)[1] + r.nextInt((this.sizeY / 2) - 1);
+            } while (!(this.isAvailable(castlePos)));
+            castleCoordinates[(q * 3) + 2] = castlePos;
+            c = new ProceduralZone(this, 1, 9, castlePos);
+            this.fillNeighbours(castlePos, 1); //Fill out neighbours to block water and mountains 
+        }
+        this.freeSpace -= 12;
+
         //Fill map with water
         int numOfWaters = 2 + r.nextInt(3);
         for (int i = 0; i < numOfWaters; i++) {
@@ -136,14 +195,31 @@ public class ProceduralGameboard {
             while(water.appendZoneRiver());
             this.freeSpace -= water.getSize();
         }
+
+        //Fill map with mountains
+        int numOfMountains = 3 + r.nextInt(5);
+        for (int i = 0; i < numOfMountains; i++) {
+            int[] mountainStart = new int[2];
+            do {
+                mountainStart[0] = r.nextInt(this.sizeX);
+                mountainStart[1] = r.nextInt(this.sizeY);
+            } while (!(this.isAvailable(mountainStart)));
+            ProceduralZone mountain = new ProceduralZone(this, ((sizeX * sizeY) / (20 * numOfMountains)) + r.nextInt((sizeX * sizeY) / (20 * numOfMountains)), 6, mountainStart);
+            while (mountain.appendZone());
+            this.freeSpace -= mountain.getSize();
+        }
         
+        for (int[] caste : castleCoordinates) {
+            System.out.println("(" + Integer.toString(caste[0]) + ", "+ Integer.toString(caste[1]) + ")");
+            this.fillNeighbours(caste, 0);
+        }
         //Fille map with terrain
         while (this.freeSpace > 0) {
             System.out.println(this.freeSpace);
             ProceduralZone z = new ProceduralZone(this, this.getRandomZoneSize(), this.choseNewZoneTerrain(), this.getNextStartingPosition());
             while (z.appendZone());
             if (z.getSize() < 3) z.changeTerrain(this.getSubstituteTerrain(z));
-            if (z.terrain < 7) this.sizes[z.terrain - 1] += z.getSize(); //Subtract 1 because sizes array is 0-induced and terrain types start at 1
+            if (z.terrain < 6) this.sizes[z.terrain - 1] += z.getSize(); //Subtract 1 because sizes array is 0-induced and terrain types start at 1
             this.freeSpace -= z.getSize();
         }
 
