@@ -153,7 +153,7 @@ public class GameBoardController {
                 }
             });
         }
-        System.out.println("Players initialized with settlements per turn: " + settlementsPerTurn);
+        // System.out.println("Players initialized with settlements per turn: " + settlementsPerTurn); // Debug statement
     }
 
     /**
@@ -572,8 +572,9 @@ public class GameBoardController {
     public void handleReturnToMenu() {
         System.out.println("Handling return to menu: gameStage = " + gameStage);
         if (gameStage != null) {
-            gameStage.close();
             GameMenuView.showMenu();
+            gameStage.close();
+
         } else {
             logger.log(Level.SEVERE, "gameStage is null.");
         }

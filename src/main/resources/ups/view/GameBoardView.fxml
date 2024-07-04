@@ -64,7 +64,7 @@
     <bottom>
         <ButtonBar prefHeight="26.0" prefWidth="537.0">
             <buttons>
-                <Button fx:id="backToMenuButton" minWidth="200" onAction="#handleReturnToMenu" text="Zurück zum Hauptmenü">
+                <Button fx:id="backToMenuButton" minWidth="200" onAction="#handleReturnToMenu" text="Zurück zum Menü">
                     <font>
                         <Font size="14.0" />
                     </font></Button>
@@ -79,7 +79,7 @@
             <center>
                 <StackPane fx:id="boardPane" alignment="CENTER_LEFT" prefWidth="397.0" BorderPane.alignment="CENTER">
                     <padding>
-                        <Insets bottom="10" left="10" right="10" top="10" />
+                        <Insets bottom="10" left="10" right="250" top="10" />
                     </padding>
                 </StackPane>
             </center>

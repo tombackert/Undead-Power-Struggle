@@ -7,9 +7,9 @@ import javafx.util.Pair;
 import ups.view.MenuView;
 
 /**
- * Controls the location cards view.
+ * Controls the creators view.
  */
-public class LocationCardsController {
+public class CreatorsController {
     
     /**
      * Returns the menu data of the view.
@@ -19,8 +19,17 @@ public class LocationCardsController {
      */
     public static List<Pair<String, Runnable>> getMenuData(Stage primaryStage) {
         
+        // list of all creators
         return Arrays.asList(
             
+            new Pair<>("@Christopher Horn", () -> System.out.println("christopher.horn@student.uni-luebeck.de")),
+                    
+            new Pair<>("@Baris Kaya", () -> System.out.println("baris.kaya@student.uni-luebeck.de")),
+                    
+            new Pair<>("@Marvin Detzkeit", () -> System.out.println("marvin.detzkeit@student.uni-luebeck.de")),
+                    
+            new Pair<>("@Tom Backert", () -> System.out.println("tom.backert@student.uni-luebeck.de")),
+               
             // Go back one stage
             new Pair<>("Back", () -> {
                 try {
@@ -30,5 +39,7 @@ public class LocationCardsController {
                 }
             })
         );
+
     }
+
 }

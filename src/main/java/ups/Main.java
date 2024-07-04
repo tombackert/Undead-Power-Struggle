@@ -1,7 +1,5 @@
 package ups;
 
-import ups.view.GameMenuView;
-
 /**
  * The common starting point of the GUI.
  */
