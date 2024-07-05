@@ -126,19 +126,14 @@ public class Player {
      */
     public int evaluatePosition(GameBoard board, int x, int y) {
         if (board == null) return 0; // Return 0 if board is null
-
         int gold = 0;
-
-        // Evaluate board if player places at (x,y)
-        board.occupiedBy[x][y] = this.color; //Change gameboard as if player had placed at (x,y)
+        //calculate gold amount for gameboard if move (x,y) is made
+        board.occupiedBy[x][y] = this.color;
+        this.villageCoordinates[this.numberOfVillages - this.remainingSettlements] = new int[]{x,y};
         this.remainingSettlements--;
-        int index = this.numberOfVillages - this.remainingSettlements;
-        if (index >= 0 && index < this.villageCoordinates.length) {
-            this.villageCoordinates[index] = new int[]{x, y};
-        }
-
-        //Subtract gold value of board if player hadn't placed at (x,y)
-        board.occupiedBy[x][y] = 0; //Reset changes made prior to measure gold value before placing at (x,y)
+        gold += evaluateGameboard(board);
+        //Subtract gold amount of gameboard before move (x,y) is made
+        board.occupiedBy[x][y] = 0;
         this.remainingSettlements++;
         gold -= evaluateGameboard(board);
 
@@ -169,6 +164,7 @@ public class Player {
                 }
             }
         }
+        System.out.println(this.name + " for Fischer card has gold= " + Integer.toString(gold));
         return gold;
     }
 
@@ -194,6 +190,7 @@ public class Player {
                 }
             }
             }
+            System.out.println(this.name + " for Bergleute card has gold= " + Integer.toString(gold));
         return gold;
     }
 
@@ -220,6 +217,7 @@ public class Player {
                 }
             }
             }
+        System.out.println(this.name + " for Arbeiter card has gold= " + Integer.toString(gold));
         return gold;
     }
 
@@ -543,10 +541,10 @@ public class Player {
     }
 
     /**
-     * Returns 3 if there is a Castle or Location hex adjacent to the position.
+     * Returns the gold amount of the static bonus - 3 gold for each SilverCastle, that has at least one own village as its neighbour
      *
      * @param board the game board
-     * @return 3 if there is a Castle or Location hex adjacent to the position, 0 otherwise
+     * @return the gold amount of the static bonus
      */
     public int evaluateStaticBonuses(GameBoard board) {
         int gold = 0;
@@ -562,6 +560,7 @@ public class Player {
                 }
             }
         }
+        System.out.println(this.name + " for Static Bonus has gold= " + Integer.toString(gold));
         return gold;
     }
 
@@ -627,5 +626,11 @@ public class Player {
 
     public void resetSettlementsPlacedThisTurn() {
         settlementsPlacedThisTurn = 0;
+    }
+
+    public void printMoves() {
+        for (int i = 0; i < this.numberOfVillages; i++) {
+            System.out.println(Integer.toString(i+1) + ". (" + Integer.toString(this.villageCoordinates[i][0]) + ", " + Integer.toString(this.villageCoordinates[i][1]) + ")");
+        }
     }
 }

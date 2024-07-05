@@ -1,5 +1,7 @@
 package ups.model;
 
+import java.util.Random;
+
 import javafx.application.Platform;
 import ups.controller.GameBoardController;
 import javafx.scene.paint.Color;
@@ -48,28 +50,39 @@ public class AIPlayer extends Player {
      * @return the best greedy move
      */
     public int[] findBestMove(GameBoard board, String currentTerrain) {
-        int[] bestMove = null;
+        int bestMovesStart = 0;
+        int bestMovesEnd = 0;
+        int[][] bestMoves = new int[board.boardSizeX * board.boardSizeY][2]; //Array viel größer als nötig: es würde reichen die
+        int[] bestMove = null;                                               //Anzahl von der Felder mit dem currentTerrain zu nehmen
         int bestGold = Integer.MIN_VALUE;
         int gold;
         int[][] neighbours;
         int x;
         int y;
+        Random r = new Random();
         //iterate over all placed villages and check to find neighbour position to place on (first move will skip this loop)
         for (int i = 0; i < this.numberOfVillages - this.remainingSettlements; i++) {
             x = this.villageCoordinates[i][0];
             y = this.villageCoordinates[i][1];
             neighbours = this.getHexagonalNeighbors(x, y);
             for (int[] n : neighbours) {
-                if (this.canPlaceVillage(board, n[0], n[1], currentTerrain)) {
-                    gold = evaluatePosition(board, n[0], n[1]);
-                    if (gold <= bestGold) continue;
-                    bestGold = gold;
-                    bestMove = n;
+                if (!(this.canPlaceVillage(board, n[0], n[1], currentTerrain))) continue;
+                gold = evaluatePosition(board, n[0], n[1]);
+                if (gold == bestGold) {
+                    bestMoves[bestMovesEnd] = n;
+                    bestMovesEnd++;
                 }
+                if (gold > bestGold) {
+                    bestMovesStart = bestMovesEnd;
+                    bestMoves[bestMovesEnd] = n;
+                    bestMovesEnd++;
+                    bestGold = gold;
+                }  
             }
         }
+        //chose random move out of highest rated moves
+        if (bestMovesEnd > bestMovesStart) bestMove = bestMoves[bestMovesStart + r.nextInt(bestMovesEnd - bestMovesStart)];
         if (bestMove != null) {
-            System.out.println("Found move as Neighbour move");
             return bestMove;
         };
         //If village can't be placed next to other village, place anywhere while maxinmizing gold (this also applies to the first move)
@@ -77,12 +90,22 @@ public class AIPlayer extends Player {
             for (int j = 0; j < board.boardSizeY; j++) {
                 if (!(this.canPlaceVillage(board, i, j, currentTerrain))) continue;
                 gold = evaluatePosition(board, i, j);
-                if (gold <= bestGold) continue;
-                bestGold = gold;
-                bestMove = new int[]{i, j};
+                if (gold == bestGold) {
+                    bestMoves[bestMovesEnd][0] = i;
+                    bestMoves[bestMovesEnd][1] = j;
+                    bestMovesEnd++;
+                }
+                if (gold > bestGold) {
+                    bestMovesStart = bestMovesEnd;
+                    bestMoves[bestMovesEnd][0] = i;
+                    bestMoves[bestMovesEnd][1] = j;
+                    bestMovesEnd++;
+                    bestGold = gold;
+                }
             }
         }
-        System.out.println("Found move as random move");
+        //chose random move out of highest rated moves
+        if (bestMovesEnd > bestMovesStart) bestMove = bestMoves[bestMovesStart + r.nextInt(bestMovesEnd - bestMovesStart)];
         return bestMove;
     }
 
