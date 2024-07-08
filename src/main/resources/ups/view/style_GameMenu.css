@@ -1,17 +1,20 @@
 .background-pane {
-    -fx-background-image: url('bg7.png');
-    -fx-background-size: cover;
-    -fx-background-position: center center;
+  -fx-background-image: url("bg5.png");
+  -fx-background-size: cover;
+  -fx-background-position: center center;
 }
 
 .transparent-box {
-    -fx-background-color: rgba(200, 200, 200, 0.7); /* Weiß mit 70% Deckkraft */
+  -fx-background-color: rgba(200, 200, 200, 0.7); /* Weiß mit 70% Deckkraft */
 }
 
 .white-background-vbox {
-    /* -fx-background-color: white; -fx-text-fill: black; /* Weiß mit schwarzer Schrift */
-    -fx-background-color: transparent; -fx-text-fill: black; /* Weiß mit schwarzer Schrift */
+  -fx-background-color: transparent;
+  -fx-text-fill: black; /* Weiß mit schwarzer Schrift */
 }
 
-
-
+.transparent-background-gridpane {
+  -fx-background-color: rgba(255, 255, 255, 0.7); /* Weiß mit 70% Deckkraft */
+  -fx-padding: 10;
+  -fx-background-radius: 10;
+}
