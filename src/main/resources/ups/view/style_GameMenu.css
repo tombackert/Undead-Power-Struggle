@@ -5,7 +5,7 @@
 }
 
 .transparent-box {
-  -fx-background-color: rgba(200, 200, 200, 0.7); /* Weiß mit 70% Deckkraft */
+  -fx-background-color: rgba(200, 200, 200, 0.5); /* Weiß mit 70% Deckkraft */
 }
 
 .white-background-vbox {
@@ -14,7 +14,7 @@
 }
 
 .transparent-background-gridpane {
-  -fx-background-color: rgba(255, 255, 255, 0.7); /* Weiß mit 70% Deckkraft */
+  -fx-background-color: rgba(255, 255, 255, 0.9); /* Weiß mit 70% Deckkraft */
   -fx-padding: 10;
   -fx-background-radius: 10;
 }
