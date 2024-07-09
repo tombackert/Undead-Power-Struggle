@@ -33,6 +33,7 @@ public abstract class PlayerController {
         if (terrainType.equals(player.getCurrentTerrainCard()) && player.canPlaceSettlement()) {
             gameBoard.placeSettlement(x, y, player.getColor());
             player.getSettlements().add(new Settlement(x, y, player.getColor()));
+            player.villageCoordinates[player.numberOfVillages - player.getRemainingSettlements()] = new int[]{x,y};
             player.placeSettlement();
             placedSettlementsThisTurn++;
 

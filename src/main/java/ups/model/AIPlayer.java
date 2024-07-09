@@ -33,7 +33,6 @@ public class AIPlayer extends Player {
         }
 
         int[] move = findBestMove(controller.getModel(), controller.getCurrentTerrain());
-        villageCoordinates[this.numberOfVillages - getRemainingSettlements()] = move;
         Platform.runLater(() -> {
             controller.handleAIClick(move[0], move[1]);
             board.occupiedBy[move[0]][move[1]] = this.color;

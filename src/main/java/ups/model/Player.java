@@ -20,7 +20,7 @@ public class Player {
     public String locationTile; // Location tile of the player
 
     public int numberOfVillages; // Number of villages the player starts with
-    int[][] villageCoordinates; // Array of coordinates of Player's villages (x, y)
+    public int[][] villageCoordinates; // Array of coordinates of Player's villages (x, y)
     public String name; // Name of the player
     int color; // Color of the player as an integer (1=Red, 2=Black, 3=Blue, 4=Orange)
     private String currentTerrainCard; // The current terrain card of the player
