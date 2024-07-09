@@ -256,7 +256,6 @@ public class Player {
                 
             }
         }
-
         return groups;
     }
 
@@ -508,13 +507,14 @@ public class Player {
     public int evaluateBauern(GameBoard board) {
         int minVills = Integer.MAX_VALUE;
         int vills = 0;
+        //Q1
         for (int x = 0; x < board.boardSizeX / 2; x++) {
             for (int y = 0; y < board.boardSizeY / 2; y++) {
                 if (board.getOccupation(x, y) == this.color) vills++;
             }
         }
         if (minVills > vills) minVills = vills;
-        minVills = 0;
+        vills = 0;
         //Q2
         for (int x = 0; x < board.boardSizeX / 2; x++) {
             for (int y = board.boardSizeY / 2; y < board.boardSizeY; y++) {
@@ -522,7 +522,7 @@ public class Player {
             }
         }
         if (minVills > vills) minVills = vills;
-        minVills = 0;
+        vills = 0;
         //Q3
         for (int x = board.boardSizeX / 2; x < board.boardSizeX; x++) {
             for (int y = 0; y < board.boardSizeY / 2; y++) {
@@ -530,13 +530,14 @@ public class Player {
             }
         }
         if (minVills > vills) minVills = vills;
-        minVills = 0;
+        vills = 0;
         //Q4
         for (int x = board.boardSizeX / 2; x < board.boardSizeX; x++) {
             for (int y = board.boardSizeY / 2; y < board.boardSizeY; y++) {
                 if (board.getOccupation(x, y) == this.color) vills++;
             }
         }
+        if (minVills > vills) minVills = vills;
         return 3 * minVills;
     }
 

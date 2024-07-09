@@ -43,7 +43,7 @@ public class AIPlayer extends Player {
     }
 
     /**
-     * Finds the best move for the AI player
+     * Returns a random move of all moves that maximise gold.
      * 
      * @param board the game board
      * @param currentTerrain the current terrain type

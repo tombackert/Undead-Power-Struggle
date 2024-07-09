@@ -157,8 +157,8 @@ public class ProceduralGameboard {
             //Add silver castle to quadrant
             castlePos = new int[2];
             do {
-                castlePos[0] = 1 + this.quadrantCoordinates(q)[0] + r.nextInt((this.sizeX / 2) - 1);
-                castlePos[1] = 1 + this.quadrantCoordinates(q)[1] + r.nextInt((this.sizeY / 2) - 1);
+                castlePos[0] = 1 + this.quadrantCoordinates(q)[0] + r.nextInt((this.sizeX / 2) - 2);
+                castlePos[1] = 1 + this.quadrantCoordinates(q)[1] + r.nextInt((this.sizeY / 2) - 2);
             } while (!(this.isAvailable(castlePos)));
             castleCoordinates[q * 3] = castlePos;
             c = new ProceduralZone(this, 1, 8, castlePos);
@@ -166,16 +166,16 @@ public class ProceduralGameboard {
             //Add gold castles
             castlePos = new int[2];
             do {
-                castlePos[0] = 1 + this.quadrantCoordinates(q)[0] + r.nextInt((this.sizeX / 2) - 1);
-                castlePos[1] = 1 + this.quadrantCoordinates(q)[1] + r.nextInt((this.sizeY / 2) - 1);
+                castlePos[0] = 1 + this.quadrantCoordinates(q)[0] + r.nextInt((this.sizeX / 2) - 2);
+                castlePos[1] = 1 + this.quadrantCoordinates(q)[1] + r.nextInt((this.sizeY / 2) - 2);
             } while (!(this.isAvailable(castlePos)));
             castleCoordinates[(q * 3) + 1] = castlePos;
             c = new ProceduralZone(this, 1, 9, castlePos);
             this.fillNeighbours(castlePos, 1); //Fill out neighbours to block water and mountains 
             castlePos = new int[2];
             do {
-                castlePos[0] = 1 + this.quadrantCoordinates(q)[0] + r.nextInt((this.sizeX / 2) - 1);
-                castlePos[1] = 1 + this.quadrantCoordinates(q)[1] + r.nextInt((this.sizeY / 2) - 1);
+                castlePos[0] = 1 + this.quadrantCoordinates(q)[0] + r.nextInt((this.sizeX / 2) - 2);
+                castlePos[1] = 1 + this.quadrantCoordinates(q)[1] + r.nextInt((this.sizeY / 2) - 2);
             } while (!(this.isAvailable(castlePos)));
             castleCoordinates[(q * 3) + 2] = castlePos;
             c = new ProceduralZone(this, 1, 9, castlePos);
