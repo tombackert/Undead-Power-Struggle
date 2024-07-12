@@ -3,11 +3,17 @@ package ups.view;
 import java.util.List;
 import javafx.util.Pair;
 import ups.controller.TutorialController;
+import ups.controller.MenuController;
+
 
 /**
  * Tutorial View. Displays the game rules and how to play the game.
  */
-public class TutorialView extends BaseMenuView{
+public class TutorialView extends BaseMenuView {
+    
+    public static String[][] title = {
+        {"Anleitung", "Tutorial"}
+    };
     
     /**
      * Returns the title of the view.
@@ -15,7 +21,7 @@ public class TutorialView extends BaseMenuView{
      */
     @Override
     protected String getTitle() {
-        return "Tutorial";
+        return title[0][MenuController.languageIndex];
     }
 
     /**
@@ -24,7 +30,7 @@ public class TutorialView extends BaseMenuView{
      */
     @Override
     protected String getTitleText() {
-        return "Tutorial";
+        return title[0][MenuController.languageIndex];
     }
 
     /**

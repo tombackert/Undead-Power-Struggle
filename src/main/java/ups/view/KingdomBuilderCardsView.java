@@ -3,11 +3,16 @@ package ups.view;
 import java.util.List;
 import javafx.util.Pair;
 import ups.controller.KingdomBuilderCardsController;
+import ups.controller.MenuController;
 
 /**
  * This class is responsible for displaying the Kingdom Builder Cards view.
  */
-public class KingdomBuilderCardsView extends BaseMenuView{
+public class KingdomBuilderCardsView extends BaseMenuView {
+    
+    public static String[][] title = {
+        {"Kingdom Builder Karten", "Kingdom Builder Cards"}
+    };
     
     /**
      * Returns the title of the view.
@@ -16,7 +21,7 @@ public class KingdomBuilderCardsView extends BaseMenuView{
      */
     @Override
     protected String getTitle() {
-        return "Kingdom Builder Cards";
+        return title[0][MenuController.languageIndex];
     }
 
     /**
@@ -26,7 +31,7 @@ public class KingdomBuilderCardsView extends BaseMenuView{
      */
     @Override
     protected String getTitleText() {
-        return "Kingdom Builder Cards";
+        return title[0][MenuController.languageIndex];
     }
 
     /**

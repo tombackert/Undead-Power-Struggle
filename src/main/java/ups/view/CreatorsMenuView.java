@@ -3,11 +3,16 @@ package ups.view;
 import javafx.util.Pair;
 import ups.controller.CreatorsController;
 import java.util.List;
+import ups.controller.MenuController;
 
 /**
  * Displays the creators of the game.
  */
 public class CreatorsMenuView extends BaseMenuView {
+
+    public static String[][] title = {
+        {"Erbauer", "Creators"}
+    };
     
     /**
      * Returns the title of the view.
@@ -15,7 +20,7 @@ public class CreatorsMenuView extends BaseMenuView {
      */
     @Override
     protected String getTitle() {
-        return "Creators";
+        return title[0][MenuController.languageIndex];
     }
 
     /**
@@ -24,7 +29,7 @@ public class CreatorsMenuView extends BaseMenuView {
      */
     @Override
     protected String getTitleText() {
-        return "Creators";
+        return title[0][MenuController.languageIndex];
     }
 
     /**

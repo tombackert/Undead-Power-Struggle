@@ -19,6 +19,24 @@ import java.util.List;
  */
 public class MenuController {
 
+    // language variable for main menu
+    public static String language;
+
+    // language index: 0 = German, 1 = English
+    public static int languageIndex = 0;
+
+    // German and English translations for the main menu items
+    public static String[][] menuItems = {
+        { "Spielen", "Play" },
+        { "Kingdom Builder Karten", "Kingdom Builder Cards" },
+        { "Ortskarten", "Location Cards" },
+        { "Anleitung", "Tutorial" },
+        { "Erbauer", "Creators" },
+        { "Beenden", "Exit" }
+    };
+    
+    
+
     /**
      * Returns the menu data of the view.
      *
@@ -29,8 +47,8 @@ public class MenuController {
 
         return Arrays.asList(
 
-                // Start the game
-                new Pair<>("Play", () -> {
+            // Start the game        
+                new Pair<>( menuItems[0][languageIndex], () -> {
                     try {
                         new GameMenuView().start(primaryStage);
                     } catch (Exception e) {
@@ -39,7 +57,7 @@ public class MenuController {
                 }),
 
                 // Display the kingdom builder cards
-                new Pair<>("Kingdom Builder Cards", () -> {
+                new Pair<>(menuItems[1][languageIndex], () -> {
                     try {
                         new KingdomBuilderCardsView().start(primaryStage);
                     } catch (Exception e) {
@@ -48,7 +66,7 @@ public class MenuController {
                 }),
 
                 // Display the location cards
-                new Pair<>("Location Cards", () -> {
+                new Pair<>(menuItems[2][languageIndex], () -> {
                     try {
                         new LocationCardsView().start(primaryStage);
                     } catch (Exception e) {
@@ -57,7 +75,7 @@ public class MenuController {
                 }),
 
                 // Display the tutorial (game instructions)
-                new Pair<>("Tutorial", () -> {
+                new Pair<>(menuItems[3][languageIndex], () -> {
                     try {
                         new TutorialView().start(primaryStage);
                     } catch (Exception e) {
@@ -66,7 +84,7 @@ public class MenuController {
                 }),
 
                 // Display the creators of the game
-                new Pair<>("Creators", () -> {
+                new Pair<>(menuItems[4][languageIndex], () -> {
                     try {
                         new CreatorsMenuView().start(primaryStage);
                     } catch (Exception e) {
@@ -75,7 +93,7 @@ public class MenuController {
                 }),
 
                 // Exit to desktop
-                new Pair<>("Exit to Desktop", Platform::exit)
+                new Pair<>(menuItems[5][languageIndex], Platform::exit)
 
         );
 
@@ -85,9 +103,10 @@ public class MenuController {
         try {
             GameMenuView gameMenuView = new GameMenuView();
             gameMenuView.start(new Stage()); // This starts the GameMenuView and assigns the menuStage
-            
+
             // Assuming we need to set the primary stage in GameMenuController
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("src\\main\\resources\\ups\\view\\GameMenuView.fxml"));
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("src\\main\\resources\\ups\\view\\GameMenuView.fxml"));
             Parent root = loader.load();
             GameMenuController gameMenuController = loader.getController();
             gameMenuController.setPrimaryStage(primaryStage);
@@ -98,5 +117,10 @@ public class MenuController {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static void initLanguage() {
+        language = "de";
+        languageIndex = 0;
     }
 }

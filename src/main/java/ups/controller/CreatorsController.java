@@ -10,6 +10,10 @@ import ups.view.MenuView;
  * Controls the creators view.
  */
 public class CreatorsController {
+
+    public static String[][] menuItems = {
+        {"Zurück", "Back"}
+    };
     
     /**
      * Returns the menu data of the view.
@@ -31,7 +35,7 @@ public class CreatorsController {
             new Pair<>("@Tom Backert", () -> System.out.println("tom.backert@student.uni-luebeck.de")),
                
             // Go back one stage
-            new Pair<>("Back", () -> {
+            new Pair<>( menuItems[0][MenuController.languageIndex], () -> {
                 try {
                     new MenuView().start(primaryStage);
                 } catch (Exception e) {

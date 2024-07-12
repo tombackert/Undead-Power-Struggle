@@ -10,6 +10,10 @@ import ups.view.MenuView;
  * Controls the kingdom builder cards view.
  */
 public class KingdomBuilderCardsController {
+
+    public static String[][] menuItems = {
+        {"Zurück", "Back"}
+    };
     
     /**
      * Returns the menu data of the view.
@@ -22,7 +26,7 @@ public class KingdomBuilderCardsController {
         return Arrays.asList(
                 
             // Go back one stage
-            new Pair<>("Back", () -> {
+            new Pair<>(menuItems[0][MenuController.languageIndex], () -> {
                 try {
                     new MenuView().start(primaryStage);
                 } catch (Exception e) {

@@ -3,11 +3,16 @@ package ups.view;
 import java.util.List;
 import javafx.util.Pair;
 import ups.controller.LocationCardsController;
+import ups.controller.MenuController;
 
 /**
  * This class is responsible for displaying the Location Cards view.
  */
-public class LocationCardsView extends BaseMenuView{
+public class LocationCardsView extends BaseMenuView {
+
+    public static String[][] title = {
+        {"Ortskarten", "Location Cards"}
+    };
     
     /**
      * Returns the title of the view.
@@ -16,7 +21,7 @@ public class LocationCardsView extends BaseMenuView{
      */
     @Override
     protected String getTitle() {
-        return "Location Cards";
+        return title[0][MenuController.languageIndex];
     }
 
     /**
@@ -26,7 +31,7 @@ public class LocationCardsView extends BaseMenuView{
      */
     @Override
     protected String getTitleText() {
-        return "Location Cards";
+        return title[0][MenuController.languageIndex];
     }
 
     /**

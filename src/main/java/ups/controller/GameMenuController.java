@@ -2,8 +2,6 @@ package ups.controller;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -107,7 +105,12 @@ public class GameMenuController {
      */
     @FXML
     public void initialize() {
-        setLanguage(Locale.GERMAN); // Default to German
+
+        if (MenuController.language == "de") {
+            setLanguage(Locale.GERMAN);
+        } else {
+            setLanguage(Locale.ENGLISH);
+        }
 
         for (MenuItem item : languageButton.getItems()) {
             item.setOnAction(event -> {
@@ -132,6 +135,16 @@ public class GameMenuController {
      * @param locale the locale
      */
     private void setLanguage(Locale locale) {
+        
+        MenuController.language = locale.getLanguage();
+        if (MenuController.language == "de") {
+            MenuController.languageIndex = 0;
+        } else {
+            MenuController.languageIndex = 1;
+        }
+
+        //System.out.println("Setting language to: " + MenuController.language);
+
         LanguageSettings.setCurrentLocale(locale);
         bundle = ResourceBundle.getBundle("messages", locale);
         if (bundle == null) {
