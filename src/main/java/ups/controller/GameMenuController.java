@@ -127,15 +127,41 @@ public class GameMenuController {
                 }
             });
         }
+        setTheme();
+
     }
 
+    /*
+     * The theme is set to the value of the selected menu item.
+     */
+    @FXML
+    private void setTheme() {
+        for (MenuItem item : themeButton.getItems()) {
+            item.setOnAction(event -> {
+                switch (item.getText()) {
+                    case "Default":
+                        MenuController.theme = 0;
+                        System.out.println("Theme: " + item.getText());
+                        break;
+                    case "Zombie":
+                        MenuController.theme = 1;
+                        System.out.println("Theme: " + item.getText());
+                        break;
+                    default:
+                        logger.log(Level.WARNING, "Unsupported theme: " + item.getText());
+                        break;
+                }
+            });
+        }
+    }
+    
     /**
      * Sets the language to the given locale.
      *
      * @param locale the locale
      */
     private void setLanguage(Locale locale) {
-        
+
         MenuController.language = locale.getLanguage();
         if (MenuController.language == "de") {
             MenuController.languageIndex = 0;
@@ -153,6 +179,8 @@ public class GameMenuController {
         }
         updateTexts();
     }
+
+    
 
     /**
      * Updates the texts in the game menu.

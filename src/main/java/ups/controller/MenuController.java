@@ -36,7 +36,7 @@ public class MenuController {
     };
 
     // theme variable for main menu: 0 = default, 1 = zombie
-    public static int theme;
+    public static int theme = 0;
     
     
 
@@ -130,6 +130,6 @@ public class MenuController {
     }
 
     public static void initTheme() {
-        theme = 0;
+        theme = 1;
     }
 }

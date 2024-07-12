@@ -98,10 +98,10 @@
                </items>
             </MenuButton>
             <Button fx:id="highscoreButton" prefHeight="26.0" prefWidth="120.0" text="Highscore" onAction="#showHighscore"/>
-            <MenuButton fx:id="themeButton" text="Theme" alignment="CENTER" prefHeight="26.0" prefWidth="120.0">
+            <MenuButton onAction="#setTheme" fx:id="themeButton" text="Theme" alignment="CENTER" prefHeight="26.0" prefWidth="120.0">
                <items>
-                  <MenuItem fx:id="theme_horror" mnemonicParsing="false" text="Horror"/>
-                  <MenuItem fx:id="theme_blood" mnemonicParsing="false" text="Blut"/>
+                  <MenuItem fx:id="theme_default" mnemonicParsing="false" text="Default"/>
+                  <MenuItem fx:id="theme_zombie" mnemonicParsing="false" text="Zombie"/>
                </items>
             </MenuButton>
          </HBox>
