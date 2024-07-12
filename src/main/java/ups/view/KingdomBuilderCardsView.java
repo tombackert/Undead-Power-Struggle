@@ -1,6 +1,11 @@
 package ups.view;
 
+import ups.view.BaseMenuView;
 import java.util.List;
+
+import javafx.scene.effect.DropShadow;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.util.Pair;
 import ups.controller.KingdomBuilderCardsController;
 import ups.controller.MenuController;
@@ -52,6 +57,24 @@ public class KingdomBuilderCardsView extends BaseMenuView {
     @Override
     protected List<Pair<String, Runnable>> getMenuData() {
         return KingdomBuilderCardsController.getMenuData(primaryStage);
+    }
+
+    /**
+     * Add line to menu view.
+     */
+    @Override
+    protected void addLine() {
+        BaseMenuView.line = new Line(BaseMenuView.WIDTH / 2, BaseMenuView.HEIGHT / 3 + 50, BaseMenuView.WIDTH / 2, BaseMenuView.HEIGHT / 3 + 500);
+        BaseMenuView.line.setStrokeWidth(3);
+        BaseMenuView.line.setStroke(Color.color(1, 1, 1, 0.75));
+        BaseMenuView.line.setEffect(new DropShadow(5, Color.BLACK));
+        BaseMenuView.line.setScaleY(0);
+
+        // Bind the line's X position to be slightly left of the menuBox
+        BaseMenuView.line.startXProperty().bind(menuBox.translateXProperty().subtract(10));
+        BaseMenuView.line.endXProperty().bind(menuBox.translateXProperty().subtract(10));
+
+        root.getChildren().add(line);
     }
 
     /**

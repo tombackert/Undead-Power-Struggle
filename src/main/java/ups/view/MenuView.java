@@ -1,5 +1,6 @@
 package ups.view;
 
+import javafx.scene.layout.Pane;
 import javafx.util.Pair;
 import ups.controller.MenuController;
 import java.util.List;
@@ -56,6 +57,8 @@ public class MenuView extends BaseMenuView {
      */
     public static void main(String[] args) {
         MenuController.initLanguage();
+        MenuController.initTheme();
         launch(args);
     }
+
 }

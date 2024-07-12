@@ -34,6 +34,9 @@ public class MenuController {
         { "Erbauer", "Creators" },
         { "Beenden", "Exit" }
     };
+
+    // theme variable for main menu: 0 = default, 1 = zombie
+    public static int theme;
     
     
 
@@ -59,7 +62,8 @@ public class MenuController {
                 // Display the kingdom builder cards
                 new Pair<>(menuItems[1][languageIndex], () -> {
                     try {
-                        new KingdomBuilderCardsView().start(primaryStage);
+                        KingdomBuilderCardsController.kingdomBuilderCardsView = new KingdomBuilderCardsView();
+                        KingdomBuilderCardsController.kingdomBuilderCardsView.start(primaryStage);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -68,7 +72,8 @@ public class MenuController {
                 // Display the location cards
                 new Pair<>(menuItems[2][languageIndex], () -> {
                     try {
-                        new LocationCardsView().start(primaryStage);
+                        LocationCardsController.locationCardsView = new LocationCardsView();
+                        LocationCardsController.locationCardsView.start(primaryStage);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -122,5 +127,9 @@ public class MenuController {
     public static void initLanguage() {
         language = "de";
         languageIndex = 0;
+    }
+
+    public static void initTheme() {
+        theme = 0;
     }
 }

@@ -21,9 +21,13 @@ import javafx.util.Duration;
 import javafx.util.Pair;
 import ups.model.MenuItem;
 import ups.model.Title;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.List;
 import ups.controller.GameMenuController;
+import ups.controller.KingdomBuilderCardsController;
 import ups.view.GameMenuView;
 
 /**
@@ -32,13 +36,15 @@ import ups.view.GameMenuView;
 public abstract class BaseMenuView extends Application {
 
     // Attributes
-    private static final int WIDTH = 1488;
-    private static final int HEIGHT = 850;
+    protected static final int WIDTH = 1488;
+    protected static final int HEIGHT = 850;
     protected Stage primaryStage;
-    protected Pane root = new Pane();
+    public Pane root = new Pane();
     protected VBox menuBox = new VBox(-5);
-    private Line line;
+    protected static Line line;
     private ImageView imageView;
+    protected VBox cardBox = new VBox(-5);
+    
 
     /**
      * Start method for menu view. 
@@ -140,7 +146,7 @@ public abstract class BaseMenuView extends Application {
     /**
      * Add line to menu view.
      */
-    private void addLine() {
+    protected void addLine() {
         line = new Line(WIDTH / 2, HEIGHT / 3 + 50, WIDTH / 2, HEIGHT / 3 + 350);
         line.setStrokeWidth(3);
         line.setStroke(Color.color(1, 1, 1, 0.75));
@@ -197,6 +203,55 @@ public abstract class BaseMenuView extends Application {
         });
 
         root.getChildren().add(menuBox);
+    }
+
+    /**
+     * Show a card image on the screen.
+     * @param pathToCard Path to the card image.
+     */
+    public void showCard(String pathToCard) {
+        try {
+            // Log the path to the card
+            //System.out.println("Showing card: " + pathToCard);
+            
+            // Load the image
+            FileInputStream input = new FileInputStream(pathToCard);
+            Image image = new Image(input);
+            ImageView imageView = new ImageView(image);
+
+            // Check if the image is loaded
+            if (image.isError()) {
+                System.err.println("Error loading image: " + image.getException());
+                return;
+            }
+            
+            // Bind image view position to be on the right side of the menu
+            cardBox.translateXProperty().bind(root.widthProperty().subtract(cardBox.widthProperty()).divide(2).add(300));
+            cardBox.setTranslateY(HEIGHT / 3 + 55);
+
+            // Set image view properties
+            imageView.setPreserveRatio(true);
+            imageView.setFitWidth(230); // (230)
+            imageView.setTranslateX(0); // (980)
+            imageView.setTranslateY(0); // (330)
+
+            // Clear previous images if any
+            cardBox.getChildren().clear();
+
+            // Add the new image view to the card box
+            cardBox.getChildren().add(imageView);
+
+            // Ensure cardBox is added to the root if not already present
+            if (!root.getChildren().contains(cardBox)) {
+                root.getChildren().add(cardBox);
+            }
+                
+            // Log successful addition
+            //System.out.println("Card image added to the scene.");
+            
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
