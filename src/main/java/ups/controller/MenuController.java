@@ -130,6 +130,6 @@ public class MenuController {
     }
 
     public static void initTheme() {
-        theme = 1;
+        theme = 0;
     }
 }

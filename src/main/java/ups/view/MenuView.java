@@ -4,6 +4,7 @@ import javafx.scene.layout.Pane;
 import javafx.util.Pair;
 import ups.controller.MenuController;
 import java.util.List;
+import ups.controller.MenuController;
 
 /**
  * The start menu view.
@@ -37,7 +38,11 @@ public class MenuView extends BaseMenuView {
      */
     @Override
     protected String getBackgroundImage() {
-        return "bg6.png";
+        if (MenuController.theme == 0) {
+            return "bg6.png";
+        } else {
+            return "zombie1.png";
+        }
     }
 
     /**

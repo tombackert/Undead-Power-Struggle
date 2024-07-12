@@ -38,7 +38,12 @@ public class CreatorsMenuView extends BaseMenuView {
      */
     @Override
     protected String getBackgroundImage() {
-        return "bg3.png";
+        if (MenuController.theme == 0) {
+            return "bg3.png";
+        } else {
+            return "zombie5.png";
+        }
+        
     }
 
     /**

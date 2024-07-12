@@ -46,7 +46,11 @@ public class KingdomBuilderCardsView extends BaseMenuView {
      */
     @Override
     protected String getBackgroundImage() {
-        return "bg8.png";
+        if (MenuController.theme == 0) {
+            return "bg8.png";
+        } else {
+            return "zombie3.png";
+        }
     }
 
     /**
