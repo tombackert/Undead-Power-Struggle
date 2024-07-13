@@ -42,7 +42,7 @@ public class LocationCardsView extends BaseMenuView {
     @Override
     protected String getBackgroundImage() {
         if (MenuController.theme == 0) {
-            return "bg1.png";
+            return "bg7.png";
         } else {
             return "zombie4.png";
         }

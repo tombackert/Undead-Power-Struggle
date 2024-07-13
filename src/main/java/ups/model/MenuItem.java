@@ -20,7 +20,7 @@ public class MenuItem extends Pane {
     // Attributes of MenuItem object
     protected Text text;
     protected Polygon bg;
-    private Effect shadow = new DropShadow(10, Color.BLACK);
+    private Effect shadow = new DropShadow(10, Color.WHITE);
     private Effect blur = new BoxBlur(1, 1, 3);
 
     /**
@@ -46,7 +46,7 @@ public class MenuItem extends Pane {
         
         text.setFont(Font.loadFont(
             Objects.requireNonNull(MenuItem.class.getResource("Penumbra-HalfSerif-Std_35114.ttf")).toExternalForm(),
-                14));
+                13));
         
         text.setFill(Color.WHITE);
         

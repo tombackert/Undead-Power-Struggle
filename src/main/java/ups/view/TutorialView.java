@@ -40,7 +40,7 @@ public class TutorialView extends BaseMenuView {
     @Override
     protected String getBackgroundImage() {
         if (MenuController.theme == 0) {
-            return "bg1.png";
+            return "bg2.png";
         } else {
             return "zombie2.png";
         }
