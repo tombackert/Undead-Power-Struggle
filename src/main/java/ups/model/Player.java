@@ -164,7 +164,6 @@ public class Player {
                 }
             }
         }
-        System.out.println(this.name + " for Fischer card has gold= " + Integer.toString(gold));
         return gold;
     }
 
@@ -190,7 +189,6 @@ public class Player {
                 }
             }
             }
-            System.out.println(this.name + " for Bergleute card has gold= " + Integer.toString(gold));
         return gold;
     }
 
@@ -217,7 +215,6 @@ public class Player {
                 }
             }
             }
-        System.out.println(this.name + " for Arbeiter card has gold= " + Integer.toString(gold));
         return gold;
     }
 
@@ -342,29 +339,6 @@ public class Player {
         return 2 * maxVills;
     }
 
-    //Help function for evaluating lords card
-    private static int[] helpLords(int[] a) {
-        int[] b = new int[a.length];
-        int place = 1;
-        int max;
-        int placed = 0;
-        while (placed < a.length) {
-            max = -1;
-            for (int i = 0; i < a.length; i++) {
-                if (a[i] > max) max = a[i];
-            }
-            for (int i = 0; i < a.length; i++) {
-                if (a[i] == max) {
-                    b[i] = place;
-                    a[i] = Integer.MIN_VALUE;
-                    placed++;
-                }
-            }
-            place = 1 + placed;
-        }
-        return b;
-    }
-
     /**
      * Returns the evaluation of the Lords card.
      * 
@@ -373,84 +347,91 @@ public class Player {
      */
     public int evaluateLords(GameBoard board) {
         int gold = 0;
-        int[] numsOfVills = new int[4];
-        int[] placements;
+        int[] numsOfVills;
+        int bigger;
         //Q1
-        for (int x = 0; x < board.boardSizeX / 2; x++) {
-            for (int y = 0; y < board.boardSizeY / 2; y++) {
-                if (board.getOccupation(x, y) == 0) continue;
-                numsOfVills[board.getOccupation(x, y) - 1]++;
+        numsOfVills = new int[9];
+        for (int i = 0; i < board.boardSizeX / 2; i++) {
+            for (int j = 0; j < board.boardSizeY / 2; j++) {
+                numsOfVills[board.occupiedBy[i][j]]++;
             }
         }
-        //Assign gold based on placement
-        placements = helpLords(numsOfVills);
-        switch (placements[this.color - 1]) {
-            case 1:
+        bigger = 0;
+        for (int c = 1; c < 9; c++) if (numsOfVills[c] > numsOfVills[this.color]) bigger++;
+        if (numsOfVills[this.color] < 1) bigger = 3;
+        switch (bigger) {
+            case 0:
                 gold += 12;
                 break;
-            case 2:
+            case 1:
                 gold += 6;
+                break;
             default:
                 break;
         }
-        numsOfVills = new int[4];
+
         //Q2
-        for (int x = 0; x < board.boardSizeX / 2; x++) {
-            for (int y = board.boardSizeY / 2; y < board.boardSizeY; y++) {
-                if (board.getOccupation(x, y) == 0) continue;
-                numsOfVills[board.getOccupation(x, y) - 1]++;
+        numsOfVills = new int[9];
+        for (int i = 0; i < board.boardSizeX / 2; i++) {
+            for (int j = board.boardSizeY / 2; j < board.boardSizeY; j++) {
+                numsOfVills[board.occupiedBy[i][j]]++;
             }
         }
-        //Assign gold based on placement
-        placements = helpLords(numsOfVills);
-        switch (placements[this.color - 1]) {
-            case 1:
+        bigger = 0;
+        for (int c = 1; c < 9; c++) if (numsOfVills[c] > numsOfVills[this.color]) bigger++;
+        if (numsOfVills[this.color] < 1) bigger = 3;
+        switch (bigger) {
+            case 0:
                 gold += 12;
                 break;
-            case 2:
+            case 1:
                 gold += 6;
+                break;
             default:
                 break;
         }
-        numsOfVills = new int[4];
+
         //Q3
-        for (int x = board.boardSizeX / 2; x < board.boardSizeX; x++) {
-            for (int y = 0; y < board.boardSizeY / 2; y++) {
-                if (board.getOccupation(x, y) == 0) continue;
-                numsOfVills[board.getOccupation(x, y) - 1]++;
+        numsOfVills = new int[9];
+        for (int i = board.boardSizeX / 2; i < board.boardSizeX; i++) {
+            for (int j = 0; j < board.boardSizeY / 2; j++) {
+                numsOfVills[board.occupiedBy[i][j]]++;
             }
         }
-        //Assign gold based on placement
-        placements = helpLords(numsOfVills);
-        switch (placements[this.color - 1]) {
-            case 1:
+        bigger = 0;
+        for (int c = 1; c < 9; c++) if (numsOfVills[c] > numsOfVills[this.color]) bigger++;
+        if (numsOfVills[this.color] < 1) bigger = 3;
+        switch (bigger) {
+            case 0:
                 gold += 12;
                 break;
-            case 2:
+            case 1:
                 gold += 6;
+                break;
             default:
                 break;
         }
-        numsOfVills = new int[4];
+
         //Q4
-        for (int x = board.boardSizeX / 2; x < board.boardSizeX; x++) {
-            for (int y = board.boardSizeY / 2; y < board.boardSizeY; y++) {
-                if (board.getOccupation(x, y) == 0) continue;
-                numsOfVills[board.getOccupation(x, y) - 1]++;
+        numsOfVills = new int[9];
+        for (int i = board.boardSizeX / 2; i < board.boardSizeX; i++) {
+            for (int j = board.boardSizeY / 2; j < board.boardSizeY; j++) {
+                numsOfVills[board.occupiedBy[i][j]]++;
             }
         }
-        //Assign gold based on placement
-        placements = helpLords(numsOfVills);
-        switch (placements[this.color - 1]) {
-            case 1:
+        bigger = 0;
+        for (int c = 1; c < 9; c++) if (numsOfVills[c] > numsOfVills[this.color]) bigger++;
+        if (numsOfVills[this.color] < 1) bigger = 3;
+        switch (bigger) {
+            case 0:
                 gold += 12;
                 break;
-            case 2:
+            case 1:
                 gold += 6;
+                break;
             default:
                 break;
         }
-        
         return gold;
     }
 
@@ -542,7 +523,7 @@ public class Player {
     }
 
     /**
-     * Returns the gold amount of the static bonus - 3 gold for each SilverCastle, that has at least one own village as its neighbour
+     * Returns the gold amount of the static bonus - 3 gold for each Castle, that has at least one own village as its neighbour
      *
      * @param board the game board
      * @return the gold amount of the static bonus
@@ -552,7 +533,8 @@ public class Player {
         int[][] neighbours;
         for (int i = 0; i < board.boardSizeX; i++) {
             for (int j = 0; j < board.boardSizeY; j++) {
-                if (!(board.getTerrainType(i, j).equals("SilverCastle"))) continue;
+                if (!(board.getTerrainType(i, j).equals("SilverCastle") || 
+                board.getTerrainType(i, j).equals("GoldCastle"))) continue;
                 neighbours = this.getHexagonalNeighbors(i, j);
                 for (int[] n : neighbours) {
                     if (board.getOccupation(n[0], n[1]) != this.color) continue;
@@ -561,7 +543,6 @@ public class Player {
                 }
             }
         }
-        System.out.println(this.name + " for Static Bonus has gold= " + Integer.toString(gold));
         return gold;
     }
 
