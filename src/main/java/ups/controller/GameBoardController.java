@@ -24,6 +24,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+
 /**
  * The GameBoardController class is responsible for controlling the game board.
  */
@@ -42,6 +45,13 @@ public class GameBoardController {
     private Button endTurnButton;
     @FXML
     private Button backToMenuButton;
+
+
+    @FXML
+    private ImageView terrainImageView;
+
+    private Map<String, Image> terrainImages;
+
 
     private GameBoardView view;
     private GameBoard model;
@@ -303,6 +313,7 @@ public class GameBoardController {
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Initialisierung fehlgeschlagen.", e);
         }
+        loadTerrainImages();
         updateTexts();
     }
 
@@ -326,6 +337,29 @@ public class GameBoardController {
         for (int i = 0; i < positions.length; i++) {
             model.initialize(i, positions[i][0], positions[i][1]);
         }
+    }
+
+/**
+     * loads terrainimage
+     *
+     */
+    private void loadTerrainImages() {
+        if (MenuController.theme == 0) {
+            terrainImages = new HashMap<>();
+            terrainImages.put("Gras", new Image(getClass().getResourceAsStream("/location-cards/Gras.png")));
+            terrainImages.put("Wald", new Image(getClass().getResourceAsStream("/location-cards/Wald.png")));
+            terrainImages.put("Wueste", new Image(getClass().getResourceAsStream("/location-cards/Wüste.png")));
+            terrainImages.put("Blumen", new Image(getClass().getResourceAsStream("/location-cards/Blumen.png")));
+            terrainImages.put("Canyon", new Image(getClass().getResourceAsStream("/location-cards/Canyon.png")));
+        } else {
+            terrainImages = new HashMap<>();
+            terrainImages.put("Gras", new Image(getClass().getResourceAsStream("/location-cards/Gras_blood.png")));
+            terrainImages.put("Wald", new Image(getClass().getResourceAsStream("/location-cards/Wald_blood.png")));
+            terrainImages.put("Wueste", new Image(getClass().getResourceAsStream("/location-cards/Wüste_blood.png")));
+            terrainImages.put("Blumen", new Image(getClass().getResourceAsStream("/location-cards/Blumen_blood.png")));
+            terrainImages.put("Canyon", new Image(getClass().getResourceAsStream("/location-cards/Canyon_blood.png")));
+
+        }  
     }
 
     /**
@@ -505,7 +539,13 @@ public class GameBoardController {
      * Updates the terrain label.
      */
     private void updateTerrainLabel() {
-        setLabelText(currentTerrainLabel, "terrain_card", currentTerrain != null ? bundle.getString(currentTerrain) : null);
+        if (currentTerrain != null && terrainImages.containsKey(currentTerrain)) {
+            terrainImageView.setImage(terrainImages.get(currentTerrain));
+            currentTerrainLabel.setText(bundle.getString("terrain_card") + ": " + bundle.getString(currentTerrain));
+        } else {
+            terrainImageView.setImage(null);
+            currentTerrainLabel.setText(bundle.getString("terrain_card") + ": ");
+        }
     }
 
     /**
