@@ -6,6 +6,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
@@ -51,6 +52,10 @@ public class GameBoardController {
     private ImageView terrainImageView;
 
     private Map<String, Image> terrainImages;
+
+    @FXML
+    private BorderPane mainBorderPane;
+
 
 
     private GameBoardView view;
@@ -142,6 +147,39 @@ public class GameBoardController {
         } else {
             logger.log(Level.SEVERE, "Player names, colors or AI status are null.");
         }
+    }
+/**
+ * Ändert den Hintergrund basierend auf dem aktuellen Thema.
+ *
+ * @param theme Das aktuelle Thema
+ */
+public void switchBackground(String theme) {
+    mainBorderPane.getStyleClass().removeIf(styleClass -> styleClass.startsWith("background-pane-"));
+    if ("dark".equals(theme)) {
+        mainBorderPane.getStyleClass().add("background-pane-dark");
+    } else {
+        mainBorderPane.getStyleClass().add("background-pane-light");
+    }
+}
+    /**
+     * sets the theme on default
+     */
+    @FXML
+    private void setThemeDefault() {
+        MenuController.theme = 0;
+        switchBackground("light");
+        loadTerrainImages(); 
+        updateTerrainLabel();
+    }
+    /**
+     * sets theme on zombie
+     */
+    @FXML
+    private void setThemeZombie() {
+        MenuController.theme = 1;
+        switchBackground("dark");
+        loadTerrainImages(); 
+        updateTerrainLabel();
     }
 
     /**
@@ -315,6 +353,15 @@ public class GameBoardController {
         }
         loadTerrainImages();
         updateTexts();
+        switchBackground(MenuController.theme == 0 ? "light" : "dark"); // Hintergrund basierend auf dem aktuellen Thema setzen  
+    }
+    /**
+     * Refreshes the background
+     */
+    public void refreshBackground() {
+        switchBackground(MenuController.theme == 0 ? "light" : "dark");
+        loadTerrainImages();
+        updateTerrainLabel();
     }
 
     /**
@@ -339,7 +386,7 @@ public class GameBoardController {
         }
     }
 
-/**
+    /**
      * loads terrainimage
      *
      */

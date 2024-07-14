@@ -25,6 +25,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+
+import javafx.scene.layout.BorderPane;
+
 /**
  * The GameMenuController class is responsible for controlling the game menu.
  */
@@ -87,6 +90,9 @@ public class GameMenuController {
 
     private GameBoardController gameBoardController;
 
+    @FXML
+    private BorderPane mainMenuBorderPane;
+
     /**
      * Sets the menu stage.
      *
@@ -128,7 +134,39 @@ public class GameMenuController {
             });
         }
         setTheme();
+        switchBackground(MenuController.theme == 0 ? "light" : "dark");
 
+    }
+    
+    /**
+     * switch the background depending on the theme
+     *
+     * @param theme the actual theme
+     */
+    public void switchBackground(String theme) {
+        mainMenuBorderPane.getStyleClass().removeIf(styleClass -> styleClass.startsWith("background-pane-"));
+        if ("dark".equals(theme)) {
+            mainMenuBorderPane.getStyleClass().add("background-pane-dark");
+        } else {
+            mainMenuBorderPane.getStyleClass().add("background-pane-light");
+        }
+    }
+
+    /**
+     * sets the theme on default
+     */
+    @FXML
+    private void setThemeDefault() {
+        MenuController.theme = 0;
+        switchBackground("light");
+    }
+    /**
+     * sets the theme on zombie
+     */
+    @FXML
+    private void setThemeZombie() {
+        MenuController.theme = 1;
+        switchBackground("dark");
     }
 
     /*
@@ -140,11 +178,11 @@ public class GameMenuController {
             item.setOnAction(event -> {
                 switch (item.getText()) {
                     case "Default":
-                        MenuController.theme = 0;
+                        setThemeDefault();
                         System.out.println("Theme: " + item.getText());
                         break;
                     case "Zombie":
-                        MenuController.theme = 1;
+                        setThemeZombie();
                         System.out.println("Theme: " + item.getText());
                         break;
                     default:
@@ -395,6 +433,7 @@ public class GameMenuController {
         GameBoardController gameBoardController = GameBoardController.getInstance();
         if (gameBoardController != null) {
             gameBoardController.refreshTexts();
+            gameBoardController.refreshBackground();
         } else {
             logger.log(Level.SEVERE, "GameBoardController ist null.");
         }

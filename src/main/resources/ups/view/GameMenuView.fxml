@@ -6,7 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="538.0" styleClass="background-pane" stylesheets="@style_GameMenu.css" prefWidth="961.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ups.controller.GameMenuController">
+<BorderPane fx:id="mainMenuBorderPane" prefHeight="538.0" styleClass="background-pane" stylesheets="@style_GameMenu.css" prefWidth="961.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ups.controller.GameMenuController">
    <top>
       <Pane prefHeight="250.0" BorderPane.alignment="CENTER" />
    </top>
@@ -20,7 +20,7 @@
       <Pane prefHeight="350.0" BorderPane.alignment="CENTER" />
    </bottom>
    <center>
-      <GridPane alignment="CENTER" hgap="10" vgap="10" styleClass="transparent-background-gridpane" stylesheets="@style_GameMenu.css">
+      <GridPane alignment="CENTER" hgap="10" vgap="10" styleClass="transparent-background-gridpane">
          <padding>
             <Insets bottom="10" left="10" right="10" top="10" />
          </padding>
@@ -98,10 +98,10 @@
                </items>
             </MenuButton>
             <Button fx:id="highscoreButton" prefHeight="26.0" prefWidth="120.0" text="Highscore" onAction="#showHighscore"/>
-            <MenuButton onAction="#setTheme" fx:id="themeButton" text="Theme" alignment="CENTER" prefHeight="26.0" prefWidth="120.0">
+            <MenuButton fx:id="themeButton" text="Theme" alignment="CENTER" prefHeight="26.0" prefWidth="120.0">
                <items>
-                  <MenuItem fx:id="theme_default" mnemonicParsing="false" text="Default"/>
-                  <MenuItem fx:id="theme_zombie" mnemonicParsing="false" text="Zombie"/>
+                  <MenuItem fx:id="theme_default" mnemonicParsing="false" text="Default" onAction="#setThemeDefault"/>
+                  <MenuItem fx:id="theme_zombie" mnemonicParsing="false" text="Zombie" onAction="#setThemeZombie"/>
                </items>
             </MenuButton>
          </HBox>
