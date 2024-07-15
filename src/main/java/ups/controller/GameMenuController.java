@@ -232,6 +232,12 @@ public class GameMenuController {
             logger.log(Level.SEVERE, "bundle is null.");
             return;
         }
+        if(MenuController.languageIndex == 0){
+            proceduralGameboardCheckbox.setText("Prozedurales Spielfeld");
+        }
+        if(MenuController.languageIndex == 1){
+            proceduralGameboardCheckbox.setText("Procedural Gameboard");
+        }
 
         setButtonText(languageButton, "choose_language");
         setButtonText(newGameButton, "new_game");
