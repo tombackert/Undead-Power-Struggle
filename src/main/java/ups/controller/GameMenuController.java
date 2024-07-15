@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import javafx.scene.paint.Color;
 import ups.gui.ColorMapping;
 import ups.model.AIPlayer;
+import ups.model.GameBoard;
 import ups.model.Highscore;
 import ups.model.Player;
 import ups.utils.AlertManager;
@@ -92,6 +93,9 @@ public class GameMenuController {
 
     @FXML
     private BorderPane mainMenuBorderPane;
+
+    @FXML
+    private CheckBox proceduralGameboardCheckbox;
 
     /**
      * Sets the menu stage.
@@ -565,5 +569,10 @@ public class GameMenuController {
             spinnerContainer.getChildren().add(spinner);
 
         }
+    }
+
+    @FXML
+    private void handleProceduralGameboardCheckbox() {
+        GameBoard.makeProcedural = proceduralGameboardCheckbox.isSelected();
     }
 }

@@ -228,6 +228,14 @@ public class ProceduralGameboard {
                 terrainMap[x][y] = ProceduralZone.decodeTerrain(this.board[x][y]);
             }
         }
-        return terrainMap;
+        int g = 0;
+        for (int i = 0; i < 5; i++) {
+            g += sizes[i];
+        }
+        //If Gameboard has at least 330 buildable fields, return it
+        if (g >= 330) return terrainMap;
+        //Else create a new one; This happens until a gameboard with 330 buildable fields is created
+        ProceduralGameboard newBoard = new ProceduralGameboard(this.sizeX, this.sizeY);
+        return newBoard.generateProceduralGameboard();
     }
 }

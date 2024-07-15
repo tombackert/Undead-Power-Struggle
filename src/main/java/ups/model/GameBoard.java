@@ -14,6 +14,7 @@ import java.util.Map;
 
 import ups.gui.ColorMapping;
 import ups.utils.ProceduralGameboard;
+import ups.utils.ProceduralZone;
 
 /**
  * The GameBoard class represents the game board of the game.
@@ -26,6 +27,7 @@ public class GameBoard {
     private final boolean[][] occupied;  // Hält die Informationen über besetzte Felder
     private Map<Point, Player> hexagonOwnership; // Hält die Besitzer der Hexagone
     private Map<String, Integer> terrainCount; // Anzahl der verbleibenden Felder für jeden Geländetyp
+    public static boolean makeProcedural = false; //true für procedural gameboard; false für standard gameboard
     
     //List of selected cards
     public List<String> selectedCards;
@@ -90,8 +92,8 @@ public class GameBoard {
         if (filePath == null) {
             throw new IllegalArgumentException("Ungültiger Index für Board-Initialisierung");
         }
-        loadBoardFromFile(filePath, startRow, startCol);
-        //this.createRandomGameboard();
+        if (makeProcedural) this.createRandomGameboard();
+        else loadBoardFromFile(filePath, startRow, startCol);
     }
 
     /**
@@ -148,11 +150,15 @@ public class GameBoard {
         System.out.println("Generating Procedural Gameboard...");
         ProceduralGameboard p = new ProceduralGameboard(this.boardSizeX, this.boardSizeY);
         String[][] store = p.generateProceduralGameboard();
+        for (int i = 1; i <= 9; i++) {
+            terrainCount.put(ProceduralZone.decodeTerrain(i), 0);
+        }
         for (int x = 0; x < this.boardSizeX; x++) {
             for (int y = 0; y < this.boardSizeY; y++) {
                 this.terrainMap[x][y] = store[x][y];
                 this.colors[x][y] = ColorMapping.getColorFromString(store[x][y]);
                 this.occupied[x][y] = false;
+                terrainCount.put(store[x][y], terrainCount.get(store[x][y])+1);
             }
         }
         System.out.println("Generated Procedural Gameboard.");

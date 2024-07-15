@@ -126,6 +126,11 @@
             <Button fx:id="continueGameButton" alignment="CENTER" prefHeight="26.0" prefWidth="120.0" onAction="#continueGame" text="Weiter spielen"/>
             <Button fx:id="exitGameButton" alignment="CENTER" prefHeight="26.0" prefWidth="120.0" onAction="#exitGame" text="Hauptmenü"/>
          </HBox>
+
+         <!-- Procedural Gameboard Option -->
+         <HBox alignment="CENTER" spacing="50" GridPane.rowIndex="6" GridPane.columnIndex="0" GridPane.columnSpan="3">
+            <CheckBox fx:id="proceduralGameboardCheckbox" mnemonicParsing="false" text="Prozedurales Spielfeld" onAction="#handleProceduralGameboardCheckbox"/>
+         </HBox>
       </GridPane>
    </center>
 </BorderPane>
