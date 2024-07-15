@@ -213,6 +213,56 @@ public abstract class BaseMenuView extends Application {
         try {
             // Log the path to the card
             //System.out.println("Showing card: " + pathToCard);
+
+            // Load the image
+            FileInputStream input = new FileInputStream(pathToCard);
+            Image image = new Image(input);
+            ImageView imageView = new ImageView(image);
+
+            // Check if the image is loaded
+            if (image.isError()) {
+                System.err.println("Error loading image: " + image.getException());
+                return;
+            }
+
+            // Bind image view position to be on the right side of the menu
+            cardBox.translateXProperty()
+                    .bind(root.widthProperty().subtract(cardBox.widthProperty()).divide(2).add(300));
+            cardBox.setTranslateY(HEIGHT / 3 + 55);
+
+            // Set image view properties
+            imageView.setPreserveRatio(true);
+            imageView.setFitWidth(230); // (230)
+            imageView.setTranslateX(0); // (980)
+            imageView.setTranslateY(0); // (330)
+
+            // Clear previous images if any
+            cardBox.getChildren().clear();
+
+            // Add the new image view to the card box
+            cardBox.getChildren().add(imageView);
+
+            // Ensure cardBox is added to the root if not already present
+            if (!root.getChildren().contains(cardBox)) {
+                root.getChildren().add(cardBox);
+            }
+
+            // Log successful addition
+            //System.out.println("Card image added to the scene.");
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Show a card image on the screen.
+     * @param pathToCard Path to the card image.
+     */
+    public void showTutorial(String pathToCard) {
+        try {
+            // Log the path to the card
+            //System.out.println("Showing card: " + pathToCard);
             
             // Load the image
             FileInputStream input = new FileInputStream(pathToCard);
@@ -226,12 +276,12 @@ public abstract class BaseMenuView extends Application {
             }
             
             // Bind image view position to be on the right side of the menu
-            cardBox.translateXProperty().bind(root.widthProperty().subtract(cardBox.widthProperty()).divide(2).add(300));
-            cardBox.setTranslateY(HEIGHT / 3 + 55);
+            cardBox.translateXProperty().bind(root.widthProperty().subtract(cardBox.widthProperty()).divide(2).add(370));
+            cardBox.setTranslateY(HEIGHT / 3 + 50);
 
             // Set image view properties
             imageView.setPreserveRatio(true);
-            imageView.setFitWidth(230); // (230)
+            imageView.setFitWidth(490); // (230)
             imageView.setTranslateX(0); // (980)
             imageView.setTranslateY(0); // (330)
 

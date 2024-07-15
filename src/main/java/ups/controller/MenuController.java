@@ -82,7 +82,8 @@ public class MenuController {
                 // Display the tutorial (game instructions)
                 new Pair<>(menuItems[3][languageIndex], () -> {
                     try {
-                        new TutorialView().start(primaryStage);
+                        TutorialController.tutorialView = new TutorialView();
+                        TutorialController.tutorialView.start(primaryStage);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
