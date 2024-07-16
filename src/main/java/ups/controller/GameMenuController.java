@@ -104,6 +104,10 @@ public class GameMenuController {
     @FXML
     private Label Label;
 
+    @FXML
+    private Button randomCardsButton;
+
+
     /**
      * Sets the menu stage.
      *
@@ -259,6 +263,12 @@ public class GameMenuController {
         }
         if (MenuController.languageIndex == 1) {
             Label.setText("Select the number of cards");
+        }
+        if (MenuController.languageIndex == 0) {
+            randomCardsButton.setText("Wähle die Anzahl der Karten aus");
+        }
+        if (MenuController.languageIndex == 1) {
+            randomCardsButton.setText("Select the number of cards");
         }
 
         setButtonText(languageButton, "choose_language");
@@ -703,4 +713,40 @@ public class GameMenuController {
     private void handleProceduralGameboardCheckbox() {
         GameBoard.makeProcedural = proceduralGameboardCheckbox.isSelected();
     }
+    @FXML
+    private void handleRandomCardsButton() {
+        generateRandomCards();
+    }
+    private void generateRandomCards() {
+        int numberOfCards = cardCountSpinner.getValue();
+        List<String> cardOptions;
+    
+        if (MenuController.theme == 1) {
+            cardOptions = loadZombieCardNames();
+        } else {
+            cardOptions = loadCardNames();
+        }
+    
+        Collections.shuffle(cardOptions);  // Mischen Sie die Liste
+    
+        spinnerContainer.getChildren().clear();  // Löschen Sie bestehende Spinner
+    
+        for (int i = 0; i < numberOfCards; i++) {
+            ComboBox<String> cardComboBox = new ComboBox<>();
+            cardComboBox.getItems().addAll(cardOptions);
+            cardComboBox.setValue(cardOptions.get(i));  // Setzen Sie eine zufällige Karte
+    
+            if (MenuController.languageIndex == 0){
+                cardComboBox.setPromptText("Karte auswählen");
+            } else {
+                cardComboBox.setPromptText("Select Card");
+            }
+    
+            int row = i / 4;
+            int col = i % 4;
+            GridPane.setConstraints(cardComboBox, col, row);
+            spinnerContainer.getChildren().add(cardComboBox);
+        }
+    }
+
 }
