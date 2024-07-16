@@ -34,6 +34,17 @@ public class ColorMapping {
         colorMap.put("Red", Color.RED);
         colorMap.put("Black", Color.BLACK);
         colorMap.put("Blue", Color.BLUE);
+
+        colorMap.put("Lila", Color.PURPLE);
+        colorMap.put("Weiß", Color.WHITE);
+        colorMap.put("Pink", Color.PINK);
+        colorMap.put("Babyblau", Color.LIGHTBLUE);
+
+        colorMap.put("Purple", Color.PURPLE);
+        colorMap.put("White", Color.WHITE);
+        colorMap.put("Pink", Color.PINK);
+        colorMap.put("Babyblue", Color.LIGHTBLUE);
+        
     }
 
     /**
@@ -59,6 +70,14 @@ public class ColorMapping {
                 return Color.BLUE;
             case 4:
                 return Color.ORANGE;
+            case 5:
+                return Color.PURPLE;
+            case 6:
+                return Color.WHITE;
+            case 7:
+                return Color.PINK;
+            case 8:
+                return Color.LIGHTBLUE;    
             default:
                 throw new IllegalArgumentException("Ungültige Spielerfarbe: " + color);
         }
@@ -76,10 +95,20 @@ public class ColorMapping {
             return 3;
         } else if (color.equals(Color.ORANGE)) {
             return 4;
-        } else {
-            throw new IllegalArgumentException("Ungültige Spielerfarbe: " + color);
+        } else if (color.equals(Color.PURPLE)) {
+            return 5;
+        } else if (color.equals(Color.WHITE)) {
+            return 6;
+        } else if (color.equals(Color.PINK)) {
+            return 7;
+        }else if (color.equals(Color.LIGHTBLUE)) {
+            return 8;
         }
+        else {
+            throw new IllegalArgumentException("Ungültige Spielerfarbe: " + color);
+        }  
     }
+    
 
     /**
      * Returns the color name for the given JavaFX Color object.

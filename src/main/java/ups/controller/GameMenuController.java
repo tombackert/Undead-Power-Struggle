@@ -58,6 +58,22 @@ public class GameMenuController {
     @FXML
     private ComboBox<String> color4ComboBox;
     @FXML
+    private TextField player5Field;
+    @FXML
+    private ComboBox<String> color5ComboBox;
+    @FXML
+    private TextField player6Field;
+    @FXML
+    private ComboBox<String> color6ComboBox;
+    @FXML
+    private TextField player7Field;
+    @FXML
+    private ComboBox<String> color7ComboBox;
+    @FXML
+    private TextField player8Field;
+    @FXML
+    private ComboBox<String> color8ComboBox;
+    @FXML
     private MenuButton languageButton;
     @FXML
     private Button newGameButton;
@@ -81,6 +97,14 @@ public class GameMenuController {
     private CheckBox aiPlayer3;
     @FXML
     private CheckBox aiPlayer4;
+    @FXML
+    private CheckBox aiPlayer5;
+    @FXML
+    private CheckBox aiPlayer6;
+    @FXML
+    private CheckBox aiPlayer7;
+    @FXML
+    private CheckBox aiPlayer8;
     @FXML
     private TextField settlementsCount;
     @FXML
@@ -265,10 +289,10 @@ public class GameMenuController {
             Label.setText("Select the number of cards");
         }
         if (MenuController.languageIndex == 0) {
-            randomCardsButton.setText("Wähle die Anzahl der Karten aus");
+            randomCardsButton.setText("Zufällige Karten");
         }
         if (MenuController.languageIndex == 1) {
-            randomCardsButton.setText("Select the number of cards");
+            randomCardsButton.setText("Random cards");
         }
 
         setButtonText(languageButton, "choose_language");
@@ -284,16 +308,28 @@ public class GameMenuController {
         setPromptText(player2Field, "prompt_player2_name");
         setPromptText(player3Field, "prompt_player3_name");
         setPromptText(player4Field, "prompt_player4_name");
+        setPromptText(player5Field, "prompt_player5_name");
+        setPromptText(player6Field, "prompt_player6_name");
+        setPromptText(player7Field, "prompt_player7_name");
+        setPromptText(player8Field, "prompt_player8_name");
 
         setPromptText(color1ComboBox, "prompt_color_select");
         setPromptText(color2ComboBox, "prompt_color_select");
         setPromptText(color3ComboBox, "prompt_color_select");
         setPromptText(color4ComboBox, "prompt_color_select");
+        setPromptText(color5ComboBox, "prompt_color_select");
+        setPromptText(color6ComboBox, "prompt_color_select");
+        setPromptText(color7ComboBox, "prompt_color_select");
+        setPromptText(color8ComboBox, "prompt_color_select");
 
         setText(aiPlayer1, "ai_player1");
         setText(aiPlayer2, "ai_player2");
         setText(aiPlayer3, "ai_player3");
         setText(aiPlayer4, "ai_player4");
+        setText(aiPlayer5, "ai_player5");
+        setText(aiPlayer6, "ai_player6");
+        setText(aiPlayer7, "ai_player7");
+        setText(aiPlayer8, "ai_player8");
 
         setPromptText(settlementsCount, "settlements_count");
         setPromptText(settlementsPerTurn, "settlements_per_turn");
@@ -302,6 +338,10 @@ public class GameMenuController {
         updateColorOptions(color2ComboBox);
         updateColorOptions(color3ComboBox);
         updateColorOptions(color4ComboBox);
+        updateColorOptions(color5ComboBox);
+        updateColorOptions(color6ComboBox);
+        updateColorOptions(color7ComboBox);
+        updateColorOptions(color8ComboBox);
     }
 
     /**
@@ -356,7 +396,7 @@ public class GameMenuController {
     private void updateColorOptions(ComboBox<String> comboBox) {
         if (comboBox != null) {
             String selectedColor = comboBox.getValue();
-            comboBox.getItems().setAll(bundle.getString("red"), bundle.getString("black"), bundle.getString("blue"), bundle.getString("orange"));
+            comboBox.getItems().setAll(bundle.getString("red"), bundle.getString("black"), bundle.getString("blue"), bundle.getString("orange"), bundle.getString("lila"), bundle.getString("weiß"), bundle.getString("pink"), bundle.getString("babyblau"));
             comboBox.setValue(selectedColor); // Re-set the selected color
         } else {
             logger.log(Level.SEVERE, "ComboBox is null.");
@@ -500,6 +540,10 @@ public class GameMenuController {
         addPlayerName(names, player2Field);
         addPlayerName(names, player3Field);
         addPlayerName(names, player4Field);
+        addPlayerName(names, player5Field);
+        addPlayerName(names, player6Field);
+        addPlayerName(names, player7Field);
+        addPlayerName(names, player8Field);
         return names;
     }
 
@@ -522,6 +566,10 @@ public class GameMenuController {
         playerColorMap.put(player2Field, color2ComboBox);
         playerColorMap.put(player3Field, color3ComboBox);
         playerColorMap.put(player4Field, color4ComboBox);
+        playerColorMap.put(player5Field, color5ComboBox);
+        playerColorMap.put(player6Field, color6ComboBox);
+        playerColorMap.put(player7Field, color7ComboBox);
+        playerColorMap.put(player8Field, color8ComboBox);
 
         List<String> colorNames = new ArrayList<>();
         for (Map.Entry<TextField, ComboBox<String>> entry : playerColorMap.entrySet()) {
@@ -567,7 +615,11 @@ public class GameMenuController {
                 aiPlayer1.isSelected(),
                 aiPlayer2.isSelected(),
                 aiPlayer3.isSelected(),
-                aiPlayer4.isSelected()
+                aiPlayer4.isSelected(),
+                aiPlayer5.isSelected(),
+                aiPlayer6.isSelected(),
+                aiPlayer7.isSelected(),
+                aiPlayer8.isSelected()
         };
     }
 
@@ -713,10 +765,16 @@ public class GameMenuController {
     private void handleProceduralGameboardCheckbox() {
         GameBoard.makeProcedural = proceduralGameboardCheckbox.isSelected();
     }
+    /**
+     * handles the random generated cards
+     */
     @FXML
     private void handleRandomCardsButton() {
         generateRandomCards();
     }
+    /**
+     * generate Random cards
+     */
     private void generateRandomCards() {
         int numberOfCards = cardCountSpinner.getValue();
         List<String> cardOptions;

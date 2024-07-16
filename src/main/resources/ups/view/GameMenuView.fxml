@@ -6,9 +6,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="mainMenuBorderPane" prefHeight="538.0" styleClass="background-pane" stylesheets="@style_GameMenu.css" prefWidth="961.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ups.controller.GameMenuController">
+<BorderPane fx:id="mainMenuBorderPane" prefHeight="238.0" styleClass="background-pane" stylesheets="@style_GameMenu.css" prefWidth="961.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ups.controller.GameMenuController">
    <top>
-      <Pane prefHeight="250.0" BorderPane.alignment="CENTER" />
+      <Pane prefHeight="150.0" BorderPane.alignment="CENTER" />
    </top>
    <left>
       <Pane prefWidth="500.0" BorderPane.alignment="CENTER" />
@@ -32,6 +32,10 @@
                <TextField fx:id="player2Field" promptText="Spieler 2 Name" />
                <TextField fx:id="player3Field" promptText="Spieler 3 Name" />
                <TextField fx:id="player4Field" promptText="Spieler 4 Name" />
+               <TextField fx:id="player5Field" promptText="Spieler 5 Name" />
+               <TextField fx:id="player6Field" promptText="Spieler 6 Name" />
+               <TextField fx:id="player7Field" promptText="Spieler 7 Name" />
+               <TextField fx:id="player8Field" promptText="Spieler 8 Name" />
             </VBox>
             <VBox alignment="CENTER" spacing="0">
                <ComboBox fx:id="color1ComboBox" promptText="Farbe auswählen" prefHeight="26.0" prefWidth="120.0">
@@ -41,6 +45,10 @@
                         <String fx:value="Schwarz" />
                         <String fx:value="Blau" />
                         <String fx:value="Orange" />
+                        <String fx:value="Lila" />
+                        <String fx:value="Pink" />
+                        <String fx:value="Weiß" />
+                        <String fx:value="Babyblau" />
                      </FXCollections>
                   </items>
                </ComboBox>
@@ -51,6 +59,10 @@
                         <String fx:value="Schwarz" />
                         <String fx:value="Blau" />
                         <String fx:value="Orange" />
+                        <String fx:value="Lila" />
+                        <String fx:value="Pink" />
+                        <String fx:value="Weiß" />
+                        <String fx:value="Babyblau" />
                      </FXCollections>
                   </items>
                </ComboBox>
@@ -61,6 +73,10 @@
                         <String fx:value="Schwarz" />
                         <String fx:value="Blau" />
                         <String fx:value="Orange" />
+                        <String fx:value="Lila" />
+                        <String fx:value="Pink" />
+                        <String fx:value="Weiß" />
+                        <String fx:value="Babyblau" />
                      </FXCollections>
                   </items>
                </ComboBox>
@@ -71,6 +87,66 @@
                         <String fx:value="Schwarz" />
                         <String fx:value="Blau" />
                         <String fx:value="Orange" />
+                        <String fx:value="Lila" />
+                        <String fx:value="Pink" />
+                        <String fx:value="Weiß" />
+                        <String fx:value="Babyblau" />
+                     </FXCollections>
+                  </items>
+               </ComboBox>
+               <ComboBox fx:id="color5ComboBox" promptText="Farbe auswählen" prefHeight="26.0" prefWidth="120.0">
+                  <items>
+                     <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Rot" />
+                        <String fx:value="Schwarz" />
+                        <String fx:value="Blau" />
+                        <String fx:value="Orange" />
+                        <String fx:value="Lila" />
+                        <String fx:value="Pink" />
+                        <String fx:value="Weiß" />
+                        <String fx:value="Babyblau" />
+                     </FXCollections>
+                  </items>
+               </ComboBox>
+               <ComboBox fx:id="color6ComboBox" promptText="Farbe auswählen" prefHeight="26.0" prefWidth="120.0">
+                  <items>
+                     <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Rot" />
+                        <String fx:value="Schwarz" />
+                        <String fx:value="Blau" />
+                        <String fx:value="Orange" />
+                        <String fx:value="Lila" />
+                        <String fx:value="Pink" />
+                        <String fx:value="Weiß" />
+                        <String fx:value="Babyblau" />
+                     </FXCollections>
+                  </items>
+               </ComboBox>
+               <ComboBox fx:id="color7ComboBox" promptText="Farbe auswählen" prefHeight="26.0" prefWidth="120.0">
+                  <items>
+                     <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Rot" />
+                        <String fx:value="Schwarz" />
+                        <String fx:value="Blau" />
+                        <String fx:value="Orange" />
+                        <String fx:value="Lila" />
+                        <String fx:value="Pink" />
+                        <String fx:value="Weiß" />
+                        <String fx:value="Babyblau" />
+                     </FXCollections>
+                  </items>
+               </ComboBox>
+               <ComboBox fx:id="color8ComboBox" promptText="Farbe auswählen" prefHeight="26.0" prefWidth="120.0">
+                  <items>
+                     <FXCollections fx:factory="observableArrayList">
+                        <String fx:value="Rot" />
+                        <String fx:value="Schwarz" />
+                        <String fx:value="Blau" />
+                        <String fx:value="Orange" />
+                        <String fx:value="Lila" />
+                        <String fx:value="Pink" />
+                        <String fx:value="Weiß" />
+                        <String fx:value="Babyblau" />
                      </FXCollections>
                   </items>
                </ComboBox>
@@ -80,6 +156,10 @@
                <CheckBox fx:id="aiPlayer2" mnemonicParsing="false" text="AIPlayer 2"/>
                <CheckBox fx:id="aiPlayer3" mnemonicParsing="false" text="AIPlayer 3"/>
                <CheckBox fx:id="aiPlayer4" mnemonicParsing="false" text="AIPlayer 4"/>
+               <CheckBox fx:id="aiPlayer5" mnemonicParsing="false" text="AIPlayer 5"/>
+               <CheckBox fx:id="aiPlayer6" mnemonicParsing="false" text="AIPlayer 6"/>
+               <CheckBox fx:id="aiPlayer7" mnemonicParsing="false" text="AIPlayer 7"/>
+               <CheckBox fx:id="aiPlayer8" mnemonicParsing="false" text="AIPlayer 8"/>
             </VBox>
          </HBox>
 
