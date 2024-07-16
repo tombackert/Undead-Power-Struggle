@@ -80,35 +80,157 @@ public class Player {
         int gold = 0;
         for (String card : board.selectedCards) {
             switch (card) {
-                case "Fischer":
+                case "Fischer" :
                     gold += evaluateFischer(board);
+                    System.out.println("Fischer");
                     break;
+                case "Fishermen" :
+                    gold += evaluateFischer(board);
+                    System.out.println("Fishermen");
+                    break;
+                case "Z.Fish" :
+                    gold += evaluateFischer(board);
+                    System.out.println("Z.Fish");
+                    break;
+                case "Z.Fisch" :
+                    gold += evaluateFischer(board);
+                    System.out.println("Z.Fisch");
+                    break;      
                 case "Bergleute":
                     gold += evaluateBergleute(board);
+                    System.out.println("Bergleute");
                     break;
+                case "Miners":
+                    gold += evaluateBergleute(board);
+                    System.out.println("Miners");
+                    break;
+                case "Z.Guard":
+                    gold += evaluateBergleute(board);
+                    System.out.println("Z.Guard");
+                    break;
+                case "Z:Wächter":
+                    gold += evaluateBergleute(board);
+                    System.out.println("Z.Wächter");
+                    break;      
                 case "Arbeiter":
                     gold += evaluateArbeiter(board);
+                    System.out.println("Arbeiter");
+                    break;
+                case "Worker":
+                    gold += evaluateArbeiter(board);
+                    System.out.println("Worker");
+                    break;
+                case "Z.Worker":
+                    gold += evaluateArbeiter(board);
+                    System.out.println("Z.Worker");
+                    break;
+                case "Z.Arbeiter":
+                    gold += evaluateArbeiter(board);
+                    System.out.println("Z.Arbeiter");
                     break;
                 case "Einsiedler":
                     gold += evaluateEinsiedler(board);
+                    System.out.println("Einsiedler");
+                    break;
+                case "Hermit":
+                    gold += evaluateEinsiedler(board);
+                    System.out.println("Hermit");
+                    break;
+                case "Z.Hermit":
+                    gold += evaluateEinsiedler(board);
+                    System.out.println("Z.Hermit");
+                    break;
+                case "Z.Einsiedler":
+                    gold += evaluateEinsiedler(board);
+                    System.out.println("Z.Einsiedler");
                     break;
                 case "Haendler":
                     gold += evaluateHaendler(board);
+                    System.out.println("Haendler");
+                    break;
+                case "Merchant":
+                    gold += evaluateHaendler(board);
+                    System.out.println("Merchant");
+                    break;
+                case "Z.Haendler":
+                    gold += evaluateHaendler(board);
+                    System.out.println("Z.Haendler");
+                    break;
+                case "Z.Merchant":
+                    gold += evaluateHaendler(board);
+                    System.out.println("Z.Merchant");
                     break;
                 case "Entdecker":
                     gold += evaluateEntdecker(board);
+                    System.out.println("Entdecker");
+                    break;
+                case "Discoverer":
+                    gold += evaluateEntdecker(board);
+                    System.out.println("Discoverer");
+                    break;
+                case "Z.Entdecker":
+                    gold += evaluateEntdecker(board);
+                    System.out.println("Z:Entdecker");
+                    break;
+                case "Z.Discoverer":
+                    gold += evaluateEntdecker(board);
+                    System.out.println("Z.Discoverer");
                     break;
                 case "Ritter":
                     gold += evaluateRitter(board);
+                    System.out.println("Ritter");
+                    break;
+                case "Knight":
+                    gold += evaluateRitter(board);
+                    System.out.println("Knight");
+                    break;
+                case "Z.Ritter":
+                    gold += evaluateRitter(board);
+                    System.out.println("Z.Ritter");
+                    break;
+                case "Z.Knight":
+                    gold += evaluateRitter(board);
+                    System.out.println("Z.Knight");
                     break;
                 case "Lords":
                     gold += evaluateLords(board);
+                    System.out.println("Lords");
+                    break;
+                case "Z.Lords":
+                    gold += evaluateLords(board);
+                    System.out.println("Z.Lords");
                     break;
                 case "Buerger":
                     gold += evaluateBuerger(board);
+                    System.out.println("Buerger");
+                    break;
+                case "Citizen":
+                    gold += evaluateBuerger(board);
+                    System.out.println("Citizen");
+                    break;
+                case "Z.Buerger":
+                    gold += evaluateBuerger(board);
+                    System.out.println("Z.Buerger");
+                    break;
+                case "Z.Citizen":
+                    gold += evaluateBuerger(board);
+                    System.out.println("Z.Citizen");
                     break;
                 case "Bauern":
                     gold += evaluateBauern(board);
+                    System.out.println("Bauern");
+                    break;
+                case "Farmer":
+                    gold += evaluateBauern(board);
+                    System.out.println("Farmer");
+                    break;
+                case "Z.Farmer":
+                    gold += evaluateBauern(board);
+                    System.out.println("Z.Farmer");
+                    break;
+                case "Z.Bauern":
+                    gold += evaluateBauern(board);
+                    System.out.println("Z.Bauern");
                     break;
             }
         }

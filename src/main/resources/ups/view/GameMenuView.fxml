@@ -108,10 +108,10 @@
 
          <!-- Siegoptions Auswahl -->
          <VBox alignment="CENTER" spacing="10" GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.columnSpan="3">
-            <Label text="Wähle die Anzahl an Siegbedingungen:" wrapText="true" />
+            <Label fx:id ="Label" text="Wähle die Anzahl an Siegbedingungen:" wrapText="true" />
             <Spinner fx:id="cardCountSpinner" initialValue="3" max="10" min="1" />
-            <Button onAction="#generateSpinners" text="Anzahl an Karten" />
-            <VBox fx:id="spinnerContainer" spacing="10" />
+            <Button fx:id = "AnzahlKarten" onAction="#generateSpinners" text="Anzahl an Karten" />
+            <GridPane fx:id="spinnerContainer" hgap="10" vgap="10"/>
          </VBox>
 
          <!-- Laden und Speichern -->

@@ -19,6 +19,7 @@ import ups.utils.HighscoreManager;
 import ups.utils.LanguageSettings;
 import ups.view.GameMenuView;
 import ups.view.HighscoreView;
+import javafx.scene.Node;
 
 import java.io.IOException;
 import java.util.*;
@@ -28,7 +29,7 @@ import java.util.stream.Collectors;
 
 
 import javafx.scene.layout.BorderPane;
-
+import javafx.scene.layout.GridPane;
 /**
  * The GameMenuController class is responsible for controlling the game menu.
  */
@@ -85,7 +86,7 @@ public class GameMenuController {
     @FXML
     private TextField settlementsPerTurn;
     @FXML
-    private VBox spinnerContainer;
+    private GridPane spinnerContainer;
     @FXML
     private Spinner<Integer> cardCountSpinner;
 
@@ -96,6 +97,12 @@ public class GameMenuController {
 
     @FXML
     private CheckBox proceduralGameboardCheckbox;
+
+    @FXML
+    private Button AnzahlKarten;
+
+    @FXML
+    private Label Label;
 
     /**
      * Sets the menu stage.
@@ -163,6 +170,7 @@ public class GameMenuController {
     private void setThemeDefault() {
         MenuController.theme = 0;
         switchBackground("light");
+        generateSpinners();
     }
     /**
      * sets the theme on zombie
@@ -171,6 +179,7 @@ public class GameMenuController {
     private void setThemeZombie() {
         MenuController.theme = 1;
         switchBackground("dark");
+        generateSpinners();
     }
 
     /*
@@ -220,6 +229,7 @@ public class GameMenuController {
             return;
         }
         updateTexts();
+        generateSpinners();
     }
 
     
@@ -237,6 +247,18 @@ public class GameMenuController {
         }
         if(MenuController.languageIndex == 1){
             proceduralGameboardCheckbox.setText("Procedural Gameboard");
+        }
+        if (MenuController.languageIndex == 0) {
+            AnzahlKarten.setText("Anzahl Karten");
+        }
+        if (MenuController.languageIndex == 1) {
+            AnzahlKarten.setText("Card number");
+        }
+        if (MenuController.languageIndex == 0) {
+            Label.setText("Wähle die Anzahl der Karten aus");
+        }
+        if (MenuController.languageIndex == 1) {
+            Label.setText("Select the number of cards");
         }
 
         setButtonText(languageButton, "choose_language");
@@ -352,6 +374,11 @@ public class GameMenuController {
             AlertManager.showAlert("alert.duplicate_colors");
             return;
         }
+        List<String> selectedCards = getSelectedCards();
+        if (hasDuplicateCards(selectedCards)) {
+            AlertManager.showAlert("alert.duplicate_cards");
+            return;
+        }
 
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ups/view/GameBoardView.fxml"), bundle);
@@ -369,7 +396,7 @@ public class GameMenuController {
             gameBoardController.setSettlementsCount(settlementsCountValue); // Set the total settlements value here
             gameBoardController.setPlayers(playerNames.toArray(new String[0]), playerColors.toArray(new Color[0]), aiPlayers);
             gameBoardController.setResourceBundle(bundle);
-
+            gameBoardController.setSelectedCards(selectedCards);
             List<Player> players = new ArrayList<>();
 
             Stage gameStage = new Stage();
@@ -564,18 +591,113 @@ public class GameMenuController {
             e.printStackTrace();
         }
     }
-
+        
+    /**
+    * Generates ComboBox spinners based on the number selected in cardCountSpinner.
+    * Clears existing spinners before generating new ones.
+    * Uses card names based on the theme and language settings.
+    */
     @FXML
     private void generateSpinners() {
         spinnerContainer.getChildren().clear(); // Löscht vorherige Spinner, falls vorhanden
         int numberOfSpinners = cardCountSpinner.getValue();
 
+        List<String> cardOptions;
+        if (MenuController.theme == 1) {
+            cardOptions = loadZombieCardNames();
+        } else {
+            cardOptions = loadCardNames();
+        }
         for (int i = 0; i < numberOfSpinners; i++) {
-            Spinner<Integer> spinner = new Spinner<>(1, 10, 1); // Hier können die Parameter angepasst werden
-            spinnerContainer.getChildren().add(spinner);
+            ComboBox<String> cardComboBox = new ComboBox<>();
+            cardComboBox.getItems().addAll(cardOptions);
+            if (MenuController.languageIndex ==0){
+                cardComboBox.setPromptText("Karte auswählen");
 
+            } else {
+                cardComboBox.setPromptText("Select Card");
+            }
+            
+
+            int row = i / 4;
+            int col = i % 4;
+            GridPane.setConstraints(cardComboBox, col, row);
+            spinnerContainer.getChildren().add(cardComboBox);
         }
     }
+
+    /**
+    * Retrieves the list of selected cards from the ComboBoxes in the spinnerContainer.
+    * 
+    * @return A list of strings representing the selected cards. The list may contain null elements if no card is selected.
+    */
+    private List<String> getSelectedCards() {
+        List<String> selectedCards = new ArrayList<>();
+        for (Node node : spinnerContainer.getChildren()) {
+            if (node instanceof ComboBox) {
+                ComboBox<String> comboBox = (ComboBox<String>) node;
+                String selectedCard = comboBox.getValue();
+                if (selectedCard != null) {
+                    selectedCards.add(selectedCard);
+                }
+            }
+        }
+        return selectedCards;
+    }
+
+    /**
+    * Checks if the given list of selected cards contains duplicates.
+    * 
+    * @param selectedCards The list of selected cards to check.
+    * @return true = if duplicates are found, false otherwise.
+    */
+    private boolean hasDuplicateCards(List<String> selectedCards) {
+        Set<String> cardSet = new HashSet<>(selectedCards);
+        return cardSet.size() < selectedCards.size();
+    }
+
+    /**
+    * Loads and returns the names of standard game cards from the resource bundle.
+    * The card names are fetched using keys common across all game themes.
+    * 
+    * @return A list of standard game card names.
+    */
+    private List<String> loadCardNames() {
+        return Arrays.asList(
+            bundle.getString("card.fischer"),
+            bundle.getString("card.bergleute"),
+            bundle.getString("card.arbeiter"),
+            bundle.getString("card.einsiedler"),
+            bundle.getString("card.haendler"),
+            bundle.getString("card.entdecker"),
+            bundle.getString("card.ritter"),
+            bundle.getString("card.lords"),
+            bundle.getString("card.buerger"),
+            bundle.getString("card.bauern")
+        );
+    }
+
+    /**
+    * Loads and returns the names of Zombie-themed cards from the resource bundle.
+    * The card names are fetched using keys specific to the Zombie theme.
+    * 
+    * @return A list of Zombie-themed card names.
+    */
+    private List<String> loadZombieCardNames() {
+        return Arrays.asList(
+            bundle.getString("card.Z.fischer"),
+            bundle.getString("card.Z.bergleute"),
+            bundle.getString("card.Z.arbeiter"),
+            bundle.getString("card.Z.einsiedler"),
+            bundle.getString("card.Z.haendler"),
+            bundle.getString("card.Z.entdecker"),
+            bundle.getString("card.Z.ritter"),
+            bundle.getString("card.Z.lords"),
+            bundle.getString("card.Z.buerger"),
+            bundle.getString("card.Z.bauern")
+        );
+    }
+    
 
     @FXML
     private void handleProceduralGameboardCheckbox() {

@@ -289,4 +289,21 @@ public class GameBoard {
         }
         return arr;
     }
+     /**
+    * Sets the selected cards to the provided list.
+    * 
+    * @param selectedCards The list of selected cards to set.
+    */
+    public void setSelectedCards(List<String> selectedCards) {
+        this.selectedCards = selectedCards;
+    }
+    /**
+    * Retrieves the currently selected cards.
+    * 
+    * @return The list of currently selected cards.
+    */
+    public List<String> getSelectedCards() {
+        return selectedCards;
+
+    }
 }

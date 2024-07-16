@@ -781,4 +781,14 @@ public void switchBackground(String theme) {
             // Fehlerbehandlung oder Logik zur Handhabung dieses Falls
         }
     }
+    /**
+    * Sets the selected cards for the model.
+    * 
+    * @param selectedCards The list of selected cards to set.
+    */
+    public void setSelectedCards(List<String> selectedCards) {
+        model.setSelectedCards(selectedCards);
+    }
 }
+
+
