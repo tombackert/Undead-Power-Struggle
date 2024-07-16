@@ -611,16 +611,18 @@ public class GameMenuController {
      * @return the array of booleans
      */
     private boolean[] getAIPlayers() {
-        return new boolean[]{
-                aiPlayer1.isSelected(),
-                aiPlayer2.isSelected(),
-                aiPlayer3.isSelected(),
-                aiPlayer4.isSelected(),
-                aiPlayer5.isSelected(),
-                aiPlayer6.isSelected(),
-                aiPlayer7.isSelected(),
-                aiPlayer8.isSelected()
+        boolean[] aiPlayers = new boolean[]{
+            aiPlayer1.isSelected(),
+            aiPlayer2.isSelected(),
+            aiPlayer3.isSelected(),
+            aiPlayer4.isSelected(),
+            aiPlayer5.isSelected(),
+            aiPlayer6.isSelected(),
+            aiPlayer7.isSelected(),
+            aiPlayer8.isSelected()
         };
+     
+        return aiPlayers;
     }
 
     @FXML
