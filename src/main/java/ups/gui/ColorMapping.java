@@ -37,12 +37,12 @@ public class ColorMapping {
 
         colorMap.put("Lila", Color.PURPLE);
         colorMap.put("Weiß", Color.WHITE);
-        colorMap.put("Pink", Color.PINK);
+        colorMap.put("Magenta", Color.MAGENTA);
         colorMap.put("Babyblau", Color.LIGHTBLUE);
 
         colorMap.put("Purple", Color.PURPLE);
         colorMap.put("White", Color.WHITE);
-        colorMap.put("Pink", Color.PINK);
+        colorMap.put("Magenta", Color.MAGENTA);
         colorMap.put("Babyblue", Color.LIGHTBLUE);
         
     }
@@ -75,7 +75,7 @@ public class ColorMapping {
             case 6:
                 return Color.WHITE;
             case 7:
-                return Color.PINK;
+                return Color.MAGENTA;
             case 8:
                 return Color.LIGHTBLUE;    
             default:
@@ -99,9 +99,9 @@ public class ColorMapping {
             return 5;
         } else if (color.equals(Color.WHITE)) {
             return 6;
-        } else if (color.equals(Color.PINK)) {
+        } else if (color.equals(Color.MAGENTA)) {
             return 7;
-        }else if (color.equals(Color.LIGHTBLUE)) {
+        } else if (color.equals(Color.LIGHTBLUE)) {
             return 8;
         }
         else {
