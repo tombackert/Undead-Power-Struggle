@@ -454,6 +454,14 @@ public class GameMenuController {
 
 //192.168.178.129
     private void startNetworkGame() throws IOException{
+        System.out.println("STARTING NETWORK GAME!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        ClientGameConnection.setMessageToClient(null);
+        ClientGameConnection.setMessageToGame(null);
+        clientThreadIsRunning = false;
+        serverThreadIsRunning = false;
+        try {
+            Thread.sleep(100);
+        } catch (Exception e) {}
         if (serverRadioButton.isSelected()) {
             List<String> cards = getSelectedCards();
             if (hasDuplicateCards(cards)) {
@@ -486,11 +494,11 @@ public class GameMenuController {
             }
         });
         clientThread.start();
-        String initString;
+        String initString = null;
         //wait for sever to send game info
         while ((initString = ClientGameConnection.getMessageToGame()) == null);
         //Parse Player info
-        System.out.println(initString.split(":::")[1]);
+        System.out.println("InitString: " + initString);
         String[][] infoStr = parsePlayerInfo(initString.split(":::")[1]);
         List<String> playerNames = new ArrayList<String>();
         List<Color> playerColors = new ArrayList<Color>();
@@ -520,6 +528,13 @@ public class GameMenuController {
         //start the game
         if (playerNames.size() < 2) {
             AlertManager.showAlert("alert.minimum_players");
+            clientThreadIsRunning = false;
+            serverThreadIsRunning = false;
+            return;
+        }
+
+        if (hasDuplicateCards(selectedCards)) {
+            AlertManager.showAlert("alert.duplicate_cards");
             clientThreadIsRunning = false;
             serverThreadIsRunning = false;
             return;

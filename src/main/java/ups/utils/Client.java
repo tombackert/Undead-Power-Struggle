@@ -24,12 +24,29 @@ public class Client {
     public void start() {
         new Thread(new IncomingMessageHandler()).start();
         new Thread(new OutgoingMessageHandler()).start();
+        while (GameMenuController.clientThreadIsRunning) {
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {}
+        }
+        shutdown();
     }
 
     public void sendMessage(String message) {
         System.out.println("Client Sending message: " + message);
         out.println(message);
         out.flush();
+    }
+
+    public void shutdown() {
+        try {
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+            }
+            System.out.println("Client shut down successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private class IncomingMessageHandler implements Runnable {
@@ -43,6 +60,14 @@ public class Client {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+                try {
+                    if (in != null) {
+                        in.close();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -62,6 +87,14 @@ public class Client {
                 }
             } catch (InterruptedException e) {
                 System.out.println("OutgoingMessageHandler thread interrupted");
+            } finally {
+                try {
+                    if (out != null) {
+                        out.close();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

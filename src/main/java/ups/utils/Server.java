@@ -4,8 +4,6 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.ArrayList;
-import java.util.Random;
 
 import ups.controller.GameMenuController;
 import ups.gui.ColorMapping;
@@ -76,6 +74,23 @@ public class Server {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+        shutdown();
+    }
+
+    public void shutdown() {
+        try {
+            // Close all client sockets
+            for (ClientHandler client : clients) {
+                client.close();
+            }
+            // Close the server socket
+            if (serverSocket != null && !serverSocket.isClosed()) {
+                serverSocket.close();
+            }
+            System.out.println("Server shut down successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -175,9 +190,16 @@ public class Server {
             clientInfoList.add(clientInfo);
         }
 
+        public void close() throws IOException {
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+            }
+        }
+
         public Socket getSocket() {
             return socket;
         }
+
 
         public boolean hasMessage() throws IOException {
             if (in.ready()) {

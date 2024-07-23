@@ -197,13 +197,13 @@
 
          <!-- Netzwerkspiel -->
          <HBox alignment="BASELINE_LEFT" spacing="15" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="4">
-            <CheckBox fx:id="networkPlayCheckBox" text="Netzwerkspiel" />
-            <RadioButton fx:id="serverRadioButton" text="Server" />
+            <CheckBox fx:id="networkPlayCheckBox" text="Online" />
+            <RadioButton fx:id="serverRadioButton" text="Host" />
          </HBox>
 
          <HBox alignment="BASELINE_LEFT" spacing="15" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="5">
-            <TextField fx:id="serverIpField" prefHeight="26.0" prefWidth="350.0" promptText="Server IP" />
-            <TextField fx:id="serverPortField" prefHeight="26.0" prefWidth="95.0" promptText="Port" />
+            <TextField fx:id="serverIpField" prefHeight="26.0" prefWidth="350.0" promptText="Host IP" />
+            <TextField fx:id="serverPortField" prefHeight="26.0" prefWidth="95.0" promptText="Host Port" />
          </HBox>
 
          <!-- Spielsteuerung -->
