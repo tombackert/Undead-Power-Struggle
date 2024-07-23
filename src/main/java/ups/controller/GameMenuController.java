@@ -454,13 +454,12 @@ public class GameMenuController {
 
 //192.168.178.129
     private void startNetworkGame() throws IOException{
-        System.out.println("STARTING NETWORK GAME!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
         ClientGameConnection.setMessageToClient(null);
         ClientGameConnection.setMessageToGame(null);
         clientThreadIsRunning = false;
         serverThreadIsRunning = false;
         try {
-            Thread.sleep(100);
+            Thread.sleep(300);
         } catch (Exception e) {}
         if (serverRadioButton.isSelected()) {
             List<String> cards = getSelectedCards();
