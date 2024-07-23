@@ -28,22 +28,16 @@ public class ColorMapping {
         colorMap.put("Rot", Color.RED);
         colorMap.put("Schwarz", Color.BLACK);
         colorMap.put("Blau", Color.BLUE);
-
         colorMap.put("Orange", Color.ORANGE);
-
         colorMap.put("Red", Color.RED);
         colorMap.put("Black", Color.BLACK);
         colorMap.put("Blue", Color.BLUE);
-
         colorMap.put("Lila", Color.PURPLE);
         colorMap.put("Weiß", Color.WHITE);
         colorMap.put("Magenta", Color.MAGENTA);
         colorMap.put("Babyblau", Color.LIGHTBLUE);
-
         colorMap.put("Purple", Color.PURPLE);
         colorMap.put("White", Color.WHITE);
-        colorMap.put("Magenta", Color.MAGENTA);
-        colorMap.put("Babyblue", Color.LIGHTBLUE);
         
     }
 
