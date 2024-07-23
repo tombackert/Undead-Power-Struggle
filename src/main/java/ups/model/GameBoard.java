@@ -6,12 +6,13 @@ import javafx.scene.paint.Color;
 
 import java.awt.*;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
+import ups.controller.GameMenuController;
 import ups.gui.ColorMapping;
 import ups.utils.ProceduralGameboard;
 import ups.utils.ProceduralZone;
@@ -92,7 +93,10 @@ public class GameBoard {
         if (filePath == null) {
             throw new IllegalArgumentException("Ungültiger Index für Board-Initialisierung");
         }
-        if (makeProcedural) this.createRandomGameboard();
+        if (makeProcedural && !GameMenuController.clientThreadIsRunning) this.createRandomGameboard();
+        else if (GameMenuController.clientThreadIsRunning && GameMenuController.gameBoardString != null) {
+            parseGameBoardFromNetwork(GameMenuController.gameBoardString);
+        }
         else loadBoardFromFile(filePath, startRow, startCol);
     }
 
@@ -105,17 +109,18 @@ public class GameBoard {
     private String getFilePathByIndex(int index) {
         switch (index) {
             case 0:
-                return "src/main/resources/quadrants/One.json";
+                return "/quadrants/One.json";
             case 1:
-                return "src/main/resources/quadrants/Two.json";
+                return "/quadrants/Two.json";
             case 2:
-                return "src/main/resources/quadrants/Three.json";
+                return "/quadrants/Three.json";
             case 3:
-                return "src/main/resources/quadrants/Four.json";
+                return "/quadrants/Four.json";
             default:
                 return null;
         }
     }
+
 
     /**
      * Loads the board from the file at the given file path.
@@ -127,17 +132,22 @@ public class GameBoard {
      */
     private void loadBoardFromFile(String filePath, int startRow, int startCol) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        Map<String, List<List<String>>> data = mapper.readValue(Path.of(filePath).toFile(), new TypeReference<>() {});
-        List<List<String>> terrain = data.get("terrainTypes");
+        try (InputStream inputStream = getClass().getResourceAsStream(filePath)) {
+            if (inputStream == null) {
+                throw new IOException("Resource not found: " + filePath);
+            }
+            Map<String, List<List<String>>> data = mapper.readValue(inputStream, new TypeReference<>() {});
+            List<List<String>> terrain = data.get("terrainTypes");
 
-        for (int row = 0; row < terrain.size(); row++) {
-            List<String> terrainRow = terrain.get(row);
-            for (int col = 0; col < terrainRow.size(); col++) {
-                colors[startRow + row][startCol + col] = ColorMapping.getColorFromString(terrainRow.get(col));
-                terrainMap[startRow + row][startCol + col] = terrainRow.get(col);  // Speichert den Geländetyp
-                occupied[startRow + row][startCol + col] = false;  // Initialisiere alle Felder als unbesetzt
+            for (int row = 0; row < terrain.size(); row++) {
+                List<String> terrainRow = terrain.get(row);
+                for (int col = 0; col < terrainRow.size(); col++) {
+                    colors[startRow + row][startCol + col] = ColorMapping.getColorFromString(terrainRow.get(col));
+                    terrainMap[startRow + row][startCol + col] = terrainRow.get(col);  // Speichert den Geländetyp
+                    occupied[startRow + row][startCol + col] = false;  // Initialisiere alle Felder als unbesetzt
 
-                terrainCount.put(terrainRow.get(col), terrainCount.getOrDefault(terrainRow.get(col), 0) + 1); // Zähle die Anzahl der Geländetypen
+                    terrainCount.put(terrainRow.get(col), terrainCount.getOrDefault(terrainRow.get(col), 0) + 1); // Zähle die Anzahl der Geländetypen
+                }
             }
         }
     }
@@ -162,6 +172,31 @@ public class GameBoard {
             }
         }
         System.out.println("Generated Procedural Gameboard.");
+    }
+
+    /**
+     * This Method parses the procedural gameboard which was sent by the server
+     * @param b the gameboard as a string
+     */
+    public void parseGameBoardFromNetwork(String b) {
+        System.out.println("Parsing the gameboard sent over by the server...");
+        String[][] store = new String[20][20];
+        String[] tiles = b.split(":");
+        for (int i = 0; i < tiles.length; i++) {
+            store[i / 20][i % 20] = ProceduralZone.decodeTerrain(Integer.parseInt(tiles[i]));
+        }
+        for (int i = 1; i <= 9; i++) {
+            terrainCount.put(ProceduralZone.decodeTerrain(i), 0);
+        }
+        for (int x = 0; x < this.boardSizeX; x++) {
+            for (int y = 0; y < this.boardSizeY; y++) {
+                this.terrainMap[x][y] = store[x][y];
+                this.colors[x][y] = ColorMapping.getColorFromString(store[x][y]);
+                this.occupied[x][y] = false;
+                terrainCount.put(store[x][y], terrainCount.get(store[x][y])+1);
+            }
+        }
+
     }
 
     /**

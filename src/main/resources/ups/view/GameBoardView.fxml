@@ -21,6 +21,7 @@
                         <Font size="14.0" />
                     </font>
                 </Label>
+                <ImageView fx:id="currentPlayerImageView" />
                 <Label fx:id="currentPlayerSettlementLabel" minWidth="200" text="Noch verfügbare Siedlungen: " styleClass="label">
                     <padding>
                         <Insets top="20.0" />

@@ -1,7 +1,9 @@
 package ups.controller;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.layout.VBox;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -14,19 +16,15 @@ import ups.model.AIPlayer;
 import ups.model.GameBoard;
 import ups.model.Highscore;
 import ups.model.Player;
-import ups.utils.AlertManager;
-import ups.utils.HighscoreManager;
-import ups.utils.LanguageSettings;
+import ups.utils.*;
 import ups.view.GameMenuView;
 import ups.view.HighscoreView;
-import javafx.scene.Node;
 
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
 
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
@@ -40,6 +38,12 @@ public class GameMenuController {
     private Stage menuStage;
     private Stage primaryStage;
     private ResourceBundle bundle;
+    private GameBoardController gameBoardController;
+    private static GameServer gameServer;
+    private static GameClient gameClient;
+    public static boolean serverThreadIsRunning = false;
+    public static boolean clientThreadIsRunning = false;
+    public static String gameBoardString = null;
 
     @FXML
     private TextField player1Field;
@@ -82,10 +86,6 @@ public class GameMenuController {
     @FXML
     private Button exitGameButton;
     @FXML
-    private Button loadGameState;
-    @FXML
-    private Button saveGameState;
-    @FXML
     private Button highscoreButton;
     @FXML
     private MenuButton themeButton;
@@ -113,18 +113,28 @@ public class GameMenuController {
     private GridPane spinnerContainer;
     @FXML
     private Spinner<Integer> cardCountSpinner;
-
-    private GameBoardController gameBoardController;
-
+    @FXML
+    private CheckBox networkPlayCheckBox;
+    @FXML
+    private TextField serverIpField;
+    @FXML
+    private TextField serverPortField;
+    @FXML
+    private RadioButton serverRadioButton;
+    @FXML
+    private RadioButton clientRadioButton;
+    @FXML
+    private ToggleGroup serverClientToggleGroup;
+    @FXML
+    private TextField networkPlayerNameField;
+    @FXML
+    private ComboBox<String> networkPlayerColorComboBox;
     @FXML
     private BorderPane mainMenuBorderPane;
-
     @FXML
     private CheckBox proceduralGameboardCheckbox;
-
     @FXML
     private Button AnzahlKarten;
-
     @FXML
     private Label Label;
 
@@ -176,7 +186,7 @@ public class GameMenuController {
         switchBackground(MenuController.theme == 0 ? "light" : "dark");
 
     }
-    
+
     /**
      * switch the background depending on the theme
      *
@@ -233,7 +243,7 @@ public class GameMenuController {
             });
         }
     }
-    
+
     /**
      * Sets the language to the given locale.
      *
@@ -260,7 +270,7 @@ public class GameMenuController {
         generateSpinners();
     }
 
-    
+
 
     /**
      * Updates the texts in the game menu.
@@ -299,8 +309,6 @@ public class GameMenuController {
         setButtonText(newGameButton, "new_game");
         setButtonText(continueGameButton, "continue_game");
         setButtonText(exitGameButton, "exit_game");
-        setButtonText(loadGameState, "load_game");
-        setButtonText(saveGameState, "save_game");
         setButtonText(highscoreButton, "show_highscore");
         setButtonText(themeButton, "choose_theme");
 
@@ -407,20 +415,170 @@ public class GameMenuController {
      * Starts a new game.
      */
     @FXML
-    public void startNewGame() {
+    public void startNewGame() throws IOException{
+        boolean isNetworkPlay = networkPlayCheckBox.isSelected();
+        if (isNetworkPlay) {
+            startNetworkGame();
+        } else {
+            startLocalGame();
+        }
+    }
+
+    private static String[][] parsePlayerInfo(String input) {
+        // Split the input string by "::"
+        String[] playerEntries = input.split("::");
+        int numOfPlayers = playerEntries.length;
+
+        // Initialize the 2D array
+        String[][] playerInfoArray = new String[numOfPlayers][2];
+
+        // Fill the 2D array with player names and colors
+        for (int i = 0; i < numOfPlayers; i++) {
+            // Split each player entry by ":"
+            String[] playerData = playerEntries[i].split(":");
+            if (playerData.length == 2) {
+                playerInfoArray[i][0] = playerData[0]; // Player name
+                playerInfoArray[i][1] = playerData[1]; // Player color
+            }
+        }
+
+        return playerInfoArray;
+    }
+
+    private int[] parseSettlementInfo(String info) {
+        int[] settlementInfo = new int[2];
+        settlementInfo[0] = Integer.parseInt(info.split(":")[0]);
+        settlementInfo[1] = Integer.parseInt(info.split(":")[1]);
+        return settlementInfo;
+    }
+
+//192.168.178.129
+    private void startNetworkGame() throws IOException{
+        if (serverRadioButton.isSelected()) {
+            List<String> cards = getSelectedCards();
+            if (hasDuplicateCards(cards)) {
+                AlertManager.showAlert("alert.duplicate_cards");
+                clientThreadIsRunning = false;
+                serverThreadIsRunning = false;
+                return;
+            }
+            int settlementsPerTurnValue = getSettlementsPerTurn();
+            int settlementsCountValue = getSettlementsCount();
+            // Start the server in its own thread
+            Thread serverThread = new Thread(() -> {
+                try {
+                    serverThreadIsRunning = true;
+                    new Server(Integer.parseInt(serverPortField.getText()), settlementsPerTurnValue, settlementsCountValue, cards).start();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+            serverThread.start();
+        }
+        String playerName = player1Field.getText();
+        String playerColor = color1ComboBox.getValue();
+        Thread clientThread = new Thread(() -> {
+            try {
+                clientThreadIsRunning = true;
+                new Client(serverIpField.getText(), Integer.parseInt(serverPortField.getText()), playerName, playerColor).start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        clientThread.start();
+        String initString;
+        //wait for sever to send game info
+        while ((initString = ClientGameConnection.getMessageToGame()) == null);
+        //Parse Player info
+        System.out.println(initString.split(":::")[1]);
+        String[][] infoStr = parsePlayerInfo(initString.split(":::")[1]);
+        List<String> playerNames = new ArrayList<String>();
+        List<Color> playerColors = new ArrayList<Color>();
+        boolean[] which = new boolean[8];
+        int whichPlayer = Integer.parseInt(initString.split(":::")[initString.split(":::").length - 1]);
+        for (int i = 0; i < infoStr.length; i++) {
+            playerNames.add(infoStr[i][0]);
+            playerColors.add(ColorMapping.getColorFromString(infoStr[i][1]));
+            which[i] = whichPlayer == i;
+        }
+        //Parse settlement info
+        System.out.println(initString.split(":::")[2]);
+        int[] settlementInfo = parseSettlementInfo(initString.split(":::")[2]);
+        int settlementsPerTurn = settlementInfo[0];
+        int settlementsCount = settlementInfo[1];
+        System.out.println("Per turn: " + Integer.toString(settlementsPerTurn) + "Gesamt: " + Integer.toString(settlementsCount));
+        //Parse kingdom builder card info
+        List<String> selectedCards = new ArrayList<String>();
+        System.out.println("Cards: " + initString.split(":::")[3]);
+        for (String c : initString.split(":::")[3].split(":")) {
+            selectedCards.add(c);
+        }
+        //Parse procedural gameboard
+        if (initString.split(":::").length > 5) {
+            gameBoardString = initString.split(":::")[4];
+        }
+        //start the game
+        if (playerNames.size() < 2) {
+            AlertManager.showAlert("alert.minimum_players");
+            clientThreadIsRunning = false;
+            serverThreadIsRunning = false;
+            return;
+        }
+
+        if (playerColors == null || playerColors.size() != playerNames.size()) {
+            AlertManager.showAlert("alert.duplicate_colors");
+            clientThreadIsRunning = false;
+            serverThreadIsRunning = false;
+            return;
+        }
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ups/view/GameBoardView.fxml"), bundle);
+        Parent root = loader.load();
+
+        GameBoardController gameBoardController = loader.getController();
+        gameBoardController.setResourceBundle(bundle); // Ensure this is called before anything else
+
+        int totalSettlementsNeeded = settlementsCount * playerNames.size();
+        if (!gameBoardController.checkAvailableBuildableFields(totalSettlementsNeeded)) {
+            AlertManager.showAlert("alert.not_enough_buildable_fields");
+            clientThreadIsRunning = false;
+            serverThreadIsRunning = false;
+            return;
+        }
+
+        gameBoardController.setSettlementsPerTurn(settlementsPerTurn);
+        gameBoardController.setSettlementsCount(settlementsCount);
+        gameBoardController.setPlayersForNetwork(playerNames.toArray(new String[0]), playerColors.toArray(new Color[0]), which, settlementsPerTurn, settlementsCount);
+        gameBoardController.setSelectedCards(selectedCards);
+
+        Stage gameStage = new Stage();
+        GameBoardController.setGameStage(gameStage);
+
+        Scene scene = new Scene(root, 1488, 850);
+        gameStage.setScene(scene);
+        gameStage.setTitle(bundle.getString("title"));
+
+        GameMenuView.setGameStage(gameStage);
+
+        menuStage.hide();
+        gameStage.show();
+        if (!which[0]) gameBoardController.startOnlineGame();
+
+    }
+
+    private void startLocalGame() {
         List<String> playerNames = getPlayerNames();
         List<Color> playerColors = getPlayerColors();
         boolean[] aiPlayers = getAIPlayers();
         int settlementsPerTurnValue = getSettlementsPerTurn();
         int settlementsCountValue = getSettlementsCount();
 
-        // Überprüfen, ob die Mindestanzahl von Spielern erreicht ist
         if (playerNames.size() < 2) {
             AlertManager.showAlert("alert.minimum_players");
             return;
         }
 
-        if (playerColors == null || playerColors.size() != getPlayerNames().size()) {
+        if (playerColors == null || playerColors.size() != playerNames.size()) {
             AlertManager.showAlert("alert.duplicate_colors");
             return;
         }
@@ -431,44 +589,87 @@ public class GameMenuController {
         }
 
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/ups/view/GameBoardView.fxml"), bundle);
-            Parent root = loader.load();
-
-            GameBoardController gameBoardController = loader.getController();
-
-            int totalSettlementsNeeded = settlementsCountValue * playerNames.size();
-            if (!gameBoardController.checkAvailableBuildableFields(totalSettlementsNeeded)) {
-                AlertManager.showAlert("alert.not_enough_buildable_fields");
-                return;
-            }
-
-            gameBoardController.setSettlementsPerTurn(settlementsPerTurnValue); // Set the value here
-            gameBoardController.setSettlementsCount(settlementsCountValue); // Set the total settlements value here
-            gameBoardController.setPlayers(playerNames.toArray(new String[0]), playerColors.toArray(new Color[0]), aiPlayers);
-            gameBoardController.setResourceBundle(bundle);
-            gameBoardController.setSelectedCards(selectedCards);
-            List<Player> players = new ArrayList<>();
-
-            Stage gameStage = new Stage();
-            GameBoardController.setGameStage(gameStage);
-
-            Scene scene = new Scene(root, 1488, 850);
-            gameStage.setScene(scene);
-            gameStage.setTitle(bundle.getString("title"));
-
-            GameMenuView.setGameStage(gameStage);
-
-            menuStage.hide();
-            gameStage.show();
-
-            // Prüfen, ob alle eingegebenen Spieler KI-Spieler sind
-            if (areAllEnteredPlayersAI(playerNames, aiPlayers) || isAIPlayerBeforeHuman(aiPlayers)) {
-                System.out.println("Ja, sind alles KI-Spieler");
-                gameBoardController.startAiGame();
-            }
-
+            startGame(playerNames, playerColors, aiPlayers, settlementsPerTurnValue, settlementsCountValue, selectedCards);
         } catch (IOException e) {
             logger.log(Level.SEVERE, "Failed to start new game", e);
+        }
+    }
+
+    private void startGame(List<String> playerNames, List<Color> playerColors, boolean[] aiPlayers, int settlementsPerTurn, int settlementsCount, List<String> selectedCards) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/ups/view/GameBoardView.fxml"), bundle);
+        Parent root = loader.load();
+
+        GameBoardController gameBoardController = loader.getController();
+        gameBoardController.setResourceBundle(bundle); // Ensure this is called before anything else
+
+        int totalSettlementsNeeded = settlementsCount * playerNames.size();
+        if (!gameBoardController.checkAvailableBuildableFields(totalSettlementsNeeded)) {
+            AlertManager.showAlert("alert.not_enough_buildable_fields");
+            return;
+        }
+
+        gameBoardController.setSettlementsPerTurn(settlementsPerTurn);
+        gameBoardController.setSettlementsCount(settlementsCount);
+        gameBoardController.setPlayers(playerNames.toArray(new String[0]), playerColors.toArray(new Color[0]), aiPlayers);
+        gameBoardController.setSelectedCards(selectedCards);
+        List<Player> players = new ArrayList<>();
+
+        Stage gameStage = new Stage();
+        GameBoardController.setGameStage(gameStage);
+
+        Scene scene = new Scene(root, 1488, 850);
+        gameStage.setScene(scene);
+        gameStage.setTitle(bundle.getString("title"));
+
+        GameMenuView.setGameStage(gameStage);
+
+        menuStage.hide();
+        gameStage.show();
+
+        if (areAllEnteredPlayersAI(playerNames, aiPlayers) || isAIPlayerBeforeHuman(aiPlayers)) {
+            System.out.println("Ja, sind alles KI-Spieler");
+            gameBoardController.startAiGame();
+        }
+    }
+
+    public void startServer(int port, String playerName, String playerColor) {
+        int settlementsPerTurnValue = getSettlementsPerTurn();
+        int settlementsCountValue = getSettlementsCount();
+
+        try {
+            gameServer = new GameServer();
+            gameServer.start(port, playerName, playerColor);
+
+            new Thread(() -> {
+                try {
+                    Thread.sleep(10000);
+
+                    Platform.runLater(() -> {
+                        List<String> playerNames = new ArrayList<>(gameServer.getPlayerNames());
+                        List<Color> playerColors = gameServer.getPlayerColors();
+                        List<String> selectedCards = getSelectedCards();
+
+                        // Notify clients to start the game
+                        System.out.println("Notifying clients to start game"); // Debug output
+                        gameServer.notifyClientsToStartGame();
+                    });
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void startClient(String ip, int port, String playerName, String playerColor) {
+        try {
+            GameClient gameClient = new GameClient();
+            gameClient.setResourceBundle(bundle); // Set the resource bundle here
+            gameClient.start(ip, port, playerName, playerColor);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -519,6 +720,7 @@ public class GameMenuController {
 
         GameBoardController gameBoardController = GameBoardController.getInstance();
         if (gameBoardController != null) {
+            gameBoardController.resumeGame(); // Resume the game
             gameBoardController.refreshTexts();
             gameBoardController.refreshBackground();
         } else {
@@ -655,12 +857,12 @@ public class GameMenuController {
             e.printStackTrace();
         }
     }
-        
+
     /**
-    * Generates ComboBox spinners based on the number selected in cardCountSpinner.
-    * Clears existing spinners before generating new ones.
-    * Uses card names based on the theme and language settings.
-    */
+     * Generates ComboBox spinners based on the number selected in cardCountSpinner.
+     * Clears existing spinners before generating new ones.
+     * Uses card names based on the theme and language settings.
+     */
     @FXML
     private void generateSpinners() {
         spinnerContainer.getChildren().clear(); // Löscht vorherige Spinner, falls vorhanden
@@ -681,7 +883,7 @@ public class GameMenuController {
             } else {
                 cardComboBox.setPromptText("Select Card");
             }
-            
+
 
             int row = i / 4;
             int col = i % 4;
@@ -691,10 +893,10 @@ public class GameMenuController {
     }
 
     /**
-    * Retrieves the list of selected cards from the ComboBoxes in the spinnerContainer.
-    * 
-    * @return A list of strings representing the selected cards. The list may contain null elements if no card is selected.
-    */
+     * Retrieves the list of selected cards from the ComboBoxes in the spinnerContainer.
+     *
+     * @return A list of strings representing the selected cards. The list may contain null elements if no card is selected.
+     */
     private List<String> getSelectedCards() {
         List<String> selectedCards = new ArrayList<>();
         for (Node node : spinnerContainer.getChildren()) {
@@ -710,62 +912,70 @@ public class GameMenuController {
     }
 
     /**
-    * Checks if the given list of selected cards contains duplicates.
-    * 
-    * @param selectedCards The list of selected cards to check.
-    * @return true = if duplicates are found, false otherwise.
-    */
+     * Checks if the given list of selected cards contains duplicates.
+     *
+     * @param selectedCards The list of selected cards to check.
+     * @return true = if duplicates are found, false otherwise.
+     */
     private boolean hasDuplicateCards(List<String> selectedCards) {
         Set<String> cardSet = new HashSet<>(selectedCards);
         return cardSet.size() < selectedCards.size();
     }
 
     /**
-    * Loads and returns the names of standard game cards from the resource bundle.
-    * The card names are fetched using keys common across all game themes.
-    * 
-    * @return A list of standard game card names.
-    */
+     * Loads and returns the names of standard game cards from the resource bundle.
+     * The card names are fetched using keys common across all game themes.
+     *
+     * @return A list of standard game card names.
+     */
     private List<String> loadCardNames() {
         return Arrays.asList(
-            bundle.getString("card.fischer"),
-            bundle.getString("card.bergleute"),
-            bundle.getString("card.arbeiter"),
-            bundle.getString("card.einsiedler"),
-            bundle.getString("card.haendler"),
-            bundle.getString("card.entdecker"),
-            bundle.getString("card.ritter"),
-            bundle.getString("card.lords"),
-            bundle.getString("card.buerger"),
-            bundle.getString("card.bauern")
+                bundle.getString("card.fischer"),
+                bundle.getString("card.bergleute"),
+                bundle.getString("card.arbeiter"),
+                bundle.getString("card.einsiedler"),
+                bundle.getString("card.haendler"),
+                bundle.getString("card.entdecker"),
+                bundle.getString("card.ritter"),
+                bundle.getString("card.lords"),
+                bundle.getString("card.buerger"),
+                bundle.getString("card.bauern")
         );
     }
 
     /**
-    * Loads and returns the names of Zombie-themed cards from the resource bundle.
-    * The card names are fetched using keys specific to the Zombie theme.
-    * 
-    * @return A list of Zombie-themed card names.
-    */
+     * Loads and returns the names of Zombie-themed cards from the resource bundle.
+     * The card names are fetched using keys specific to the Zombie theme.
+     *
+     * @return A list of Zombie-themed card names.
+     */
     private List<String> loadZombieCardNames() {
         return Arrays.asList(
-            bundle.getString("card.Z.fischer"),
-            bundle.getString("card.Z.bergleute"),
-            bundle.getString("card.Z.arbeiter"),
-            bundle.getString("card.Z.einsiedler"),
-            bundle.getString("card.Z.haendler"),
-            bundle.getString("card.Z.entdecker"),
-            bundle.getString("card.Z.ritter"),
-            bundle.getString("card.Z.lords"),
-            bundle.getString("card.Z.buerger"),
-            bundle.getString("card.Z.bauern")
+                bundle.getString("card.Z.fischer"),
+                bundle.getString("card.Z.bergleute"),
+                bundle.getString("card.Z.arbeiter"),
+                bundle.getString("card.Z.einsiedler"),
+                bundle.getString("card.Z.haendler"),
+                bundle.getString("card.Z.entdecker"),
+                bundle.getString("card.Z.ritter"),
+                bundle.getString("card.Z.lords"),
+                bundle.getString("card.Z.buerger"),
+                bundle.getString("card.Z.bauern")
         );
     }
-    
+
 
     @FXML
     private void handleProceduralGameboardCheckbox() {
         GameBoard.makeProcedural = proceduralGameboardCheckbox.isSelected();
+    }
+
+    public static GameServer getGameServer() {
+        return gameServer;
+    }
+
+    public static GameClient getGameClient() {
+        return gameClient;
     }
     /**
      * handles the random generated cards

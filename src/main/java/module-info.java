@@ -13,6 +13,7 @@ module ups {
 
     exports ups.gui;
     exports ups.model;
+    exports ups.utils;
     opens ups.view to javafx.fxml;
     exports ups.view;
     opens ups.controller to javafx.fxml;

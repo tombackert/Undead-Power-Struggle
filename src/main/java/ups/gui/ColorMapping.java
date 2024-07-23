@@ -20,7 +20,7 @@ public class ColorMapping {
         colorMap.put("Blumen", Color.PINK);
         colorMap.put("Canyon", Color.BROWN);
         colorMap.put("Berg", Color.GRAY);
-        colorMap.put("Wasser", Color.BLUE);
+        colorMap.put("Wasser", Color.LIGHTBLUE);
         colorMap.put("SilverCastle", Color.SILVER);
         colorMap.put("GoldCastle", Color.GOLD);
 
@@ -123,4 +123,5 @@ public class ColorMapping {
                 .findFirst() // Return the first color name that matches the given color
                 .orElse("Unbekannt"); // Return "Unbekannt" if color is not found
     }
+
 }

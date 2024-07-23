@@ -1,15 +1,16 @@
 package ups.model;
 
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Random;
-
-import javafx.application.Platform;
-import ups.controller.GameBoardController;
 import javafx.scene.paint.Color;
 
 /**
  * The AIPlayer class represents an AI player in the game.
  */
 public class AIPlayer extends Player {
+    private final Queue<int[]> pendingMoves = new LinkedList<>();
+
     /**
      * Constructs a new AIPlayer with the given name and color.
      *
@@ -22,28 +23,8 @@ public class AIPlayer extends Player {
     }
 
     /**
-     * Makes a move for the AI player.
-     *
-     * @param controller the game board controller
-     */
-    public void makeMove(GameBoardController controller, GameBoard board) {
-        // Check if the game should end
-        if (controller.checkAllPlayersNoSettlements()) {
-            controller.endGame();
-        }
-
-        int[] move = findBestMove(controller.getModel(), controller.getCurrentTerrain());
-        Platform.runLater(() -> {
-            controller.handleAIClick(move[0], move[1]);
-            board.occupiedBy[move[0]][move[1]] = this.color;
-            controller.updateBoardForAI(AIPlayer.this);
-        });
-        System.out.println("AI move: " + move[0] + ", " + move[1] + ". AI Player now has gold=" + evaluateGameboard(controller.getModel()));
-    }
-
-    /**
      * Returns a random move of all moves that maximise gold.
-     * 
+     *
      * @param board the game board
      * @param currentTerrain the current terrain type
      * @return the best greedy move
@@ -76,14 +57,14 @@ public class AIPlayer extends Player {
                     bestMoves[bestMovesEnd] = n;
                     bestMovesEnd++;
                     bestGold = gold;
-                }  
+                }
             }
         }
         //chose random move out of highest rated moves
         if (bestMovesEnd > bestMovesStart) bestMove = bestMoves[bestMovesStart + r.nextInt(bestMovesEnd - bestMovesStart)];
         if (bestMove != null) {
             return bestMove;
-        };
+        }
         //If village can't be placed next to other village, place anywhere while maxinmizing gold (this also applies to the first move)
         for (int i = 0; i < board.boardSizeX; i++) {
             for (int j = 0; j < board.boardSizeY; j++) {
@@ -118,5 +99,13 @@ public class AIPlayer extends Player {
     private boolean canPlaceVillage(GameBoard board, int x, int y, String currentTerrain) {
         return (0 <= x && x < board.boardSizeX && 0 <= y && y < board.boardSizeY
                 && board.isNotOccupied(x, y) && board.getTerrainType(x, y).equals(currentTerrain));
+    }
+
+    public void addPendingMove(int[] move) {
+        pendingMoves.add(move);
+    }
+
+    public void clearPendingMoves() {
+        pendingMoves.clear();
     }
 }

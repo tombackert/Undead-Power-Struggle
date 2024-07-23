@@ -6,18 +6,17 @@ import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javafx.scene.paint.Color;
 import ups.gui.ColorMapping;
 import ups.model.*;
-import ups.utils.AlertManager;
-import ups.utils.HighscoreManager;
+import ups.utils.*;
 import ups.view.GameBoardView;
 import ups.view.GameMenuView;
-import ups.utils.LanguageSettings;
-import ups.view.HighscoreView;
 
 import java.io.IOException;
 import java.util.*;
@@ -25,12 +24,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-
-/**
- * The GameBoardController class is responsible for controlling the game board.
- */
 public class GameBoardController {
     @FXML
     private StackPane boardPane;
@@ -46,21 +39,17 @@ public class GameBoardController {
     private Button endTurnButton;
     @FXML
     private Button backToMenuButton;
-
-
+    @FXML
+    private ImageView currentPlayerImageView;
     @FXML
     private ImageView terrainImageView;
-
-    private Map<String, Image> terrainImages;
-
     @FXML
     private BorderPane mainBorderPane;
-
-
 
     private GameBoardView view;
     private GameBoard model;
     private final Map<Player, PlayerController> playerControllers = new HashMap<>();
+    private Map<String, Image> terrainImages;
     private Player[] players;
     private int currentPlayerIndex = 0;
     private boolean terrainDrawnThisTurn = false;
@@ -75,8 +64,14 @@ public class GameBoardController {
     private String currentTerrain;
     private int settlementsPerTurn = 3; // Default value
     private int settlementsCount = 40; // Default value
-    // Add this field to the GameBoardController class
     private boolean gameEnded = false;
+    private boolean endgameMode = false;
+    private Player firstPlayerOutOfSettlements = null;
+    private boolean isPaused = false;
+    private Task<Void> currentAITask = null;
+    private int remainingAIMoves = 0; // Store the number of remaining AI moves
+    private GameServer gameServer;
+    private GameClient gameClient;
 
     /**
      * Default constructor for FXML loading
@@ -84,15 +79,16 @@ public class GameBoardController {
     public GameBoardController() {
     }
 
-    /**
-     * Constructs a new GameBoardController with the given model and players.
-     *
-     * @param model   the game board model
-     * @param players the list of players
-     */
-    public GameBoardController(GameBoard model, List<Player> players) {
-        this.model = model;
-        this.players = players.toArray(new Player[0]);
+    public void setGameServer(GameServer gameServer) {
+        this.gameServer = gameServer;
+    }
+
+    public void setGameClient(GameClient gameClient) {
+        this.gameClient = gameClient;
+    }
+
+    public static void setInstance(GameBoardController controller) {
+        instance = controller;
     }
 
     /**
@@ -123,13 +119,6 @@ public class GameBoardController {
     }
 
     /**
-     * Sets the total number of settlements.
-     */
-    public int getSettlementsCount() {
-        return settlementsCount;
-    }
-
-    /**
      * Sets the players' names, colors, and AI status.
      *
      * @param playerNames  the player names
@@ -148,38 +137,38 @@ public class GameBoardController {
             logger.log(Level.SEVERE, "Player names, colors or AI status are null.");
         }
     }
-/**
- * Ändert den Hintergrund basierend auf dem aktuellen Thema.
- *
- * @param theme Das aktuelle Thema
- */
-public void switchBackground(String theme) {
-    mainBorderPane.getStyleClass().removeIf(styleClass -> styleClass.startsWith("background-pane-"));
-    if ("dark".equals(theme)) {
-        mainBorderPane.getStyleClass().add("background-pane-dark");
-    } else {
-        mainBorderPane.getStyleClass().add("background-pane-light");
+
+    public void setPlayersForNetwork(String[] playerNames, Color[] playerColors, boolean[] isOneself, int sPerTurn, int sAmount) {
+        this.playerNames = playerNames;
+        this.playerColors = playerColors;
+        this.isAIPlayer = new boolean[playerNames.length];
+        //Init players
+        this.players = new Player[playerNames.length];
+        for (int i = 0; i < playerNames.length; i++) {
+            if (isOneself[i]) this.players[i] = new SelfOnlinePlayer(playerNames[i], playerColors[i], sPerTurn, sAmount);
+            else this.players[i] = new OnlinePlayer(playerNames[i], playerColors[i], sPerTurn, sAmount);
+            playerControllers.put(this.players[i], new PlayerController(this.players[i], model, this) {
+                @Override
+                protected void notifyCanEndTurn() {
+                    endTurnButton.setDisable(false);
+                }
+            });
+        }
+        updateCurrentPlayerInfo();
     }
-}
+
     /**
-     * sets the theme on default
+     * Ändert den Hintergrund basierend auf dem aktuellen Thema.
+     *
+     * @param theme Das aktuelle Thema
      */
-    @FXML
-    private void setThemeDefault() {
-        MenuController.theme = 0;
-        switchBackground("light");
-        loadTerrainImages(); 
-        updateTerrainLabel();
-    }
-    /**
-     * sets theme on zombie
-     */
-    @FXML
-    private void setThemeZombie() {
-        MenuController.theme = 1;
-        switchBackground("dark");
-        loadTerrainImages(); 
-        updateTerrainLabel();
+    public void switchBackground(String theme) {
+        mainBorderPane.getStyleClass().removeIf(styleClass -> styleClass.startsWith("background-pane-"));
+        if ("dark".equals(theme)) {
+            mainBorderPane.getStyleClass().add("background-pane-dark");
+        } else {
+            mainBorderPane.getStyleClass().add("background-pane-light");
+        }
     }
 
     /**
@@ -202,7 +191,6 @@ public void switchBackground(String theme) {
                 }
             });
         }
-        // System.out.println("Players initialized with settlements per turn: " + settlementsPerTurn); // Debug statement
     }
 
     /**
@@ -214,23 +202,38 @@ public void switchBackground(String theme) {
     }
 
     /**
-     * Updates the current player label.
+     * Updates the current player label and image.
      */
     private void updateCurrentPlayerLabel() {
-        if (currentPlayerLabel == null) {
-            logger.log(Level.SEVERE, "currentPlayerLabel is null.");
+        if (currentPlayerLabel == null || currentPlayerImageView == null) {
+            logger.log(Level.SEVERE, "currentPlayerLabel or currentPlayerImageView is null.");
             return;
         }
 
         if (players == null || players.length == 0) {
             currentPlayerLabel.setText("Aktueller Spieler: Unbekannt");
+            currentPlayerImageView.setImage(null); // Setze das Bild auf null
         } else {
             Player currentPlayer = players[currentPlayerIndex];
             if (currentPlayer == null) {
                 currentPlayerLabel.setText("Aktueller Spieler: Unbekannt");
+                currentPlayerImageView.setImage(null); // Setze das Bild auf null
                 logger.log(Level.SEVERE, "Current player is null.");
             } else {
                 currentPlayerLabel.setText("Aktueller Spieler: " + currentPlayer.getName());
+                String colorName = ColorMapping.getStringFromColor(currentPlayer.getColor()).toLowerCase();
+                ImageView playerImageView = view.loadHouseImage(colorName);
+                if (playerImageView != null) {
+                    currentPlayerImageView.setImage(playerImageView.getImage()); // Setze das Bild basierend auf der Spielerfarbe
+
+                    // Passe die Größe des Bildes an
+                    double imageSize = 40; // Beispielgröße, passe diese nach Bedarf an
+                    currentPlayerImageView.setFitWidth(imageSize);
+                    currentPlayerImageView.setFitHeight(imageSize);
+                    currentPlayerImageView.setPreserveRatio(true);
+                } else {
+                    currentPlayerImageView.setImage(null); // Falls kein Bild gefunden wurde
+                }
             }
         }
     }
@@ -275,6 +278,7 @@ public void switchBackground(String theme) {
      */
     public void setResourceBundle(ResourceBundle bundle) {
         this.bundle = bundle;
+        System.out.println("ResourceBundle set in GameBoardController.");
         updateTexts();
     }
 
@@ -296,8 +300,8 @@ public void switchBackground(String theme) {
             return;
         }
 
-        setLabelText(currentPlayerLabel, "current_player", players[currentPlayerIndex].getName());
-        setLabelText(currentPlayerSettlementLabel, "available_settlements", String.valueOf(players[currentPlayerIndex].getRemainingSettlements()));
+        setLabelText(currentPlayerLabel, "current_player", players != null && currentPlayerIndex >= 0 && currentPlayerIndex < players.length ? players[currentPlayerIndex].getName() : "Unknown");
+        setLabelText(currentPlayerSettlementLabel, "available_settlements", players != null && currentPlayerIndex >= 0 && currentPlayerIndex < players.length ? String.valueOf(players[currentPlayerIndex].getRemainingSettlements()) : "Unknown");
         updateTerrainLabel();
         setButtonText(drawTerrainCardButton, "draw_terrain_card");
         setButtonText(endTurnButton, "end_turn");
@@ -353,8 +357,9 @@ public void switchBackground(String theme) {
         }
         loadTerrainImages();
         updateTexts();
-        switchBackground(MenuController.theme == 0 ? "light" : "dark"); // Hintergrund basierend auf dem aktuellen Thema setzen  
+        switchBackground(MenuController.theme == 0 ? "light" : "dark"); // Hintergrund basierend auf dem aktuellen Thema setzen
     }
+
     /**
      * Refreshes the background
      */
@@ -393,20 +398,20 @@ public void switchBackground(String theme) {
     private void loadTerrainImages() {
         if (MenuController.theme == 0) {
             terrainImages = new HashMap<>();
-            terrainImages.put("Gras", new Image(getClass().getResourceAsStream("/location-cards/Gras.png")));
-            terrainImages.put("Wald", new Image(getClass().getResourceAsStream("/location-cards/Wald.png")));
-            terrainImages.put("Wueste", new Image(getClass().getResourceAsStream("/location-cards/Wüste.png")));
-            terrainImages.put("Blumen", new Image(getClass().getResourceAsStream("/location-cards/Blumen.png")));
-            terrainImages.put("Canyon", new Image(getClass().getResourceAsStream("/location-cards/Canyon.png")));
+            terrainImages.put("Gras", new Image(Objects.requireNonNull(getClass().getResourceAsStream("/location-cards/Gras.png"))));
+            terrainImages.put("Wald", new Image(Objects.requireNonNull(getClass().getResourceAsStream("/location-cards/Wald.png"))));
+            terrainImages.put("Wueste", new Image(Objects.requireNonNull(getClass().getResourceAsStream("/location-cards/Wüste.png"))));
+            terrainImages.put("Blumen", new Image(Objects.requireNonNull(getClass().getResourceAsStream("/location-cards/Blumen.png"))));
+            terrainImages.put("Canyon", new Image(Objects.requireNonNull(getClass().getResourceAsStream("/location-cards/Canyon.png"))));
         } else {
             terrainImages = new HashMap<>();
-            terrainImages.put("Gras", new Image(getClass().getResourceAsStream("/location-cards/Gras_blood.png")));
-            terrainImages.put("Wald", new Image(getClass().getResourceAsStream("/location-cards/Wald_blood.png")));
-            terrainImages.put("Wueste", new Image(getClass().getResourceAsStream("/location-cards/Wüste_blood.png")));
-            terrainImages.put("Blumen", new Image(getClass().getResourceAsStream("/location-cards/Blumen_blood.png")));
-            terrainImages.put("Canyon", new Image(getClass().getResourceAsStream("/location-cards/Canyon_blood.png")));
+            terrainImages.put("Gras", new Image(Objects.requireNonNull(getClass().getResourceAsStream("/location-cards/Gras_blood.png"))));
+            terrainImages.put("Wald", new Image(Objects.requireNonNull(getClass().getResourceAsStream("/location-cards/Wald_blood.png"))));
+            terrainImages.put("Wueste", new Image(Objects.requireNonNull(getClass().getResourceAsStream("/location-cards/Wüste_blood.png"))));
+            terrainImages.put("Blumen", new Image(Objects.requireNonNull(getClass().getResourceAsStream("/location-cards/Blumen_blood.png"))));
+            terrainImages.put("Canyon", new Image(Objects.requireNonNull(getClass().getResourceAsStream("/location-cards/Canyon_blood.png"))));
 
-        }  
+        }
     }
 
     /**
@@ -434,16 +439,27 @@ public void switchBackground(String theme) {
      * @param row      the row
      * @param col      the column
      */
+    @FXML
     public void handleHexagonClick(Group hexGroup, int row, int col) {
         if (gameEnded) return; // Exit if the game has ended
+
+        Player currentPlayer = players[currentPlayerIndex];
+
+        if (currentPlayer.getRemainingSettlements() == 0) {
+            AlertManager.showAlert("alert.no_settlements_left");
+            return;
+        }
 
         try {
             if (tryPlaceSettlement(row, col)) {
                 view.addHouseToHexagon(hexGroup, players[currentPlayerIndex].getColor());
                 updateCurrentPlayerSettlementLabel();
                 updateTerrainLabel();
+                if (currentPlayer.isSelfOnlinePlayer) {
+                    ClientGameConnection.setMessageToClient("MOVE:" + Integer.toString(row) + ":" + Integer.toString(col));
+                }
 
-                if (playerControllers.get(players[currentPlayerIndex]).canEndTurn()) {
+                if ((playerControllers.get(players[currentPlayerIndex]).canEndTurn() || players[currentPlayerIndex].getRemainingSettlements() == 0) && !currentPlayer.isExternalPlayer) {
                     endTurnButton.setDisable(false);
                 }
                 if (checkAllPlayersNoSettlements()) {
@@ -472,13 +488,56 @@ public void switchBackground(String theme) {
         Player currentPlayer = players[currentPlayerIndex];
         PlayerController playerController = playerControllers.get(currentPlayer);
 
+        // Überprüfe, ob das Terrain der gezogenen Geländekarte entspricht
+        String terrainType = model.getTerrainType(row, col);
+        if (!terrainType.equals(currentPlayer.getCurrentTerrainCard())) {
+            AlertManager.showAlert("alert.wrong_terrain_card");
+            return false;
+        }
+
         if (currentPlayer.canPlaceSettlement() && model.isNotOccupied(row, col)) {
+            // Überprüfe, ob die Siedlung neben einer bestehenden Siedlung des Spielers gebaut werden kann
+            if (!isNextToExistingSettlement(currentPlayer, row, col) && canPlaceNextToExistingSettlement(currentPlayer)) {
+                AlertManager.showAlert("alert.must_place_next_to_existing");
+                return false;
+            }
+
             playerController.placeSettlement(currentPlayer, row, col);
             return true;
         }
         return false;
     }
 
+    private boolean isNextToExistingSettlement(Player player, int row, int col) {
+        // Überprüfe die Nachbarfelder
+        int[][] neighbors = player.getHexagonalNeighbors(row, col);
+        for (int[] neighbor : neighbors) {
+            int x = neighbor[0];
+            int y = neighbor[1];
+            if (x >= 0 && x < model.boardSizeX && y >= 0 && y < model.boardSizeY && model.getOccupation(x, y) == ColorMapping.getIntFromColor(player.getColor())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean canPlaceNextToExistingSettlement(Player player) {
+        for (int i = 0; i < model.boardSizeX; i++) {
+            for (int j = 0; j < model.boardSizeY; j++) {
+                if (model.getOccupation(i, j) == ColorMapping.getIntFromColor(player.getColor())) {
+                    int[][] neighbors = player.getHexagonalNeighbors(i, j);
+                    for (int[] neighbor : neighbors) {
+                        int x = neighbor[0];
+                        int y = neighbor[1];
+                        if (x >= 0 && x < model.boardSizeX && y >= 0 && y < model.boardSizeY && model.isNotOccupied(x, y) && model.getTerrainType(x, y).equals(player.getCurrentTerrainCard())) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
 
     /**
      * Handles the AI player click event.
@@ -498,10 +557,12 @@ public void switchBackground(String theme) {
      * @param aiPlayer the AI player
      */
     private void makeAIMove(AIPlayer aiPlayer) {
-        if (gameEnded) return; // Exit if the game has ended
+        if (gameEnded || isPaused) return; // Exit if the game has ended or is paused
 
         disableHumanInteraction();
-        Task<Void> task = new Task<>() {
+        remainingAIMoves = settlementsPerTurn; // Set the remaining AI moves
+
+        currentAITask = new Task<>() {
             @Override
             protected Void call() {
                 Platform.runLater(() -> {
@@ -512,29 +573,55 @@ public void switchBackground(String theme) {
                 try {
                     Thread.sleep(750);
                 } catch (InterruptedException e) {
+                    if (isCancelled()) {
+                        return null;
+                    }
                     logger.log(Level.SEVERE, "AI move interrupted", e);
                 }
-                for (int i = 0; i < settlementsPerTurn; i++) {
-                    Platform.runLater(() -> {
-                        if (aiPlayer.getRemainingSettlements() > 0) {
-                            aiPlayer.makeMove(GameBoardController.this, model);
-                            updateBoardForAI(aiPlayer);
+                processAIMoves(aiPlayer, remainingAIMoves);
+                return null;
+            }
+        };
 
-                            // Check if the game should end
-                            if (checkAllPlayersNoSettlements()) {
-                                endGame();
-                            }
+        Thread thread = new Thread(currentAITask);
+        thread.setDaemon(true);
+        thread.start();
+    }
+
+    private void processAIMoves(AIPlayer aiPlayer, int movesToProcess) {
+        currentAITask = new Task<>() {
+            @Override
+            protected Void call() {
+                try {
+                    for (int i = 0; i < movesToProcess; i++) {
+                        if (isPaused || isCancelled()) {
+                            remainingAIMoves = movesToProcess - i; // Update remaining moves
+                            return null;
                         }
-                    });
-                    try {
-                        Thread.sleep(750);
-                    } catch (InterruptedException e) {
-                        logger.log(Level.SEVERE, "AI move interrupted", e);
+                        Platform.runLater(() -> {
+                            if (aiPlayer.getRemainingSettlements() > 0) {
+                                int[] move = aiPlayer.findBestMove(getModel(), getCurrentTerrain());
+                                aiPlayer.addPendingMove(move);
+                                handleAIClick(move[0], move[1]);
+                            }
+                        });
+                        try {
+                            Thread.sleep(750);
+                        } catch (InterruptedException e) {
+                            if (isCancelled()) {
+                                remainingAIMoves = movesToProcess - i; // Update remaining moves
+                                return null;
+                            }
+                            logger.log(Level.SEVERE, "AI move interrupted", e);
+                        }
+                        if (aiPlayer.getRemainingSettlements() <= 0) {
+                            break;
+                        }
                     }
-                    if (aiPlayer.getRemainingSettlements() <= 0) {
-                        break;
-                    }
+                } catch (Exception e) {
+                    logger.log(Level.SEVERE, "Error processing AI moves", e);
                 }
+
                 Platform.runLater(() -> {
                     if (!checkAllPlayersNoSettlements() && !gameEnded) {
                         enableHumanInteraction();
@@ -545,25 +632,9 @@ public void switchBackground(String theme) {
             }
         };
 
-        Thread thread = new Thread(task);
+        Thread thread = new Thread(currentAITask);
         thread.setDaemon(true);
         thread.start();
-    }
-
-    /**
-     * Updates the board for the given AI player.
-     *
-     * @param aiPlayer the AI player
-     */
-    public void updateBoardForAI(AIPlayer aiPlayer) {
-        for (int i = 0; i < model.boardSizeX; i++) {
-            for (int j = 0; j < model.boardSizeY; j++) {
-                if (model.getOccupation(i, j) == ColorMapping.getIntFromColor(aiPlayer.getColor())) {
-                    Group hexGroup = getHexGroup(i, j);
-                    view.addHouseToHexagon(hexGroup, aiPlayer.getColor());
-                }
-            }
-        }
     }
 
     /**
@@ -571,7 +642,9 @@ public void switchBackground(String theme) {
      *
      * @param player the player
      */
-    public void updateBoardForPlayer(Player player) {
+    private void updateBoardForPlayerGeneric(Player player) {
+        System.out.println("Update board for this player:");
+        player.printPlayer();
         for (int i = 0; i < model.boardSizeX; i++) {
             for (int j = 0; j < model.boardSizeY; j++) {
                 if (model.getOccupation(i, j) == ColorMapping.getIntFromColor(player.getColor())) {
@@ -583,9 +656,28 @@ public void switchBackground(String theme) {
     }
 
     /**
+     * Updates the board for the given AI player.
+     *
+     * @param aiPlayer the AI player
+     */
+    public void updateBoardForAI(AIPlayer aiPlayer) {
+        updateBoardForPlayerGeneric(aiPlayer);
+    }
+
+    /**
+     * Updates the board for the given player.
+     *
+     * @param player the player
+     */
+    public void updateBoardForPlayer(Player player) {
+        updateBoardForPlayerGeneric(player);
+    }
+
+
+    /**
      * Updates the terrain label.
      */
-    private void updateTerrainLabel() {
+    public void updateTerrainLabel() {
         if (currentTerrain != null && terrainImages.containsKey(currentTerrain)) {
             terrainImageView.setImage(terrainImages.get(currentTerrain));
             currentTerrainLabel.setText(bundle.getString("terrain_card") + ": " + bundle.getString(currentTerrain));
@@ -594,7 +686,10 @@ public void switchBackground(String theme) {
             currentTerrainLabel.setText(bundle.getString("terrain_card") + ": ");
         }
     }
-
+    private void doItInThread() {
+        ClientGameConnection.setMessageToGame(null);
+        new Thread(() -> handleOnlinePlayer()).start();
+    }
     /**
      * Switches the current player.
      */
@@ -603,6 +698,13 @@ public void switchBackground(String theme) {
         if (gameEnded) return; // Exit if the game has ended
 
         currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+
+        // Überprüfe, ob der erste Spieler ohne Siedlungen wieder an der Reihe ist
+        if (endgameMode && players[currentPlayerIndex] == firstPlayerOutOfSettlements) {
+            endGame();
+            return;
+        }
+
         updateCurrentPlayerInfo();
         updateTexts();
         terrainDrawnThisTurn = false; // Flag zurücksetzen
@@ -614,10 +716,16 @@ public void switchBackground(String theme) {
 
         if (players[currentPlayerIndex] instanceof AIPlayer) {
             makeAIMove((AIPlayer) players[currentPlayerIndex]);
-        } else {
+        } 
+        else if (players[currentPlayerIndex].isExternalPlayer) {
+            doItInThread();
+        }
+        else {
             // Es ist ein menschlicher Spieler, aktiviere UI-Interaktionen für menschliche Eingaben
             enableHumanInteraction();
         }
+        if (players[currentPlayerIndex].isExternalPlayer) System.out.println("New player is external player!!!!");
+        else System.out.println("New player is own online player!!!");
     }
 
     /**
@@ -653,6 +761,8 @@ public void switchBackground(String theme) {
             updateTerrainLabel();
             terrainDrawnThisTurn = true;
             drawTerrainCardButton.setDisable(true);
+            notifyTerrainCardDrawn(currentPlayer.getName(), currentTerrain);
+            if (currentPlayer.isSelfOnlinePlayer) ClientGameConnection.setMessageToClient("TERRAINCARD:" + currentTerrain);
         }
     }
 
@@ -663,12 +773,23 @@ public void switchBackground(String theme) {
      */
     @FXML
     public boolean endTurn() {
-        if (playerControllers.get(players[currentPlayerIndex]).canEndTurn()) {
+        Player currentPlayer = players[currentPlayerIndex];
+        PlayerController playerController = playerControllers.get(currentPlayer);
+
+        if (playerController.canEndTurn() || currentPlayer.getRemainingSettlements() == 0) {
+            // Überprüfe, ob der aktuelle Spieler keine Siedlungen mehr hat
+            if (currentPlayer.isSelfOnlinePlayer) ClientGameConnection.setMessageToClient("ENDTURN");
+            if (currentPlayer.getRemainingSettlements() == 0) {
+                if (!endgameMode) {
+                    endgameMode = true;
+                    firstPlayerOutOfSettlements = currentPlayer;
+                }
+            }
             switchPlayer();
             terrainDrawnThisTurn = false;
             return true;
         } else {
-            System.out.println("Du musst 3 Siedlungen setzen, bevor du deinen Zug beenden kannst.");
+            System.out.println("Du musst " + settlementsPerTurn + " Siedlungen setzen, bevor du deinen Zug beenden kannst.");
             return false;
         }
     }
@@ -678,13 +799,30 @@ public void switchBackground(String theme) {
      */
     @FXML
     public void handleReturnToMenu() {
+        pauseGame();  // Pause the game before returning to the menu
         System.out.println("Handling return to menu: gameStage = " + gameStage);
         if (gameStage != null) {
             GameMenuView.showMenu();
             gameStage.close();
-
         } else {
             logger.log(Level.SEVERE, "gameStage is null.");
+        }
+    }
+
+    public void pauseGame() {
+        isPaused = true;
+        if (currentAITask != null) {
+            currentAITask.cancel();
+        }
+        disableHumanInteraction();
+    }
+
+    public void resumeGame() {
+        isPaused = false;
+        if (players[currentPlayerIndex] instanceof AIPlayer) {
+            makeAIMove((AIPlayer) players[currentPlayerIndex]);
+        } else {
+            enableHumanInteraction();
         }
     }
 
@@ -696,6 +834,13 @@ public void switchBackground(String theme) {
         if (gameEnded) return; // Prevent multiple executions
         gameEnded = true; // Set the flag to indicate the game has ended
 
+        // Clear pending moves for all AI players
+        for (Player player : players) {
+            if (player instanceof AIPlayer) {
+                ((AIPlayer) player).clearPendingMoves();
+            }
+        }
+
         List<Player> sortedPlayers = playerControllers.keySet().stream()
                 .sorted((p1, p2) -> Integer.compare(p2.evaluateGameboard(model), p1.evaluateGameboard(model)))
                 .collect(Collectors.toList());
@@ -703,11 +848,12 @@ public void switchBackground(String theme) {
         Player winner = sortedPlayers.get(0); // Der Spieler mit dem meisten Gold ist der Gewinner
 
         saveHighscore(sortedPlayers, model);
-
         AlertManager.showWinner("alert.winner_is", winner.getName(), winner.evaluateGameboard(model)); // Pass name and gold amount
         Platform.runLater(() -> {
             GameMenuView.showMenu();
             gameStage.close();
+            GameMenuController.clientThreadIsRunning = false;//Stoppe Server und Client sobald spiel endet
+            GameMenuController.serverThreadIsRunning = false;
         });
     }
 
@@ -781,14 +927,77 @@ public void switchBackground(String theme) {
             // Fehlerbehandlung oder Logik zur Handhabung dieses Falls
         }
     }
+
+    public void startOnlineGame() {
+        System.out.println("Wait for other players");
+        doItInThread();
+    }
+
     /**
-    * Sets the selected cards for the model.
-    * 
-    * @param selectedCards The list of selected cards to set.
-    */
+     * Sets the selected cards for the model.
+     *
+     * @param selectedCards The list of selected cards to set.
+     */
     public void setSelectedCards(List<String> selectedCards) {
+        for (String c : selectedCards) {
+            System.out.println(c);
+        }
         model.setSelectedCards(selectedCards);
     }
+
+    private void notifyTerrainCardDrawn(String playerName, String terrainType) {
+        if (GameMenuController.getGameServer() != null) {
+            GameMenuController.getGameServer().broadcastTerrainCardDrawn(playerName, terrainType);
+            System.out.println("Broadcasting terrain card drawn message: " + playerName + ", " + terrainType);
+        }
+        else if (GameMenuController.getGameClient() != null) {
+            GameMenuController.getGameClient().handleTerrainCardDrawnMessage(playerName, terrainType);
+            System.out.println("Handling terrain card drawn message: " + playerName + ", " + terrainType);
+        }
+        else {
+            System.out.println("No server or client found.");
+        }
+    }
+
+    public void handleTerrainCardDrawnMessage(TerrainCardDrawnMessage message) {
+        System.out.println("Updating terrain card for player: " + message.getPlayerName() + " with terrain: " + message.getTerrainType()); // Debug output
+        currentTerrain = message.getTerrainType();
+        updateTerrainLabel();
+        terrainDrawnThisTurn = true;
+        drawTerrainCardButton.setDisable(true);
+    }
+    
+    public void handleOnlinePlayer() {
+        disableHumanInteraction();
+        String message;
+        while (true) {
+            message = ClientGameConnection.getMessageToGame();
+            if (message == null) continue;
+            if (message.startsWith("MOVE")) {
+                String[] moveStr = message.split(":");
+                int x = Integer.parseInt(moveStr[1]);
+                int y = Integer.parseInt(moveStr[2]);
+                System.out.println("Online Spieler setzt auf Feld: " + Integer.toString(x) + "," + Integer.toString(y));
+                final int fx = x; // final variables to use inside the lambda
+                final int fy = y;
+                Platform.runLater(() -> handleHexagonClick(getHexGroup(fx, fy), fx, fy));
+            }
+            else if (message.equals("ENDTURN") && terrainDrawnThisTurn) {
+                Platform.runLater(() -> endTurn());
+                return;
+            }
+            else if (message.startsWith("TERRAINCARD")) {
+                Player currentPlayer = players[currentPlayerIndex];
+                currentTerrain = message.split(":")[1];
+                currentPlayer.drawTerrainCard(currentTerrain);
+                updateTerrainLabel();
+                terrainDrawnThisTurn = true;
+                drawTerrainCardButton.setDisable(true);
+                notifyTerrainCardDrawn(currentPlayer.getName(), currentTerrain);
+            }
+        }
+    }
+    public void parseGameBoardFromNetwork(String b) {
+        model.parseGameBoardFromNetwork(b);
+    }
 }
-
-

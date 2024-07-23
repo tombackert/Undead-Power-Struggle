@@ -277,7 +277,7 @@ public class GameBoardView extends Pane {
         }
     }
 
-    private ImageView loadHouseImage(String colorName) {
+    public ImageView loadHouseImage(String colorName) {
         try {
             return new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/settlements/haus_" + colorName + ".png"))));
         } catch (NullPointerException e) {

@@ -33,16 +33,13 @@ public abstract class PlayerController {
         if (terrainType.equals(player.getCurrentTerrainCard()) && player.canPlaceSettlement()) {
             gameBoard.placeSettlement(x, y, player.getColor());
             player.getSettlements().add(new Settlement(x, y, player.getColor()));
-            player.villageCoordinates[player.numberOfVillages - player.getRemainingSettlements()] = new int[]{x,y};
+            player.villageCoordinates[player.numberOfVillages - player.getRemainingSettlements()] = new int[]{x, y};
             player.placeSettlement();
             placedSettlementsThisTurn++;
 
-            if (player.getRemainingSettlements() == 0) {
-                gameBoardController.updateBoardForPlayer(player);
-                gameBoardController.endGame();
-            }
+            gameBoardController.updateBoardForPlayer(player);
 
-            if (canEndTurn()) {
+            if (canEndTurn() || player.getRemainingSettlements() == 0) {
                 notifyCanEndTurn();
             }
         } else {

@@ -13,6 +13,10 @@ import ups.gui.ColorMapping;
  */
 public class Player {
 
+    //For online play
+    public boolean isExternalPlayer = false; //für Online mitspieler
+    public boolean isSelfOnlinePlayer = false; //für eigenen spieler im online modus
+
     //0=Oracle; 1=Farm; 2=Oasis; 3=Tower; 4=Tavern; 5=Barn; 6=Harbour; 7=Paddock
     int[] locationCards;
 
@@ -736,5 +740,10 @@ public class Player {
         for (int i = 0; i < this.numberOfVillages; i++) {
             System.out.println(Integer.toString(i+1) + ". (" + Integer.toString(this.villageCoordinates[i][0]) + ", " + Integer.toString(this.villageCoordinates[i][1]) + ")");
         }
+    }
+
+    public void printPlayer() {
+        System.out.println("Name: " + this.name);
+        System.out.println("Color: " + Integer.toString(this.color));
     }
 }
