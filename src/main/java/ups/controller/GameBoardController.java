@@ -28,9 +28,9 @@ public class GameBoardController {
     @FXML
     private StackPane boardPane;
     @FXML
-    private Label currentPlayerLabel;
+    public Label currentPlayerLabel;
     @FXML
-    private Label currentPlayerSettlementLabel;
+    public Label currentPlayerSettlementLabel;
     @FXML
     private Label currentTerrainLabel;
     @FXML
@@ -40,7 +40,7 @@ public class GameBoardController {
     @FXML
     private Button backToMenuButton;
     @FXML
-    private ImageView currentPlayerImageView;
+    public ImageView currentPlayerImageView;
     @FXML
     private ImageView terrainImageView;
     @FXML
@@ -49,25 +49,25 @@ public class GameBoardController {
     private GameBoardView view;
     private GameBoard model;
     private final Map<Player, PlayerController> playerControllers = new HashMap<>();
-    private Map<String, Image> terrainImages;
-    private Player[] players;
-    private int currentPlayerIndex = 0;
-    private boolean terrainDrawnThisTurn = false;
+    public Map<String, Image> terrainImages;
+    public Player[] players;
+    public int currentPlayerIndex = 0;
+    public boolean terrainDrawnThisTurn = false;
     private final String[] terrainsBuildable = {"Gras", "Wald", "Wueste", "Blumen", "Canyon"};
     private static Stage gameStage;
     private String[] playerNames;
     private Color[] playerColors;
     private boolean[] isAIPlayer;
     public static final Logger logger = Logger.getLogger(GameBoardController.class.getName());
-    private ResourceBundle bundle;
+    public ResourceBundle bundle;
     private static GameBoardController instance;
-    private String currentTerrain;
+    public String currentTerrain;
     private int settlementsPerTurn = 3; // Default value
-    private int settlementsCount = 40; // Default value
-    private boolean gameEnded = false;
+    public int settlementsCount = 40; // Default value
+    public boolean gameEnded = false;
     private boolean endgameMode = false;
     private Player firstPlayerOutOfSettlements = null;
-    private boolean isPaused = false;
+    public boolean isPaused = false;
     private Task<Void> currentAITask = null;
     private int remainingAIMoves = 0; // Store the number of remaining AI moves
     private GameServer gameServer;

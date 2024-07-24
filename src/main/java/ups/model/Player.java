@@ -30,7 +30,7 @@ public class Player {
     private String currentTerrainCard; // The current terrain card of the player
     private final List<Settlement> settlements; // List of settlements placed by the player
     protected int remainingSettlements; // Number of settlements left to place
-    private int settlementsPlacedThisTurn; // Number of settlements placed this turn
+    public int settlementsPlacedThisTurn; // Number of settlements placed this turn
     private final int settlementsPerTurn; // Number of settlements that can be placed per turn
     private GameBoard board; // Reference to the game board
 

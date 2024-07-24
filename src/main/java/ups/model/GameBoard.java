@@ -23,11 +23,11 @@ import ups.utils.ProceduralZone;
 
 public class GameBoard {
     
-    private final Color[][] colors; // Hält die Farben für jede Position
-    private final String[][] terrainMap;  // Hält die Geländetypen für jede Position
-    private final boolean[][] occupied;  // Hält die Informationen über besetzte Felder
-    private Map<Point, Player> hexagonOwnership; // Hält die Besitzer der Hexagone
-    private Map<String, Integer> terrainCount; // Anzahl der verbleibenden Felder für jeden Geländetyp
+    public Color[][] colors; // Hält die Farben für jede Position
+    public String[][] terrainMap;  // Hält die Geländetypen für jede Position
+    public boolean[][] occupied;  // Hält die Informationen über besetzte Felder
+    public Map<Point, Player> hexagonOwnership; // Hält die Besitzer der Hexagone
+    public Map<String, Integer> terrainCount; // Anzahl der verbleibenden Felder für jeden Geländetyp
     public static boolean makeProcedural = false; //true für procedural gameboard; false für standard gameboard
     
     //List of selected cards
@@ -156,7 +156,7 @@ public class GameBoard {
      * Creates a procedural generated Gameboard. This funtion is just a prototype, it might lacks some funtionality of the function
      * loadBoardFromFile so don't use it to play the game. Use it if you want to see how the procedural generation looks.
      */
-    private void createRandomGameboard() {
+    public void createRandomGameboard() {
         System.out.println("Generating Procedural Gameboard...");
         ProceduralGameboard p = new ProceduralGameboard(this.boardSizeX, this.boardSizeY);
         String[][] store = p.generateProceduralGameboard();
