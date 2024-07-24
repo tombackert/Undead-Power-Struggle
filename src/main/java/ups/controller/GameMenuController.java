@@ -501,9 +501,17 @@ public class GameMenuController {
         clientThread.start();
         String initString = null;
         //wait for sever to send game info
-        while ((initString = ClientGameConnection.getMessageToGame()) == null);
+        long startTime = System.currentTimeMillis();
+        while (((initString = ClientGameConnection.getMessageToGame()) == null) && System.currentTimeMillis() - startTime < 10000);
         //Parse Player info
         System.out.println("InitString: " + initString);
+        if (initString == null) {
+            System.out.println("Verbindung zum Server fehlgeschlagen");
+            clientThreadIsRunning = false;
+            serverThreadIsRunning = false;
+            return;
+
+        }
         String[][] infoStr = parsePlayerInfo(initString.split(":::")[1]);
         List<String> playerNames = new ArrayList<String>();
         List<Color> playerColors = new ArrayList<Color>();
