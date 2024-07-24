@@ -4,8 +4,9 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import javafx.scene.image.ImageView?>
 
-<BorderPane prefHeight="730.0" prefWidth="1430.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ups.controller.GameBoardController">
+<BorderPane fx:id="mainBorderPane" prefHeight="730.0" prefWidth="1430.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ups.controller.GameBoardController" stylesheets="@style_GameBoard.css">
     <left>
         <VBox alignment="CENTER_LEFT" prefHeight="660.0" prefWidth="264.0" spacing="10">
             <padding>
@@ -15,11 +16,13 @@
                 <VBox.margin>
                     <Insets bottom="10.0" top="10.0" />
                 </VBox.margin>
-                <Label fx:id="currentPlayerLabel" minWidth="200" text="Aktueller Spieler: ">
+                <Label fx:id="currentPlayerLabel" minWidth="200" text="Aktueller Spieler: " styleClass="label">
                     <font>
                         <Font size="14.0" />
-                    </font></Label>
-                <Label fx:id="currentPlayerSettlementLabel" minWidth="200" text="Noch verfügbare Siedlungen: ">
+                    </font>
+                </Label>
+                <ImageView fx:id="currentPlayerImageView" />
+                <Label fx:id="currentPlayerSettlementLabel" minWidth="200" text="Noch verfügbare Siedlungen: " styleClass="label">
                     <padding>
                         <Insets top="20.0" />
                     </padding>
@@ -29,18 +32,22 @@
                 </Label>
             </TextFlow>
             <TextFlow layoutX="20.0" layoutY="30.0" prefHeight="95.0" prefWidth="281.0">
-                <Label fx:id="currentTerrainLabel" minWidth="200" prefHeight="64.0" prefWidth="277.0" text="Geländekarte:&#10;Ziehe erst eine Geländekarte!">
+                <Label fx:id="currentTerrainLabel" minWidth="200" prefHeight="64.0" prefWidth="277.0" text="Geländekarte:&#10;Ziehe erst eine Geländekarte!" styleClass="label">
                     <font>
                         <Font size="14.0" />
                     </font>
                     <padding>
                         <Insets bottom="20.0" />
                     </padding>
+                    <graphic>
+                        <ImageView fx:id="terrainImageView" fitHeight="200.0" fitWidth="100.0" />
+                    </graphic>
                 </Label>
                 <Button fx:id="drawTerrainCardButton" minWidth="200" onAction="#switchTerrain" text="Geländekarte ziehen">
                     <font>
                         <Font size="14.0" />
-                    </font></Button>
+                    </font>
+                </Button>
             </TextFlow>
             <ButtonBar prefHeight="351.0" prefWidth="328.0" />
             <BorderPane prefHeight="0.0" prefWidth="328.0">
@@ -64,10 +71,11 @@
     <bottom>
         <ButtonBar prefHeight="26.0" prefWidth="537.0">
             <buttons>
-                <Button fx:id="backToMenuButton" minWidth="200" onAction="#handleReturnToMenu" text="Zurück zum Hauptmenü">
+                <Button fx:id="backToMenuButton" minWidth="200" onAction="#handleReturnToMenu" text="Zurück zum Menü">
                     <font>
                         <Font size="14.0" />
-                    </font></Button>
+                    </font>
+                </Button>
             </buttons>
             <BorderPane.margin>
                 <Insets bottom="20.0" left="50.0" right="50.0" top="20.0" />
@@ -79,7 +87,7 @@
             <center>
                 <StackPane fx:id="boardPane" alignment="CENTER_LEFT" prefWidth="397.0" BorderPane.alignment="CENTER">
                     <padding>
-                        <Insets bottom="10" left="10" right="10" top="10" />
+                        <Insets bottom="10" left="10" right="250" top="10" />
                     </padding>
                 </StackPane>
             </center>

@@ -1,0 +1,103 @@
+package ups.utils;
+
+import java.io.*;
+import java.net.*;
+
+import ups.controller.GameMenuController;
+import ups.utils.ClientGameConnection;
+
+public class Client {
+
+    private Socket socket;
+    private BufferedReader in;
+    private PrintWriter out;
+
+    public Client(String serverAddress, int port, String name, String color) throws IOException {
+        socket = new Socket(serverAddress, port);
+        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        out = new PrintWriter(socket.getOutputStream(), true);
+        // Send initial client info to the server
+        sendMessage(name + ":" + color);
+        System.out.println("Client connected to server at " + serverAddress + ":" + port);
+    }
+
+    public void start() {
+        new Thread(new IncomingMessageHandler()).start();
+        new Thread(new OutgoingMessageHandler()).start();
+        while (GameMenuController.clientThreadIsRunning) {
+            try {
+                Thread.sleep(100);
+            } catch (Exception e) {}
+        }
+        shutdown();
+    }
+
+    public void sendMessage(String message) {
+        System.out.println("Client Sending message: " + message);
+        out.println(message);
+        out.flush();
+    }
+
+    public void shutdown() {
+        try {
+            if (socket != null && !socket.isClosed()) {
+                socket.close();
+            }
+            System.out.println("Client shut down successfully.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private class IncomingMessageHandler implements Runnable {
+        @Override
+        public void run() {
+            try {
+                String message;
+                while (GameMenuController.clientThreadIsRunning && (message = in.readLine()) != null) {
+                    System.out.println("Client received: " + message);
+                    ClientGameConnection.setMessageToGame(message);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    if (in != null) {
+                        in.close();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private class OutgoingMessageHandler implements Runnable {
+        @Override
+        public void run() {
+            try {
+                while (GameMenuController.clientThreadIsRunning) {
+                    String message = ClientGameConnection.getMessageToClient();
+                    if (message != null) {
+                        sendMessage(message);
+                        System.out.println("Client sent: " + message);
+                    }
+                    // Sleep briefly to prevent tight loop and reduce CPU usage
+                    Thread.sleep(100);
+                }
+            } catch (InterruptedException e) {
+                System.out.println("OutgoingMessageHandler thread interrupted");
+            } finally {
+                try {
+                    if (out != null) {
+                        out.close();
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    
+}

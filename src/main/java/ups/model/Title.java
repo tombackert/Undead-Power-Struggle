@@ -5,17 +5,20 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
-
 import java.util.Objects;
 
-
-
+/**
+ * Title object for start menu. Extends Pane class.
+ */
 public class Title extends Pane {
     
-    // Text for title
+    // Title text
     private Text text;
 
-    // Constructor for title
+    /**
+     * Constructor for Title object.
+     * @param name name of the title
+     */
     public Title(String name) {
        
         // Create spread string
@@ -38,12 +41,18 @@ public class Title extends Pane {
         getChildren().addAll(text);
     }
 
-    // Get width of title
+    /**
+     * Get title width.
+     * @return width of title
+     */
     public double getTitleWidth() {
         return text.getLayoutBounds().getWidth();
     }
 
-    // Get height of title
+    /**
+     * Get title height.
+     * @return height of title
+     */
     public double getTitleHeight() {
         return text.getLayoutBounds().getHeight();
     }

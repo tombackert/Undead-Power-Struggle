@@ -11,6 +11,9 @@ import ups.controller.GameBoardController;
 import ups.gui.ColorMapping;
 import ups.model.GameBoard;
 
+import javafx.scene.input.ScrollEvent;
+
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -30,6 +33,10 @@ public class GameBoardView extends Pane {
     private final Color[][] originalColors = new Color[BOARD_HEIGHT][BOARD_WIDTH]; // Speichert die Originalfarben
     private GameBoardController controller; // Referenz auf den Controller
 
+
+    private double scaleValue = 1.0; // Initial scale
+    private static final double MAX_SCALE = 3.0; // Maximum zoom scale
+    private static final double MIN_SCALE = 0.5; // Minimum zoom scale
     /**
      * Constructs a new GameBoardView with the given model.
      *
@@ -50,8 +57,42 @@ public class GameBoardView extends Pane {
     public void setController(GameBoardController controller) {
         this.controller = controller; // Setze den Controller
         setupEventHandlers(); // Setze die Event-Handler
+          // Add mouse scroll event handler for zooming
+          setOnScroll(event -> handleZoom(event));
     }
 
+     /**
+     * handles the zooming with the mouse
+     * @param event the scroll event containing details about the mouse scroll action
+     */
+    private void handleZoom(ScrollEvent event) {
+        if (event.getDeltaY() == 0) {
+            return;
+        }
+    
+        double scaleFactor = (event.getDeltaY() > 0) ? 1.1 : 0.9;
+    
+        double newScale = scaleValue * scaleFactor;
+        if (newScale > MAX_SCALE) {
+            newScale = MAX_SCALE;
+        } else if (newScale < MIN_SCALE) {
+            newScale = MIN_SCALE;
+        }
+    
+        // Apply zoom at mouse pointer
+        double f = (newScale / scaleValue) - 1;
+        double dx = (event.getX() - (getWidth() / 2));
+        double dy = (event.getY() - (getHeight() / 2));
+    
+        setScaleX(newScale);
+        setScaleY(newScale);
+        setTranslateX(getTranslateX() - f * dx);
+        setTranslateY(getTranslateY() - f * dy);
+    
+        scaleValue = newScale;
+    }
+
+ 
     /**
      * Sets up the event handlers for the hexagons.
      */
@@ -224,22 +265,36 @@ public class GameBoardView extends Pane {
      */
     public void addHouseToHexagon(Group hexGroup, Color color) {
         String colorName = ColorMapping.getStringFromColor(color).toLowerCase();
-        ImageView houseImageView;
+        ImageView houseImageView = loadHouseImage(colorName);
+        if (houseImageView != null) {
+            updateHouseImageView(houseImageView, getHexSize(), getHexWidth(), getHexHeight());
+
+            if (hexGroup.getChildren().size() > 1) {
+                hexGroup.getChildren().remove(1);
+            }
+
+            hexGroup.getChildren().add(houseImageView);
+        }
+    }
+
+    public ImageView loadHouseImage(String colorName) {
         try {
-            houseImageView = new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/settlements/haus_" + colorName + ".png"))));
+            return new ImageView(new Image(Objects.requireNonNull(getClass().getResourceAsStream("/settlements/haus_" + colorName + ".png"))));
         } catch (NullPointerException e) {
             logger.log(Level.SEVERE, "Image for color " + colorName + " not found.", e);
-            return;
+            return null;
         }
-        double hexSize = Math.min(getWidth() / (BOARD_WIDTH * Math.sqrt(3)), getHeight() / (BOARD_HEIGHT * 1.5));
-        double hexWidth = Math.sqrt(3) * hexSize;
-        double hexHeight = 2 * hexSize;
-        updateHouseImageView(houseImageView, hexSize, hexWidth, hexHeight);
+    }
 
-        if (hexGroup.getChildren().size() > 1) {
-            hexGroup.getChildren().remove(1);
-        }
+    private double getHexSize() {
+        return Math.min(getWidth() / (BOARD_WIDTH * Math.sqrt(3)), getHeight() / (BOARD_HEIGHT * 1.5));
+    }
 
-        hexGroup.getChildren().add(houseImageView);
+    private double getHexWidth() {
+        return Math.sqrt(3) * getHexSize();
+    }
+
+    private double getHexHeight() {
+        return 2 * getHexSize();
     }
 }

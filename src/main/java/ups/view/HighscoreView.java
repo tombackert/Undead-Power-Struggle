@@ -5,12 +5,14 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import ups.model.Highscore;
 
 import java.io.IOException;
+import java.util.List;
 
 public class HighscoreView {
 
-    public void showHighscoreView() {
+    public void showHighscoreView(List<Highscore> highscores) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/ups/view/HighscoreView.fxml"));
             Parent root = loader.load();

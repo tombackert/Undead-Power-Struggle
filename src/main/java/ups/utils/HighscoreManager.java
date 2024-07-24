@@ -4,6 +4,7 @@ import ups.model.Highscore;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,14 +43,15 @@ public class HighscoreManager {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public List<Highscore> loadHighscores() {
         File file = new File(HIGHSCORE_FILE);
         if (!file.exists() || file.length() == 0) {
             return new ArrayList<>();
         }
         try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
-            return (List<Highscore>) ois.readObject();
+            List<Highscore> highscores = (List<Highscore>) ois.readObject();
+            highscores.sort(Comparator.comparingInt(Highscore::getScore).reversed()); // Sortieren nach Punktzahl absteigend
+            return highscores;
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }

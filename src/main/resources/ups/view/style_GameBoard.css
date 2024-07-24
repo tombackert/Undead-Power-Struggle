@@ -1,0 +1,15 @@
+.background-pane-light {
+  -fx-background-image: url("bg5.png"); 
+  -fx-background-size: cover;
+  -fx-background-position: center center;
+}
+
+.background-pane-dark {
+  -fx-background-image: url("zombie2.png"); 
+  -fx-background-size: cover;
+  -fx-background-position: center center;
+}
+
+.label {
+    -fx-text-fill: white;
+}
