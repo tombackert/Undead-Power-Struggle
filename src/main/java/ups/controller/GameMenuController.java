@@ -502,7 +502,7 @@ public class GameMenuController {
         String initString = null;
         //wait for sever to send game info
         long startTime = System.currentTimeMillis();
-        while (((initString = ClientGameConnection.getMessageToGame()) == null) && System.currentTimeMillis() - startTime < 10000);
+        while (((initString = ClientGameConnection.getMessageToGame()) == null) && System.currentTimeMillis() - startTime < 15000);
         //Parse Player info
         System.out.println("InitString: " + initString);
         if (initString == null) {
