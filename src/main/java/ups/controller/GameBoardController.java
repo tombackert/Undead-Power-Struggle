@@ -79,14 +79,26 @@ public class GameBoardController {
     public GameBoardController() {
     }
 
+    /**
+     * Sets the game server.
+     * @param gameServer the game server
+     */
     public void setGameServer(GameServer gameServer) {
         this.gameServer = gameServer;
     }
 
+    /**
+     * Sets the game client.
+     * @param gameClient the game client
+     */
     public void setGameClient(GameClient gameClient) {
         this.gameClient = gameClient;
     }
 
+    /**
+     * Sets the instance of the game board controller.
+     * @param controller the game board controller
+     */
     public static void setInstance(GameBoardController controller) {
         instance = controller;
     }
@@ -138,6 +150,15 @@ public class GameBoardController {
         }
     }
 
+    /**
+     * Sets the players for network play.
+     *
+     * @param playerNames  the player names
+     * @param playerColors the player colors
+     * @param isOneself    the player status
+     * @param sPerTurn     the number of settlements per turn
+     * @param sAmount      the total number of settlements
+     */
     public void setPlayersForNetwork(String[] playerNames, Color[] playerColors, boolean[] isOneself, int sPerTurn, int sAmount) {
         this.playerNames = playerNames;
         this.playerColors = playerColors;
@@ -809,6 +830,9 @@ public class GameBoardController {
         }
     }
 
+    /**
+     * Pauses the game.
+     */
     public void pauseGame() {
         isPaused = true;
         if (currentAITask != null) {
@@ -817,6 +841,9 @@ public class GameBoardController {
         disableHumanInteraction();
     }
 
+    /**
+     * Resumes the game.
+     */
     public void resumeGame() {
         isPaused = false;
         if (players[currentPlayerIndex] instanceof AIPlayer) {
@@ -888,6 +915,12 @@ public class GameBoardController {
         boardPane.setDisable(false); // Aktiviert die gesamte Spielfläche
     }
 
+    /**
+     * Checks if there are enough buildable fields for the required settlements.
+     *
+     * @param requiredSettlements the required settlements
+     * @return true if there are enough buildable fields, false otherwise
+     */
     public boolean checkAvailableBuildableFields(int requiredSettlements) {
         int buildableFields = 0;
         for (int i = 0; i < model.boardSizeX; i++) {
@@ -919,6 +952,9 @@ public class GameBoardController {
         return true;
     }
 
+    /**
+     * Starts the AI game.
+     */
     public void startAiGame() {
         if (players[currentPlayerIndex] instanceof AIPlayer) {
             makeAIMove((AIPlayer) players[currentPlayerIndex]);
@@ -928,6 +964,9 @@ public class GameBoardController {
         }
     }
 
+    /**
+     * Starts the online game.
+     */
     public void startOnlineGame() {
         System.out.println("Wait for other players");
         doItInThread();
@@ -959,6 +998,11 @@ public class GameBoardController {
         }
     }
 
+    /**
+     * Handles the terrain card drawn message.
+     *
+     * @param message the message
+     */
     public void handleTerrainCardDrawnMessage(TerrainCardDrawnMessage message) {
         System.out.println("Updating terrain card for player: " + message.getPlayerName() + " with terrain: " + message.getTerrainType()); // Debug output
         currentTerrain = message.getTerrainType();
@@ -966,7 +1010,10 @@ public class GameBoardController {
         terrainDrawnThisTurn = true;
         drawTerrainCardButton.setDisable(true);
     }
-    
+
+    /**
+     * Handles the end turn message.
+     */
     public void handleOnlinePlayer() {
         disableHumanInteraction();
         String message;
@@ -997,6 +1044,11 @@ public class GameBoardController {
             }
         }
     }
+
+    /**
+     * Parses the game board from the network.
+     * @param b the game board
+     */
     public void parseGameBoardFromNetwork(String b) {
         model.parseGameBoardFromNetwork(b);
     }

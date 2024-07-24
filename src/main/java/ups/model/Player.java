@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
-
 import javafx.scene.paint.Color;
 import ups.gui.ColorMapping;
 
@@ -39,6 +38,8 @@ public class Player {
      *
      * @param name  the name of the player
      * @param color the color of the player
+     * @param settlementsPerTurn the number of settlements that can be placed per turn
+     * @param settlementsCount the number of settlements the player starts with
      */
     public Player(String name, Color color, int settlementsPerTurn, int settlementsCount) {
         this.numberOfVillages = settlementsCount;
@@ -52,6 +53,12 @@ public class Player {
         //System.out.println("Player created with settlements per turn: " + settlementsPerTurn); // Debug statement
     }
 
+    /**
+     * Gets the color of the player as an integer.
+     * @param x the x-coordinate
+     * @param y the y-coordinate
+     * @return the color of the player as an integer
+     */
     public int[][] getHexagonalNeighbors(int x, int y) {
         if (x % 2 == 0) { // even row
             return new int[][]{

@@ -61,7 +61,7 @@ public class MenuItem extends Pane {
 
     /**
      * Set action for menu item.
-     * @param action
+     * @param action action to be set
      */
     public void setOnAction(Runnable action) {
         setOnMouseClicked(e -> action.run());

@@ -16,6 +16,8 @@ public class AIPlayer extends Player {
      *
      * @param name  the name of the player
      * @param color the color of the player
+     * @param settlementsPerTurn the number of settlements the player can place per turn
+     * @param settlementsCount the total number of settlements the player can place
      */
     public AIPlayer(String name, Color color, int settlementsPerTurn, int settlementsCount) {
         super(name, color, settlementsPerTurn, settlementsCount);
@@ -101,10 +103,17 @@ public class AIPlayer extends Player {
                 && board.isNotOccupied(x, y) && board.getTerrainType(x, y).equals(currentTerrain));
     }
 
+    /**
+     * Adds a move to the list of pending moves.
+     * @param move the move to add
+     */
     public void addPendingMove(int[] move) {
         pendingMoves.add(move);
     }
 
+    /**
+     * Clears the list of pending moves.
+     */
     public void clearPendingMoves() {
         pendingMoves.clear();
     }

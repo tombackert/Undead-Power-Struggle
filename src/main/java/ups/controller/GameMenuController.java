@@ -151,6 +151,11 @@ public class GameMenuController {
         this.menuStage = menuStage;
     }
 
+    /**
+     * Sets the primary stage.
+     *
+     * @param primaryStage the primary stage
+     */
     public void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
     }
@@ -220,7 +225,7 @@ public class GameMenuController {
         generateSpinners();
     }
 
-    /*
+    /**
      * The theme is set to the value of the selected menu item.
      */
     @FXML
@@ -413,6 +418,7 @@ public class GameMenuController {
 
     /**
      * Starts a new game.
+     * @throws IOException if an I/O error occurs
      */
     @FXML
     public void startNewGame() throws IOException{
@@ -646,6 +652,13 @@ public class GameMenuController {
         }
     }
 
+    /**
+     * Starts the server.
+     *
+     * @param port         the port
+     * @param playerName   the player name
+     * @param playerColor  the player color
+     */
     public void startServer(int port, String playerName, String playerColor) {
         int settlementsPerTurnValue = getSettlementsPerTurn();
         int settlementsCountValue = getSettlementsCount();
@@ -676,7 +689,14 @@ public class GameMenuController {
         }
     }
 
-
+    /**
+     * Starts the client.
+     *
+     * @param ip          the IP address
+     * @param port        the port
+     * @param playerName   the player name
+     * @param playerColor  the player color
+     */
     public void startClient(String ip, int port, String playerName, String playerColor) {
         try {
             GameClient gameClient = new GameClient();
@@ -984,10 +1004,18 @@ public class GameMenuController {
         GameBoard.makeProcedural = proceduralGameboardCheckbox.isSelected();
     }
 
+    /**
+     * Gets the game server.
+     * @return the game server
+     */
     public static GameServer getGameServer() {
         return gameServer;
     }
 
+    /**
+     * Gets the game client.
+     * @return the game client
+     */
     public static GameClient getGameClient() {
         return gameClient;
     }

@@ -3,15 +3,12 @@ package ups.model;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.scene.paint.Color;
-
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import ups.controller.GameMenuController;
 import ups.gui.ColorMapping;
 import ups.utils.ProceduralGameboard;
@@ -48,6 +45,7 @@ public class GameBoard {
      *
      * @param rows the number of rows
      * @param cols the number of columns
+     * @param selectedCards the list of selected cards
      */
     public GameBoard(int rows, int cols, List<String> selectedCards) {
         super();
@@ -287,7 +285,7 @@ public class GameBoard {
         return terrainCount.getOrDefault(terrainType, 0) > 0;
     }
 
-    /*
+    /**
      * Returns the coordinates of the neighbours of the hexagon at the given row and column.
      * @param x the row
      * @param y the column
@@ -313,8 +311,11 @@ public class GameBoard {
 
     }
 
-    /*
+    /**
      * Returns the terrain type of the neighbours of the hexagon at the given row and column.
+     * @param x the row
+     * @param y the column
+     * @return the terrain types of the neighbours
      */
     public String[] getNeighbourTerrain(int x, int y) {
         this.resetNeighbourCoordinates(x, y);
@@ -324,6 +325,7 @@ public class GameBoard {
         }
         return arr;
     }
+
      /**
     * Sets the selected cards to the provided list.
     * 
@@ -332,6 +334,7 @@ public class GameBoard {
     public void setSelectedCards(List<String> selectedCards) {
         this.selectedCards = selectedCards;
     }
+
     /**
     * Retrieves the currently selected cards.
     * 

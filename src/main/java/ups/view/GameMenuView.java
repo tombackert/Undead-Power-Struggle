@@ -20,7 +20,7 @@ public class GameMenuView extends Application {
     /**
      * Starts the game menu.
      *
-     * @param menuStage the menu stage
+     * @param stage the menu stage
      * @throws Exception if an error occurs
      */
     @Override
@@ -45,6 +45,7 @@ public class GameMenuView extends Application {
 
     /**
      * Shows the game menu.
+     * @param args the command line arguments
      */
     public static void main(String[] args) {
         launch(args);

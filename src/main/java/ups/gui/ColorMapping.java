@@ -53,6 +53,8 @@ public class ColorMapping {
 
     /**
      * Returns the JavaFX Color object for the given player color.
+     * @param color the player color
+     * @return the JavaFX Color object
      */
     public static Color getColorFromInt(int color) {
         switch (color) {
@@ -79,6 +81,8 @@ public class ColorMapping {
 
     /**
      * Returns the player color for the given JavaFX Color object.
+     * @param color the JavaFX Color object
+     * @return the player color
      */
     public static int getIntFromColor(Color color) {
         if (color.equals(Color.RED)) {
